@@ -1,0 +1,2351 @@
+[
+  {
+    "codMec": "BTIS058008",
+    "nome": "I.I.S.S. \"ALDO MORO - S. COSMAI\" (TRANI)",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "BTIS058008@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AL01B",
+    "nome": "GIUSEPPE LOTTI - 1 CD ANDRIA",
+    "comune": "ANDRIA",
+    "sito": "WWW.SCUOLAVACCINA.EDU.IT",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA06907P",
+    "nome": "VIA MARTIRI DI VIA FANI",
+    "comune": "BISCEGLIE",
+    "sito": "www.secondocircolobisceglie.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRH05850R",
+    "nome": "IPSSEO SERALE TRANI",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM8AL01G",
+    "nome": "S.S.1 G. \"PADRE N. VACCINA\"",
+    "comune": "ANDRIA",
+    "sito": "WWW.SCUOLAVACCINA.EDU.IT",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE06800R",
+    "nome": "1 C.D. \"DE AMICIS\" (BISCEGLIE)",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "BTEE06800R@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRH05801C",
+    "nome": "IP \"A. MORO\"",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTTD056518",
+    "nome": "I.T.E.S. - CORSO SERALE \"ETTORE CARAFA\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AM017",
+    "nome": "VINCENZO SACCOTELLI - 1 CD ANDR",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPM056014",
+    "nome": "LICEO ECONOMICO SOCIALE \"ETTORE CARAFA\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM8AM01B",
+    "nome": "S.S.1 G. VITTORIO EMANUELE III",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTTD05601V",
+    "nome": "I.T.E.S \"ETTORE CARAFA\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIS05600L",
+    "nome": "I.I.S.S. \"ETTORE CARAFA\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTIS05600L@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM867032",
+    "nome": "S.S.1 G. \"S. BALDACCHINI\"",
+    "comune": "BARLETTA",
+    "sito": "http//www.istitutocomprensivopietromennea.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRH053019",
+    "nome": "I.P. \"A. MORO\"",
+    "comune": "MARGHERITA DI SAVOIA",
+    "sito": "https//www.iissmoromargheritadisavoia.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC8AM00A",
+    "nome": "I.C. \"OBERDAN-V. EMANUELE III\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTIC8AM00A@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC866003",
+    "nome": "I.C. \"MUSTI - DIMICCOLI\"",
+    "comune": "BARLETTA",
+    "sito": "",
+    "pec": "BTIC866003@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA17503P",
+    "nome": "SANDRO PERTINI",
+    "comune": "TRANI",
+    "sito": "https//www.beltrani.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPS05301G",
+    "nome": "LICEO \"A. MORO\"",
+    "comune": "MARGHERITA DI SAVOIA",
+    "sito": "iissmoromargheritadisavoia.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AM01C",
+    "nome": "OBERDAN 1 CD ANDRIA",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE17500R",
+    "nome": "4 C.D. \"G. BELTRANI \"",
+    "comune": "TRANI",
+    "sito": "https//www.beltrani.edu.it",
+    "pec": "BTEE17500R@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRH05352Q",
+    "nome": "I.P. \"A. MORO\" SERALE",
+    "comune": "MARGHERITA DI SAVOIA",
+    "sito": "https//www.iissmoromargheritadisavoia.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC8AL00E",
+    "nome": "IC P.N.VACCINA-G.LOTTI-DELLA VI",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTIC8AL00E@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AA03T",
+    "nome": "MARIA MONTESSORI",
+    "comune": "BARLETTA",
+    "sito": "https//www.icmodugnomoro.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIS053005",
+    "nome": "I.I.S.S. \"A. MORO\" (MARGHERITA)",
+    "comune": "MARGHERITA DI SAVOIA",
+    "sito": "",
+    "pec": "BTIS053005@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE854031",
+    "nome": "FRANCESCO GALANTE",
+    "comune": "MARGHERITA DI SAVOIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AA01Q",
+    "nome": "\"VIA OFANTO 4 \"",
+    "comune": "BARLETTA",
+    "sito": "https//www.icmodugnomoro.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM80001D",
+    "nome": "MAZZINI",
+    "comune": "MINERVINO MURGE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AJ022",
+    "nome": "PASCULLI",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC85400R",
+    "nome": "I.C. \"GIOVANNI XXIII-G.PASCOLI\"",
+    "comune": "MARGHERITA DI SAVOIA",
+    "sito": "",
+    "pec": "BTIC85400R@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRI05052Q",
+    "nome": "IPSIA \"ARCHIMEDE\" - BARLETTA SERALE",
+    "comune": "BARLETTA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA80002A",
+    "nome": "VIA ORTO BORRELLI",
+    "comune": "MINERVINO MURGE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AA011",
+    "nome": "\"G.MODUGNO\"",
+    "comune": "BARLETTA",
+    "sito": "https//www.icmodugnomoro.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA85404R",
+    "nome": "BUONARROTI",
+    "comune": "MARGHERITA DI SAVOIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AJ033",
+    "nome": "VIA OFANTO N. 29",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA17501L",
+    "nome": "NICOLA FABIANO",
+    "comune": "TRANI",
+    "sito": "www.beltrani.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM8AA01X",
+    "nome": "S.S.1 G. \"RENATO MORO\"",
+    "comune": "BARLETTA",
+    "sito": "https//www.icmodugnomoro.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRI050008",
+    "nome": "I.P. \"ARCHIMEDE \"",
+    "comune": "BARLETTA",
+    "sito": "https//www.ipsiarchimede.edu.it/",
+    "pec": "BTRI050008@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRC061024",
+    "nome": "SEZIONE CARCERARIA IP COSMAI",
+    "comune": "TRANI",
+    "sito": "www.iissdenittis.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA85403Q",
+    "nome": "KENNEDY",
+    "comune": "MARGHERITA DI SAVOIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTTD05901A",
+    "nome": "I.I.S.S. \"L. EINAUDI\"-TECNICO",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "WWWIISSMOROTRANI.EDU.IT",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM8AJ021",
+    "nome": "GIOVANNI XXIII -S.FERDINANDO P.",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA17502N",
+    "nome": "MARIA MONTESSORI",
+    "comune": "TRANI",
+    "sito": "www.beltrani.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRI050019",
+    "nome": "IPSIA \"ARCHIMEDE\"- SEDE ASS.TA DI ANDRIA",
+    "comune": "ANDRIA",
+    "sito": "https//www.ipsiarchimede.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC8AA00V",
+    "nome": "I.C. \"G. MODUGNO - RENATO MORO\"",
+    "comune": "BARLETTA",
+    "sito": "",
+    "pec": "BTIC8AA00V@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRC061013",
+    "nome": "IPSC - IPSAM SERGIO COSMAI",
+    "comune": "BISCEGLIE",
+    "sito": "www.iissdenittis.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA85401N",
+    "nome": "ZONA ARMELLINA",
+    "comune": "MARGHERITA DI SAVOIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRA05950C",
+    "nome": "L.EINAUDI IPROFESSIONALE SERALE",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "iissmoromargheritadisavoia.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AF01V",
+    "nome": "PADRE GIUSEPPE LEONE",
+    "comune": "TRINITAPOLI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE17501T",
+    "nome": "G. BELTRANI - 4 CD. TRANI",
+    "comune": "TRANI",
+    "sito": "www.beltrani.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AA022",
+    "nome": "\"SAN RUGGIERO\"",
+    "comune": "BARLETTA",
+    "sito": "https//www.icmodugnomoro.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRF06000X",
+    "nome": "I.OC. \"MAZZINI-DE CESARE-FERMI\"",
+    "comune": "SPINAZZOLA",
+    "sito": "www.icspinazzola.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC853001",
+    "nome": "I.C. MARCON-CAREL-LOSIT-BOVIO",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "https//www.istitutocomprensivomarconicarella.edu.it/",
+    "pec": "BTIC853001@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AA02R",
+    "nome": "P.ZZA PLEBISCITO 1",
+    "comune": "BARLETTA",
+    "sito": "https//www.icmodugnomoro.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AJ03T",
+    "nome": "RODARI",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRI023011",
+    "nome": "I.P.I.A. \"M. DELL'AQUILA\" - SAN FERD.",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "WWW.dellaquila.staffa.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AN013",
+    "nome": "\"SORELLE AGAZZI\" - 3 C.D.",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPC02301L",
+    "nome": "LICEO \"S. STAFFA\" - TRINITAPOLI",
+    "comune": "TRINITAPOLI",
+    "sito": "www.dellaquila-staffa.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AJ02R",
+    "nome": "MONTESSORI",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE86301N",
+    "nome": "VERDI GIUSEPPE 5 CD",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AN024",
+    "nome": "\"EDMONDO DE AMICIS\" - 3 C.D.",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTTD023511",
+    "nome": "I.T.E. \"M. DELL'AQUILA\" SERALE-SAN FERD.",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "WWW.dellaquila.staffa.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC8AJ00V",
+    "nome": "I.C. \"DE AMICIS-GIOVANNI XXIII\"",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "",
+    "pec": "BTIC8AJ00V@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA86301C",
+    "nome": "\"D.D. PASQUALE MASSARO\"",
+    "comune": "ANDRIA",
+    "sito": "WWW.ICVERDICAFARO.EDU.IT",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AN018",
+    "nome": "GIOVANNI PAOLO II - (EX 7' CD)",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRI023022",
+    "nome": "I.P. \"S. STAFFA\"-TRINITAPOLI",
+    "comune": "TRINITAPOLI",
+    "sito": "www.dellaquila-staffa.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA86302D",
+    "nome": "\"M. CARELLA\"",
+    "comune": "ANDRIA",
+    "sito": "www.icverdicafaro.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC8AN006",
+    "nome": "I.C. \"R. COTUGNO\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTIC8AN006@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM8AN017",
+    "nome": "SS1G \"RITA LEVI MONTALCINI\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM89301C",
+    "nome": "S.M.S\"G.SALVEMINI\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA06901C",
+    "nome": "\"SANDRO PERTINI\"",
+    "comune": "BISCEGLIE",
+    "sito": "www.secondocircolobisceglie.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA89304B",
+    "nome": "DON TONINO BELLO - 1 CD ANDRIA",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE069148",
+    "nome": "VIA FANI - 2 CD BISCEGLIE",
+    "comune": "BISCEGLIE",
+    "sito": "https//www.secondocircolobisceglie.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE80101A",
+    "nome": "MAZZINI - C.D.SPINAZZOLA",
+    "comune": "SPINAZZOLA",
+    "sito": "www.icspinazzola.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA89201C",
+    "nome": "PLESSO INFANZIA \"M. D'AZEGLIO\"",
+    "comune": "BARLETTA",
+    "sito": "ww.icdazegliodenittis.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE06900L",
+    "nome": "2 C.D. \"PROF. ARC. CAPUTI\"",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "BTEE06900L@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE80001E",
+    "nome": "PIETROCOLA CD MINERVINO",
+    "comune": "MINERVINO MURGE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM89201L",
+    "nome": "PLESSO S.S. 1 G. \"G. DE NITTIS\"",
+    "comune": "BARLETTA",
+    "sito": "www.icdazegliodenittis.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTCT70300R",
+    "nome": "CPIA BAT GINO STRADA C/O I.C. IMB-SALV",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC80000C",
+    "nome": "I.C. \"PIETROCOLA - MAZZINI\"",
+    "comune": "MINERVINO MURGE",
+    "sito": "",
+    "pec": "BTIC80000C@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTCT71600V",
+    "nome": "CPIA BAT GINO STRADA C/O PLESSO PASCULLI",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE89201N",
+    "nome": "PLESSO PRIMARIA \"M. D'AZEGLIO\"",
+    "comune": "BARLETTA",
+    "sito": "www.icdazegliodenittis.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AK02T",
+    "nome": "\"PAOLO BORSELLINO\" - 8' C.D.",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA800019",
+    "nome": "G. SANTOMAURO",
+    "comune": "MINERVINO MURGE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM86201R",
+    "nome": "\"E. FERMI\"",
+    "comune": "ANDRIA",
+    "sito": "www.marianofermi.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM866014",
+    "nome": "R. DIMICCOLI",
+    "comune": "BARLETTA",
+    "sito": "www.mustidimiccoli.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTCT70400L",
+    "nome": "CPIA BAT GINO STRADAC/O IC BOSCO-BAT-FER",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AK03N",
+    "nome": "\"GRAZIELLA MANSI\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE80002G",
+    "nome": "DE AMICIS",
+    "comune": "MINERVINO MURGE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE86202V",
+    "nome": "\"A. MARIANO\"",
+    "comune": "ANDRIA",
+    "sito": "www.marianofermi.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE866015",
+    "nome": "MUSTI - 2 CD BARLETTA",
+    "comune": "BARLETTA",
+    "sito": "www.mustidimiccoli.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTCT71400P",
+    "nome": "CPIA BAT G. STRADA - IC G. XXIII-PASCOLI",
+    "comune": "MARGHERITA DI SAVOIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AK01G",
+    "nome": "EDIFICIO ROSMINI I",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC860004",
+    "nome": "I.C. \"DON BOSCO SANTO-MANZONI\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTIC860004@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE06802V",
+    "nome": "\"DON PINO PUGLISI\"",
+    "comune": "BISCEGLIE",
+    "sito": "www.deamicisbisceglie.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA86601X",
+    "nome": "VIA ENRICO DE NICOLA",
+    "comune": "BARLETTA",
+    "sito": "www.mustidimiccoli.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE860016",
+    "nome": "DON BOSCO SANTO 2 CD ANDRIA",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AK02L",
+    "nome": "DON MILANI",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA866021",
+    "nome": "\"G. RODARI\"",
+    "comune": "BARLETTA",
+    "sito": "www.mustidimiccoli.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA860011",
+    "nome": "\"PADRE PIO\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AJ011",
+    "nome": "PRIMARIA \"DE AMICIS\"",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA06101T",
+    "nome": "INFANZIA-FRAGGIANNI",
+    "comune": "BARLETTA",
+    "sito": "www.scuolafraggianni.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE860027",
+    "nome": "\"G. RODARI\" - 2 CD ANDRIA",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTTD04301R",
+    "nome": "\"R. LOTTI-UMBERTO I\" TEC.TURISMO-AGRARIO",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AJ04V",
+    "nome": "VIALE OFANTO",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE061013",
+    "nome": "VIA VITRANI 1",
+    "comune": "BARLETTA",
+    "sito": "www.scuolafraggianni.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM860015",
+    "nome": "MANZONI",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE173016",
+    "nome": "MONS PETRONELLI - 2 CD. TRANI",
+    "comune": "TRANI",
+    "sito": "https//www.scuolapetronellitrani.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIS04300E",
+    "nome": "I.I.S.S. \"R. LOTTI - UMBERTO I\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTIS04300E@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AJ01Q",
+    "nome": "LOPEZ",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIS046002",
+    "nome": "I.I.S.S. \"LEONTINE E GIUSEPPE DE NITTIS",
+    "comune": "BARLETTA",
+    "sito": "",
+    "pec": "BTIS046002@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE172009",
+    "nome": "1 C.D. \"DE AMICIS\" (TRANI)",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "BTEE172009@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE061002",
+    "nome": "3 C.D. \"N. FRAGGIANNI\"",
+    "comune": "BARLETTA",
+    "sito": "",
+    "pec": "BTEE061002@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE85401V",
+    "nome": "PAPA GIOVANNI XXIII",
+    "comune": "MARGHERITA DI SAVOIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTTF06000Q",
+    "nome": "I.T.T. \"SEN. IANNUZZI\"",
+    "comune": "ANDRIA",
+    "sito": "ittjannuzzi.edu.it",
+    "pec": "BTTF06000Q@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTSL04401N",
+    "nome": "LICEO ARTISTICO \"GIUSEPPE COLASANTO\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE17201A",
+    "nome": "SCUOLA PRIMARIA \"DE AMICIS\"",
+    "comune": "TRANI",
+    "sito": "www.deamicistrani.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE061024",
+    "nome": "VIA VITRANI 2",
+    "comune": "BARLETTA",
+    "sito": "www.scuolafraggianni.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA172048",
+    "nome": "\"S.PAOLO\"",
+    "comune": "TRANI",
+    "sito": "www.deamicistrani.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRF044013",
+    "nome": "SERVIZI SOCIO SANITARI-COMMERCIALI PCP",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA172026",
+    "nome": "SCUOLA INFANZIA DE AMICIS",
+    "comune": "TRANI",
+    "sito": "www.deamicistrani.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRF04451C",
+    "nome": "\"GIUSEPPE COLASANTO\" - SERALE",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AP02Q",
+    "nome": "PREFABB.CARRARA GIOIA",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA172015",
+    "nome": "SCUOLA INFANZIA \"DELL'OLIO\"",
+    "comune": "TRANI",
+    "sito": "www.deamicistrani.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIS04400A",
+    "nome": "I.I.S.S. \"GIUSEPPE COLASANTO\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTIS04400A@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AP03R",
+    "nome": "\"A. DI BARI\" - SCUOLA INFANZIA",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE06901N",
+    "nome": "PROF.ARC.CAPUTI 2 CD BISCEGLIE",
+    "comune": "BISCEGLIE",
+    "sito": "https//www.secondocircolobisceglie.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE06401E",
+    "nome": "PADRE R. DIBARI",
+    "comune": "BARLETTA",
+    "sito": "www.scuolagirondi.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRC04301D",
+    "nome": "\"R. LOTTI -UMBERTO I\" PROF.SERV. COMM.LI",
+    "comune": "ANDRIA",
+    "sito": "www.lottiumbertoprimo.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC86300G",
+    "nome": "I.C. \"G. VERDI - P. CAFARO\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTIC86300G@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPS390004",
+    "nome": "I.OC. \"MAZZINI-DE CESARE-FERMI\"-LICEO FE",
+    "comune": "SPINAZZOLA",
+    "sito": "www.icspinazzola.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AP021",
+    "nome": "V.AMANDO VESCOVO 3 CD BISCEGLIE",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM86301L",
+    "nome": "P. CAFARO",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AP01P",
+    "nome": "?PAOLA BELSITO?",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPS15000X",
+    "nome": "LICEO \"CARLO CAFIERO\"",
+    "comune": "BARLETTA",
+    "sito": "liceocafiero.edu.it",
+    "pec": "BTPS15000X@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AF031",
+    "nome": "CAPPUCCINI",
+    "comune": "TRINITAPOLI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA86202N",
+    "nome": "\"A. MARIANO\"",
+    "comune": "ANDRIA",
+    "sito": "www.marianofermi.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPS11000D",
+    "nome": "LICEO SCIENTIFICO \"VALDEMARO VECCHI\"",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "BTPS11000D@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC8AP00T",
+    "nome": "IC S.G. BOSCO-BATTISTI-FERRARIS",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "BTIC8AP00T@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC86200Q",
+    "nome": "I.C. \"A. MARIANO - E. FERMI\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTIC86200Q@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPS08000V",
+    "nome": "LICEO SCIENTIFICO \"RICCARDO NUZZI\"",
+    "comune": "ANDRIA",
+    "sito": "www.liceonuzzi.edu.it",
+    "pec": "BTPS08000V@pec.istruzione.it",
+    "customerCode": "SS16754",
+    "piattaforma": "argo"
+  },
+  {
+    "codMec": "BTAA86203P",
+    "nome": "\"ELSA MORANTE\"",
+    "comune": "ANDRIA",
+    "sito": "www.marianofermi.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AP01X",
+    "nome": "\"A. DI BARI\" - 3 CD BISCEGLIE",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE852028",
+    "nome": "PRIMARIA 'S. G. BOSCO'",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "https//www.icfoscololomanto.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPS03000T",
+    "nome": "LICEO \"LEONARDO DA VINCI\"",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "BTPS03000T@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AE035",
+    "nome": "SC.INF.MADRE TERESA DI CALCUTTA",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA852023",
+    "nome": "INFANZIA 'DE MURO LOMANTO'",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "https//www.icfoscololomanto.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC89200G",
+    "nome": "I.C. \"M.D'AZEGLIO-G.DE NITTIS\"",
+    "comune": "BARLETTA",
+    "sito": "",
+    "pec": "BTIC89200G@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPC210007",
+    "nome": "LICEO \"F. DE SANCTIS\"",
+    "comune": "TRANI",
+    "sito": "WWW.LICEODESANCTIS.EDU.IT",
+    "pec": "BTPC210007@pec.istruzione.it",
+    "customerCode": "SG28799",
+    "piattaforma": "argo"
+  },
+  {
+    "codMec": "BTIC8AE006",
+    "nome": "I.C. \"ROCCA-BOVIO-PALUMBO-D'ANN",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "BTIC8AE006@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA852034",
+    "nome": "VIA F.VECCHIA I",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "https//www.icfoscololomanto.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE867011",
+    "nome": "S.D. SAVIO",
+    "comune": "BARLETTA",
+    "sito": "http//www.istitutocomprensivopietromennea.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM801019",
+    "nome": "DE CESARE",
+    "comune": "SPINAZZOLA",
+    "sito": "www.icspinazzola.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AD02D",
+    "nome": "LARGO PRIMAVERA - PRIMARIA",
+    "comune": "BARLETTA",
+    "sito": "http//wwwicgp2.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA86701Q",
+    "nome": "CARLO MARIA GIULINI",
+    "comune": "BARLETTA",
+    "sito": "http//www.istitutocomprensivopietromennea.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTCT723002",
+    "nome": "CPIA BAT GINO STRADA - PLESSO \"BOTTA\"",
+    "comune": "SPINAZZOLA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE06803X",
+    "nome": "DINO ABASCIA'",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTSL046019",
+    "nome": "I.I.S.S. LEONTINE E GIUSEPPE DE NITTIS",
+    "comune": "BARLETTA",
+    "sito": "www.iissdenittis.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC801008",
+    "nome": "I.OC. \"MAZZINI-DE CESARE-FERMI\"",
+    "comune": "SPINAZZOLA",
+    "sito": "",
+    "pec": "BTIC801008@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRC046011",
+    "nome": "IPSC LEONTINE E GIUSEPPE DE NITTIS",
+    "comune": "BARLETTA",
+    "sito": "www.iissdenittis.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AD017",
+    "nome": "LARGO PRIMAVERA - INFANZIA",
+    "comune": "BARLETTA",
+    "sito": "http//wwwicgp2.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM71901N",
+    "nome": "CPIA BAT C/O ISTITUTI PENITENZIARI",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE867022",
+    "nome": "GIANNI RODARI",
+    "comune": "BARLETTA",
+    "sito": "http//www.istitutocomprensivopietromennea.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA06802N",
+    "nome": "DON PINO PUGLISI",
+    "comune": "BISCEGLIE",
+    "sito": "www.deamicisbisceglie.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA801015",
+    "nome": "PLESSO MAZZINI",
+    "comune": "SPINAZZOLA",
+    "sito": "www.icspinazzola.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRC04651A",
+    "nome": "LEONTINE E GIUSEPPE DE NITTIS-SERALE",
+    "comune": "BARLETTA",
+    "sito": "www.iissdenittis.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC8AD00A",
+    "nome": "I.C. \"GIOVANNI PAOLO II\"",
+    "comune": "BARLETTA",
+    "sito": "",
+    "pec": "BTIC8AD00A@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC86700V",
+    "nome": "I.C. \"PIETRO MENNEA\"",
+    "comune": "BARLETTA",
+    "sito": "",
+    "pec": "BTIC86700V@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE06801T",
+    "nome": "DE AMICIS - 1 CD BISCEGLIE",
+    "comune": "BISCEGLIE",
+    "sito": "www.deamicisbisceglie.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRC046022",
+    "nome": "IPSC LEONTINE E GIUSEPPE DE NITTIS",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "www.iissdenittis.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM8AD02C",
+    "nome": "RITA LEVI-MONTALCINI",
+    "comune": "BARLETTA",
+    "sito": "http//wwwicgp2.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA06406E",
+    "nome": "\"DON LORENZO MILANI\"",
+    "comune": "BARLETTA",
+    "sito": "www.scuolagirondi.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AE029",
+    "nome": "PAPA GIOVANNI XXIII-3 C.D.TRANI",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA06404C",
+    "nome": "PADRE RAFFAELE DI BARI",
+    "comune": "BARLETTA",
+    "sito": "www.scuolagirondi.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM85401T",
+    "nome": "PASCOLI",
+    "comune": "MARGHERITA DI SAVOIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE06403L",
+    "nome": "VIA ZANARDELLI",
+    "comune": "BARLETTA",
+    "sito": "www.scuolagirondi.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA06403B",
+    "nome": "COLLODI",
+    "comune": "BARLETTA",
+    "sito": "www.scuolagirondi.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE06400D",
+    "nome": "6 C.D. \"GIRONDI\"",
+    "comune": "BARLETTA",
+    "sito": "",
+    "pec": "BTEE06400D@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPM06101G",
+    "nome": "L.E.S. \"G. DELL'OLIO\"",
+    "comune": "BISCEGLIE",
+    "sito": "www.itescarafa.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTTD06101A",
+    "nome": "I.T.E. \"G. DELL'OLIO\"",
+    "comune": "BISCEGLIE",
+    "sito": "WWWIISSMOROTRANI.EDU.IT",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRC06150B",
+    "nome": "IP SER. SOCIO SANITARIO G. BOVIO SERALE",
+    "comune": "BISCEGLIE",
+    "sito": "www.iissdenittis.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM8AF013",
+    "nome": "GARIBALDI",
+    "comune": "TRINITAPOLI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTTD05950P",
+    "nome": "ITE EINAUDI SERALE TECNICO",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "WWWIISSMOROTRANI.EDU.IT",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC8AF002",
+    "nome": "I.C. DON MILANI-GARIBALDI-LEONE",
+    "comune": "TRINITAPOLI",
+    "sito": "",
+    "pec": "BTIC8AF002@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM853012",
+    "nome": "MARCONI- G.BOVIO",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPS05901E",
+    "nome": "LICEO \"ENRICO FERMI\"",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AF02X",
+    "nome": "ROSA E CAROLINA AGAZZI",
+    "comune": "TRINITAPOLI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE853013",
+    "nome": "SCUOLA PRIMARIA CARELLA",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC852005",
+    "nome": "I.C. 'FOSC-DE MUR LOMAN-MAZZIN'",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "",
+    "pec": "BTIC852005@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPS05902G",
+    "nome": "E. FERMI - MINERVINO SEZ. ASS.",
+    "comune": "MINERVINO MURGE",
+    "sito": "iissmoromargheritadisavoia.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AF014",
+    "nome": "DON LORENZO MILANI COMPARETTI",
+    "comune": "TRINITAPOLI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPC040009",
+    "nome": "LICEO \"CARLO TROYA\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTPC040009@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE852017",
+    "nome": "PRIMARIA 'DE MURO LOMANTO'",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "https//www.icfoscololomanto.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AE013",
+    "nome": "SC. INF. \"GIANNI RODARI\"",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTPC01000D",
+    "nome": "LICEO \"A. CASARDI\"",
+    "comune": "BARLETTA",
+    "sito": "",
+    "pec": "BTPC01000D@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM852016",
+    "nome": "'UGO FOSCOLO'",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "https//www.icfoscololomanto.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AE024",
+    "nome": "SC. INF. \"PAPA GIOVANNI XXIII\"",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTCT701005",
+    "nome": "CPIA BAT GINO STRADA - PLESSO \"MANZONI\"",
+    "comune": "BARLETTA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE852039",
+    "nome": "MAZZINI - 1 CD CANOSA",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "https//www.icfoscololomanto.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AE018",
+    "nome": "D'ANNUNZIO - 3 C.D.TRANI",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTCT71000X",
+    "nome": "CPIA BAT G. STRADAC/O IC GARIBALDI-LEONE",
+    "comune": "TRINITAPOLI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM8AE017",
+    "nome": "S.S.1 G. \"ROCCA-BOVIO-PALUMBO\"",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA852012",
+    "nome": "INFANZIA 'S. G. BOSCO'",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "https//www.icfoscololomanto.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM8AQ01P",
+    "nome": "SS1G BATTISTI-FERRARIS (COSMAI)",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AQ03L",
+    "nome": "CARRARA REDDITO",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AQ01Q",
+    "nome": "VIA SALNITRO - 4 CD BISCEGLIE",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM8AP01V",
+    "nome": "S.S.1 G. \"BATTISTI - FERRARIS\"",
+    "comune": "BISCEGLIE",
+    "sito": "www.btic8ap00t.edu.it",
+    "pec": "",
+    "customerCode": "SC29434",
+    "piattaforma": "argo"
+  },
+  {
+    "codMec": "BTAA06801L",
+    "nome": "DON PIERINO ARCIERI",
+    "comune": "BISCEGLIE",
+    "sito": "www.deamicisbisceglie.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM30100X",
+    "nome": "CPIA BAT \"GINO STRADA\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTMM30100X@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AL01L",
+    "nome": "DELLA VITTORIA (EX 7' CD)",
+    "comune": "ANDRIA",
+    "sito": "WWW.SCUOLAVACCINA.EDU.IT",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE71901P",
+    "nome": "CPIA BAT C/O ISTITUTI PENITENZIARI",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AK01R",
+    "nome": "\"GIOVANNI FALCONE\" - 8' C.D.",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AD039",
+    "nome": "VIA BOTTICELLI",
+    "comune": "BARLETTA",
+    "sito": "http//wwwicgp2.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM8AK01Q",
+    "nome": "SS1G ALIGHIERI",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTCT71900A",
+    "nome": "CPIA BAT G. STRADA C/O SS1?G. \"GEN. BALD",
+    "comune": "TRANI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AD028",
+    "nome": "VIA DEI PINI",
+    "comune": "BARLETTA",
+    "sito": "http//wwwicgp2.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTCT702001",
+    "nome": "CPIA BAT G. STRADA-IC MARC-CAREL-LOS-B.",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC8AK00P",
+    "nome": "I.C. \"A.ROSMINI-ALIGHIERI\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTIC8AK00P@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE853024",
+    "nome": "GIOVANNI PAOLO II",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AD01C",
+    "nome": "VIA DEI PINI 1",
+    "comune": "BARLETTA",
+    "sito": "http//wwwicgp2.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA85303X",
+    "nome": "GIOVANNI PAOLO II",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM20900N",
+    "nome": "S.S.1 G. \"E. BALDASSARRE\"",
+    "comune": "TRANI",
+    "sito": "www.scuolabaldassarre.edu.it",
+    "pec": "BTMM20900N@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE89303G",
+    "nome": "DON TONINO BELLO - 1 CD ANDRIA",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTTD32000N",
+    "nome": "I.T.E.T. CASSANDRO FERMI NERVI",
+    "comune": "BARLETTA",
+    "sito": "www.cassandroferminervi.edu.it",
+    "pec": "BTTD32000N@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA85302V",
+    "nome": "SCUOLA INFANZIA MAURO CARELLA",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA864018",
+    "nome": "MARIA MONTESSORI",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM08900R",
+    "nome": "S.S.1 G. \"R. MONTERISI\"",
+    "comune": "BISCEGLIE",
+    "sito": "www.scuolamediamonterisi.edu.it",
+    "pec": "BTMM08900R@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA89303A",
+    "nome": "\"FEDERICO II DI SVEVIA\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE173005",
+    "nome": "2 C.D. \"MONS. PETRONELLI\"",
+    "comune": "TRANI",
+    "sito": "https//www.scuolapetronellitrani.edu.it/",
+    "pec": "BTEE173005@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTTD320503",
+    "nome": "I.T.E.T. CASSANDRO FERMI NERVI SERALE",
+    "comune": "BARLETTA",
+    "sito": "www.cassandroferminervi.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM07800A",
+    "nome": "S.S.1 G. \"E. FIERAMOSCA\"",
+    "comune": "BARLETTA",
+    "sito": "ettorefieramosca.edu.it",
+    "pec": "BTMM07800A@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA864029",
+    "nome": "\"COLLODI\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE89302E",
+    "nome": "SAN VALENTINO 4 CD ANDRIA",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA173044",
+    "nome": "COLLODI",
+    "comune": "TRANI",
+    "sito": "https//www.scuolapetronellitrani.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC86400B",
+    "nome": "I.C. \"IANNUZZI-MONS. DI DONNA\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTIC86400B@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTTD02301G",
+    "nome": "I.T.E. \" M. DELL'AQUILA\"-SAN FERD.",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "WWW.dellaquila.staffa.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE173027",
+    "nome": "BRIG. A. CEZZA 2 CD TRANI",
+    "comune": "TRANI",
+    "sito": "https//www.scuolapetronellitrani.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIS061004",
+    "nome": "I.I.S.S. \"G. DELL'OLIO - S. COSMAI\"",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE89301D",
+    "nome": "FEDERICO II DI SVEVIA",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTMM86401C",
+    "nome": "MONS DI DONNA",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIS023009",
+    "nome": "I.I.S.S. \" DELL'AQUILA STAFFA\"",
+    "comune": "SAN FERDINANDO DI PUGLIA",
+    "sito": "",
+    "pec": "BTIS023009@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA173066",
+    "nome": "BRIG. A. CEZZA",
+    "comune": "TRANI",
+    "sito": "https//www.scuolapetronellitrani.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AQ02R",
+    "nome": "SERGIO COSMAI - 4 CD BISCEGLIE",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA893029",
+    "nome": "PAPA GIOVANNI XXIII",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE86402E",
+    "nome": "MONS.DI DONNA 6 CD ANDRIA",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AQ01E",
+    "nome": "\"GIOVANNI FALCONE E PAOLO BORSE",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC89300B",
+    "nome": "I.C. \"IMBRIANI - SALVEMINI\"",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "BTIC89300B@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE86403G",
+    "nome": "ALDO MORO - 6 CD ANDRIA",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIC8AQ00N",
+    "nome": "IC DON P. UVA-BATTISTI-FERRARIS",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "BTIC8AQ00N@pec.istruzione.it",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTRA059014",
+    "nome": "I.I.S.S. \"L. EINAUDI\" - PROFESSIONALE",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "iissmoromargheritadisavoia.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE8AF025",
+    "nome": "PRIMARIA LEONE GARIBALDI",
+    "comune": "TRINITAPOLI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE069126",
+    "nome": "DON TONINO BELLO 2 CD BISCEGLIE",
+    "comune": "BISCEGLIE",
+    "sito": "https//www.secondocircolobisceglie.edu.it/",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE86404L",
+    "nome": "R. IANNUZZI",
+    "comune": "ANDRIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTEE86201T",
+    "nome": "\"A. INCHINGOLO\"",
+    "comune": "ANDRIA",
+    "sito": "www.marianofermi.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AQ02G",
+    "nome": "VIA CORTE PREZIOSA II",
+    "comune": "BISCEGLIE",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA8AF042",
+    "nome": "G. RODARI",
+    "comune": "TRINITAPOLI",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTIS059004",
+    "nome": "I.I.S.S. \"E. FERMI - L. EINAUDI\"",
+    "comune": "CANOSA DI PUGLIA",
+    "sito": "",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA06904G",
+    "nome": "VIA XXV APRILE",
+    "comune": "BISCEGLIE",
+    "sito": "www.secondocircolobisceglie.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTTD05801E",
+    "nome": "A. MORO",
+    "comune": "TRANI",
+    "sito": "WWWIISSMOROTRANI.EDU.IT",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA86201L",
+    "nome": "\"CARLO LORENZINI\"",
+    "comune": "ANDRIA",
+    "sito": "www.marianofermi.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  },
+  {
+    "codMec": "BTAA06902D",
+    "nome": "DON TONINO BELLO",
+    "comune": "BISCEGLIE",
+    "sito": "www.secondocircolobisceglie.edu.it",
+    "pec": "",
+    "customerCode": null,
+    "piattaforma": null
+  }
+]

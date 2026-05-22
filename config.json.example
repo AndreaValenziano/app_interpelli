@@ -1,0 +1,9 @@
+{
+    "email_mittente": "tua_email@gmail.com",
+    "password_email": "tua_password_app_qui",
+    "email_destinatario": "email_dove_ricevere_notifiche@email.com",
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "_note_gmail": "Per Gmail usa una 'Password per le app': https://support.google.com/accounts/answer/185833",
+    "_note_ci": "In produzione (GitHub Actions) usa i Secrets invece di questo file: EMAIL_MITTENTE, PASSWORD_EMAIL, EMAIL_DESTINATARIO, SMTP_SERVER, SMTP_PORT. Le variabili d'ambiente hanno sempre precedenza su config.json."
+}
