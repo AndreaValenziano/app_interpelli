@@ -9,6 +9,7 @@ from filtering import (
     estrai_scadenza,
     compute_stable_id,
 )
+from pdf_utils import estrai_scadenza_da_pdf
 
 # Aggiornare l'URL ogni anno scolastico
 URL = "https://www.istruzionebat.it/interpelli/a-s-2025-2026/"
@@ -36,7 +37,7 @@ class IstruzioneBatHtmlSource(BaseSource):
                     'title': testo[:120],
                     'link': link,
                     'tipo': identifica_tipo_interpello(testo),
-                    'scadenza': estrai_scadenza(testo),
+                    'scadenza': estrai_scadenza(testo) or (estrai_scadenza_da_pdf(link) if link and link.lower().endswith('.pdf') else ''),
                     'source': self.name,
                     'stable_id': compute_stable_id(testo),
                     'data_rilevamento': datetime.now().isoformat(),

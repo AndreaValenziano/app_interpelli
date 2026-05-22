@@ -102,10 +102,7 @@ class ArgoAlboSource(BaseSource):
         if not is_sostegno_primaria_infanzia(testo):
             return None
 
-        scadenza = (
-            self._formatta_data(atto.get('dataArchiviazione'))
-            or estrai_scadenza(testo)
-        )
+        scadenza = estrai_scadenza(testo) or self._formatta_data(atto.get('dataArchiviazione'))
 
         atto_id = atto.get('id')
         link = f"https://www.portaleargo.it/albopretorio/online/#/?customerCode={customer_code}"

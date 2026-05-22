@@ -34,30 +34,44 @@ rm interpelli_visti.json
 ### Module layout
 
 ```
-monitor_interpelli.py   # orchestrator + email + dedup
-filtering.py            # shared filter logic (codici, dedup ID, date extraction)
+monitor_interpelli.py   # orchestrator + email + dedup + expiry filter
+filtering.py            # shared filter logic (codici, dedup ID, date extraction, expiry)
+pdf_utils.py            # deadline extraction from PDF via pypdf (in-memory cache)
 sources/
   __init__.py           # get_enabled_sources() registry
   base.py               # BaseSource ABC + shared _http_get()
   istruzionebat_rss.py  # primary: UST BAT WordPress RSS feed
   istruzionebat_html.py # fallback: scrape the HTML index page
   scuolainterpelli_rss.py  # secondary: national aggregator, filtered for BAT
+  argo_albo.py          # per-school: queries Argo albo pretorio API
 .github/workflows/monitor.yml  # GitHub Actions cron scheduler
 ```
 
 ### Data flow
 
 1. `esegui()` iterates `get_enabled_sources()` → each `fetch()` returns normalized posting dicts already filtered by target codes.
-2. `filtra_nuovi_interpelli()` deduplicates: skips if `stable_id` (sha256 of normalized text) OR normalized link already seen. Writes updated state to `interpelli_visti.json` (unless `--dry-run`).
-3. `invia_email()` sends HTML via SMTP+STARTTLS.
+2. `esegui()` discards expired postings using `scadenza_passata()` (logs "⏰ Scartati N scaduti"). Postings with no parseable deadline are kept (better a false positive than a miss).
+3. `filtra_nuovi_interpelli()` deduplicates: skips if `stable_id` (sha256 of normalized text) OR normalized link already seen. Writes updated state to `interpelli_visti.json` (unless `--dry-run`).
+4. `invia_email()` sends HTML via SMTP+STARTTLS.
 
 ### Normalized posting dict fields
 
-Each fetcher returns dicts with: `testo`, `title`, `link`, `tipo`, `scadenza`, `source`, `stable_id`, `data_rilevamento`.
+Each fetcher returns dicts with: `testo`, `title`, `link`, `tipo`, `scadenza`, `source`, `stable_id`, `data_rilevamento`. `scadenza` is `'DD/MM/YYYY'` or `''` (never `'Non specificata'` — callers display that label for empty string).
 
 ### Filtering functions (`filtering.py`)
 
-`is_sostegno_primaria_infanzia`, `identifica_tipo_interpello`, `estrai_scadenza` are verbatim from the original code. `compute_stable_id(testo)` uses `hashlib.sha256` (not Python's `hash()`, which is salted per-process and would break dedup across GitHub Actions runs).
+- `is_sostegno_primaria_infanzia`, `identifica_tipo_interpello`: keyword matching on ADEE/ADAA/EEEE/AAAA.
+- `estrai_scadenza(testo)`: recognizes separators `.`/`/`/`-` and keywords (al/entro il/scadenza/termine/fino al/dal…al). Returns `'DD/MM/YYYY'` or `''`.
+- `parse_data(s)`: parses `'DD/MM/YYYY'` → `date`. Returns `None` on failure.
+- `scadenza_passata(s, oggi=None)`: `True` only if parseable AND < today. Non-parseable → `False` (do not discard).
+- `compute_stable_id(testo)`: `hashlib.sha256` (not Python's `hash()`, which is salted per-process and would break dedup across GitHub Actions runs).
+
+### Deadline resolution per source (fallback chain)
+
+Each fetcher populates `scadenza` with the first non-empty result:
+1. `estrai_scadenza(testo)` — title + description + allegato filenames.
+2. If link ends in `.pdf` → `estrai_scadenza_da_pdf(link)` (pdf_utils).
+- **Argo** additionally falls back to `dataArchiviazione` (albo archiving date) as last resort — this is *not* the application deadline but is better than nothing. Priority: `estrai_scadenza(testo) or dataArchiviazione`.
 
 ### Sources
 
@@ -98,7 +112,9 @@ Run once (not part of the regular monitor cycle) to produce `scuole_bat.json`:
 python3 build_scuole_bat.py
 ```
 
-The script downloads the MIUR open-data CSV `SCUANAGRAFESTAT`, filters by province `BT`, then crawls each school's `.edu.it` site looking for a `customerCode=SC#####` Argo link. Schools without an Argo link get `customerCode: null` and are skipped by `argo_albo`. **Review `scuole_bat.json` with the user before using in production** — especially the discovered customerCodes.
+The script downloads the MIUR open-data CSV `SCUANAGRAFESTAT`, **groups by `CODICEISTITUTORIFERIMENTO`** (the principal institution, not individual plessi), filters to institutions with at least one `SCUOLA PRIMARIA` or `SCUOLA (DELL')INFANZIA` plesso (≈31 IC/circoli; excludes CPIA), normalizes malformed site URLs, adds `www.{codice}.edu.it` fallback, then crawls each institution's site (homepage + albo/pretori subpages) for `customerCode=SC#####`. Schools without an Argo link get `customerCode: null` and are skipped by `argo_albo`. **Review `scuole_bat.json` with the user before using in production** — missing customerCodes are filled in manually by navigating each school's albo.
+
+`scuole_bat.json` schema per entry: `{codMec, nome, comune, siti: [...], pec, gradi: [...], customerCode, piattaforma}`.
 
 If the MIUR CSV URL returns 404 (happens at the start of each new school year), update `MIUR_CSV_URL` in `build_scuole_bat.py`. Find the new URL at `dati.istruzione.it/opendata/opendata/catalogo/elements1/` searching for `SCUANAGRAFESTAT`.
 

@@ -16,6 +16,7 @@ from datetime import datetime
 from typing import List, Dict
 
 from sources import get_enabled_sources
+from filtering import scadenza_passata
 
 
 class InterpelliMonitor:
@@ -126,7 +127,7 @@ class InterpelliMonitor:
             <div class="interpello">
                 <h3>Interpello #{i}</h3>
                 <p class="tipo">📋 Tipo: {interpello['tipo']}</p>
-                <p class="scadenza">📅 Scadenza: {interpello['scadenza']}</p>
+                <p class="scadenza">📅 Scadenza: {interpello['scadenza'] or 'Non specificata'}</p>
                 <p class="fonte">Fonte: {interpello['source']}</p>
                 <p><strong>Descrizione:</strong><br>{interpello['testo'][:300]}...</p>
             """
@@ -154,7 +155,7 @@ class InterpelliMonitor:
             print(f"\n[DRY-RUN] Email NON inviata. Oggetto: 🔔 {n} Nuov{'o' if n == 1 else 'i'} Interpell{'o' if n == 1 else 'i'} Primaria/Infanzia BAT")
             for i, ip in enumerate(interpelli, 1):
                 print(f"  [{i}] [{ip['source']}] {ip['title'][:80]}")
-                print(f"       Tipo: {ip['tipo']} | Scadenza: {ip['scadenza']}")
+                print(f"       Tipo: {ip['tipo']} | Scadenza: {ip['scadenza'] or 'Non specificata'}")
                 print(f"       Link: {ip.get('link') or '—'}")
             return
 
@@ -198,6 +199,11 @@ class InterpelliMonitor:
             tutti.extend(risultati)
 
         print(f"\n📊 Totale grezzo (da tutte le sorgenti): {len(tutti)}")
+        n_pre = len(tutti)
+        tutti = [ip for ip in tutti if not scadenza_passata(ip.get('scadenza', ''))]
+        n_scaduti = n_pre - len(tutti)
+        if n_scaduti:
+            print(f"⏰ Scartati {n_scaduti} interpell{'o' if n_scaduti == 1 else 'i'} scadut{'o' if n_scaduti == 1 else 'i'}")
         print("🆕 Filtro nuovi interpelli (dedup cross-sorgente)...")
         nuovi = self.filtra_nuovi_interpelli(tutti)
         print(f"✨ Trovati {len(nuovi)} nuovi interpelli")
