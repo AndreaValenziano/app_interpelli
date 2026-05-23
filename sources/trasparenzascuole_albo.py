@@ -1,12 +1,16 @@
 import json
 import os
+import random
 import re
 import time
+from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List, Optional
 
 import requests
 from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from .base import BaseSource
 from filtering import (
@@ -23,15 +27,47 @@ SCUOLE_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'scuole_b
 SLEEP_TRA_SCUOLE = 1.5
 MAX_PAGINE = 20
 
-_HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-    'Accept-Language': 'it-IT,it;q=0.9,en;q=0.8',
+_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+_UA_HINTS = {
+    'sec-ch-ua': '"Chromium";v="131", "Not_A Brand";v="24"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"macOS"',
 }
+
+# Headers per la GET di navigazione (prima richiesta a ogni pagina pubblica)
+_NAV_HEADERS = {
+    'User-Agent': _UA,
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'it-IT,it;q=0.9,en;q=0.8',
+    'Upgrade-Insecure-Requests': '1',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-User': '?1',
+    'Sec-Fetch-Dest': 'document',
+    **_UA_HINTS,
+}
+# Headers per la pagina scuola (GET con Referer = homepage)
+_PAGE_HEADERS = {
+    **_NAV_HEADERS,
+    'Sec-Fetch-Site': 'same-origin',
+    'Referer': TRASPARENZA_BASE + '/',
+}
+# Headers per le chiamate AJAX (POST XHR)
 _AJAX_HEADERS = {
-    **_HEADERS,
+    'User-Agent': _UA,
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'it-IT,it;q=0.9,en;q=0.8',
     'Content-Type': 'application/json; charset=UTF-8',
     'X-Requested-With': 'XMLHttpRequest',
+    'Origin': TRASPARENZA_BASE,
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Dest': 'empty',
+    **_UA_HINTS,
 }
+
 _BASE_PAYLOAD = {
     'statopubblicazione': '0',  # solo atti in corso di pubblicazione
     'idtipoatto': '',
@@ -44,6 +80,15 @@ _BASE_PAYLOAD = {
     'searchfield': '',
 }
 
+_RETRY = Retry(
+    total=3,
+    backoff_factor=2,
+    status_forcelist=(403, 429, 500, 502, 503, 504),
+    allowed_methods=frozenset(['GET', 'POST']),
+    respect_retry_after_header=True,
+    raise_on_status=False,
+)
+
 
 class TrasparenzascuoleAlboSource(BaseSource):
     name = "trasparenzascuole_albo"
@@ -52,6 +97,9 @@ class TrasparenzascuoleAlboSource(BaseSource):
         try:
             scuole = self._carica_scuole()
             interpelli = []
+            errors_by_status: dict = defaultdict(list)  # status_code → [nome, ...]
+            session = self._make_session()
+
             for scuola in scuole:
                 if scuola.get('piattaforma') != 'trasparenzascuole':
                     continue
@@ -60,15 +108,36 @@ class TrasparenzascuoleAlboSource(BaseSource):
                     continue
                 nome = scuola.get('nome', cf)
                 try:
-                    trovati = self._fetch_scuola(cf, nome)
+                    trovati = self._fetch_scuola(session, cf, nome)
                     interpelli.extend(trovati)
+                except requests.HTTPError as e:
+                    status = e.response.status_code if e.response is not None else 0
+                    if not errors_by_status[status]:
+                        print(f"[{self.name}] Errore per CF {cf} ({nome}): {e}")
+                    errors_by_status[status].append(nome)
                 except Exception as e:
                     print(f"[{self.name}] Errore per CF {cf} ({nome}): {e}")
-                time.sleep(SLEEP_TRA_SCUOLE)
+                time.sleep(SLEEP_TRA_SCUOLE + random.uniform(0, 0.8))
+
+            for status, nomi in errors_by_status.items():
+                if len(nomi) > 1:
+                    label = "Bloccato da WAF Cloudflare" if status == 403 else f"HTTP {status}"
+                    print(f"[{self.name}] ⚠  {label} su {len(nomi)} scuole (probabile block IP su runner CI)")
             return interpelli
         except Exception as e:
             print(f"[{self.name}] Errore: {e}")
             return []
+
+    @staticmethod
+    def _make_session() -> requests.Session:
+        session = requests.Session()
+        adapter = HTTPAdapter(max_retries=_RETRY)
+        session.mount('https://', adapter)
+        try:
+            session.get(TRASPARENZA_BASE + '/', headers=_NAV_HEADERS, timeout=15)
+        except Exception:
+            pass  # warm-up fallito: si prosegue comunque
+        return session
 
     def _carica_scuole(self) -> List[Dict]:
         if not os.path.exists(SCUOLE_FILE):
@@ -76,12 +145,11 @@ class TrasparenzascuoleAlboSource(BaseSource):
         with open(SCUOLE_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
 
-    def _fetch_scuola(self, cf: str, nome_scuola: str) -> List[Dict]:
+    def _fetch_scuola(self, session: requests.Session, cf: str, nome_scuola: str) -> List[Dict]:
         page_url = f"{TRASPARENZA_PUBLIC}?CF={cf}"
-        session = requests.Session()
 
         # Step 1: GET pagina → cust_id (GUID della scuola sul bottone Cerca)
-        resp = session.get(page_url, headers=_HEADERS, timeout=30)
+        resp = session.get(page_url, headers=_PAGE_HEADERS, timeout=30)
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, 'html.parser')
         btn = soup.find('button', {'data-action': 'GET_APD_TABLE'})
