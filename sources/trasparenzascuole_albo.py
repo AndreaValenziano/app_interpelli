@@ -15,24 +15,33 @@ from filtering import (
     identifica_tipo_interpello,
     is_sostegno_primaria_infanzia,
 )
-from pdf_utils import estrai_scadenza_da_pdf
 
 TRASPARENZA_BASE = "https://www.trasparenzascuole.it"
 TRASPARENZA_PUBLIC = f"{TRASPARENZA_BASE}/Public/APDPublic_ExtV2.aspx"
 TRASPARENZA_AJAX = f"{TRASPARENZA_BASE}/Ajax/APP_Ajax_Get.aspx"
 SCUOLE_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'scuole_bat.json')
 SLEEP_TRA_SCUOLE = 1.5
-MAX_PAGINE = 20  # sicurezza: non iterare all'infinito
+MAX_PAGINE = 20
 
 _HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     'Accept-Language': 'it-IT,it;q=0.9,en;q=0.8',
 }
 _AJAX_HEADERS = {
     **_HEADERS,
-    'Content-Type': 'application/json; charset=utf-8',
+    'Content-Type': 'application/json; charset=UTF-8',
     'X-Requested-With': 'XMLHttpRequest',
+}
+_BASE_PAYLOAD = {
+    'statopubblicazione': '0',  # solo atti in corso di pubblicazione
+    'idtipoatto': '',
+    'annoselezionato': '',
+    'numeroprogressivo': '',
+    'numeroprotocollo': '',
+    'oggetto': '',
+    'dataInizio': '',
+    'dataFine': '',
+    'searchfield': '',
 }
 
 
@@ -71,11 +80,10 @@ class TrasparenzascuoleAlboSource(BaseSource):
         page_url = f"{TRASPARENZA_PUBLIC}?CF={cf}"
         session = requests.Session()
 
-        # GET iniziale: ottieni il GUID della scuola (data-cust-id sul bottone Cerca)
+        # Step 1: GET pagina → cust_id (GUID della scuola sul bottone Cerca)
         resp = session.get(page_url, headers=_HEADERS, timeout=30)
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, 'html.parser')
-
         btn = soup.find('button', {'data-action': 'GET_APD_TABLE'})
         if not btn:
             return []
@@ -83,105 +91,68 @@ class TrasparenzascuoleAlboSource(BaseSource):
         if not cust_id:
             return []
 
-        ajax_url = f"{TRASPARENZA_AJAX}?action=GET_APD_TABLE&Others={cust_id}"
-        referer_headers = {**_AJAX_HEADERS, 'Referer': page_url}
+        # Step 2: GET INIT_APD — necessario per inizializzare la sessione lato server;
+        # senza questo passo la POST GET_APD_TABLE restituisce sempre "Nessuno atto trovato"
+        init_url = f"{TRASPARENZA_AJAX}?action=INIT_APD&Others={cust_id}&_={int(time.time() * 1000)}"
+        session.get(init_url, headers={**_AJAX_HEADERS, 'Referer': page_url}, timeout=15)
 
-        base_payload = {
-            'statopubblicazione': '0',  # 0 = In corso di pubblicazione
-            'idtipoatto': '',
-            'annoselezionato': '',
-            'numeroprogressivo': '',
-            'numeroprotocollo': '',
-            'oggetto': '',
-            'dataInizio': '',
-            'dataFine': '',
-            'searchfield': '',
-        }
+        ajax_url = f"{TRASPARENZA_AJAX}?action=GET_APD_TABLE&Others={cust_id}"
+        req_headers = {**_AJAX_HEADERS, 'Referer': page_url}
 
         risultati: List[Dict] = []
         for page_num in range(1, MAX_PAGINE + 1):
-            payload = {**base_payload, 'PageNumber': str(page_num)}
+            payload = dict(_BASE_PAYLOAD)
+            if page_num > 1:
+                payload['PageNumber'] = str(page_num)
+
             try:
-                r = session.post(ajax_url, data=json.dumps(payload), headers=referer_headers, timeout=30)
+                r = session.post(ajax_url, data=json.dumps(payload), headers=req_headers, timeout=30)
                 r.raise_for_status()
             except Exception:
                 break
 
-            soup_page = BeautifulSoup(r.text, 'html.parser')
-            page_results = self._parse_tabella(soup_page, cf, nome_scuola)
-            risultati.extend(page_results)
-
-            # Calcola il numero totale di pagine dalla prima risposta
-            if page_num == 1:
-                total_pages = self._estrai_totale_pagine(soup_page)
-                if total_pages <= 1:
-                    break
-            elif page_num >= total_pages:
+            if 'Nessuno atto trovato' in r.text:
                 break
 
-            time.sleep(0.5)
+            soup_page = BeautifulSoup(r.text, 'html.parser')
+            risultati.extend(self._parse_risposta(soup_page, cf, nome_scuola, page_url))
+
+            m = re.search(r'Totale pagine (\d+) di (\d+)', r.text)
+            if not m or page_num >= int(m.group(2)):
+                break
+
+            time.sleep(0.3)
 
         return risultati
 
-    def _estrai_totale_pagine(self, soup: BeautifulSoup) -> int:
-        """Legge 'Totale pagine X di N' per sapere quante pagine ci sono."""
-        testo = soup.get_text()
-        m = re.search(r'Totale pagine\s+\d+\s+di\s+(\d+)', testo)
-        if m:
-            return int(m.group(1))
-        # Fallback: prendi il data-page più alto tra i bottoni di paginazione
-        max_page = 1
-        for btn in soup.find_all(attrs={'data-page': True}):
-            try:
-                max_page = max(max_page, int(btn['data-page']))
-            except (ValueError, TypeError):
-                pass
-        return max_page
-
-    def _parse_tabella(self, soup: BeautifulSoup, cf: str, nome_scuola: str) -> List[Dict]:
+    def _parse_risposta(self, soup: BeautifulSoup, cf: str, nome_scuola: str, page_url: str) -> List[Dict]:
         risultati = []
-
-        # La tabella non ha header row: tutte le <tr> sono dati
-        table = (
-            soup.find('table', id=re.compile(r'grid|result|atti|albo', re.I))
-            or soup.find('table', class_=re.compile(r'grid|result|atti|albo', re.I))
-            or next((t for t in soup.find_all('table') if t.find('td')), None)
-        )
-        if not table:
-            return risultati
-
-        for row in table.find_all('tr'):
+        for row in soup.find_all('tr'):
             cells = row.find_all('td')
-            if len(cells) < 2:
+            if len(cells) < 4:
                 continue
 
+            # L'oggetto vero dell'atto è nell'<i> tag della seconda colonna
+            i_tag = row.find('i')
+            oggetto_raw = i_tag.get_text(strip=True) if i_tag else ''
+            oggetto = re.sub(r'^Oggetto:\s*', '', oggetto_raw).strip()
             testo = row.get_text(separator=' ', strip=True)
-            if not is_sostegno_primaria_infanzia(testo):
+
+            if not is_sostegno_primaria_infanzia(oggetto or testo):
                 continue
 
-            link_tag = row.find('a', href=True)
-            link: Optional[str] = None
-            if link_tag:
-                href = link_tag['href']
-                if href.startswith('http'):
-                    link = href
-                elif href.startswith('/'):
-                    link = TRASPARENZA_BASE + href
+            scadenza = self._estrai_scadenza_da_riga(cells, oggetto)
 
-            doc_id = self._estrai_id_atto(link) if link else None
-            sid_base = f"trasparenzascuole-{cf}-{doc_id}" if doc_id else testo
-
-            scadenza = estrai_scadenza(testo)
-            if not scadenza and link and link.lower().endswith('.pdf'):
-                scadenza = estrai_scadenza_da_pdf(link)
-
-            oggetto = next((c.get_text(strip=True) for c in cells if c.get_text(strip=True)), testo[:120])
+            # data-idatto (GUID) come base dello stable_id — più stabile del testo
+            btn_atto: Optional[BeautifulSoup] = row.find('button', {'data-action': 'GET_APD_ATTO'})
+            id_atto = btn_atto.get('data-idatto', '') if btn_atto else ''
+            sid_base = f"trasparenzascuole-{cf}-{id_atto}" if id_atto else testo
 
             risultati.append({
                 'testo': testo,
-                'title': f"[{nome_scuola}] {oggetto[:100]}",
-                'link': link,
-                'tipo': identifica_tipo_interpello(testo),
+                'title': f"[{nome_scuola}] {(oggetto or testo)[:100]}",
+                'link': page_url,
+                'tipo': identifica_tipo_interpello(oggetto or testo),
                 'scadenza': scadenza,
                 'source': self.name,
                 'stable_id': compute_stable_id(sid_base),
@@ -191,9 +162,15 @@ class TrasparenzascuoleAlboSource(BaseSource):
         return risultati
 
     @staticmethod
-    def _estrai_id_atto(link: str) -> Optional[str]:
-        m = re.search(r'[?&][iI][dD]=(\d+)', link)
-        if m:
-            return m.group(1)
-        m = re.search(r'/(\d{4,})(?:/|$|\?)', link)
-        return m.group(1) if m else None
+    def _estrai_scadenza_da_riga(cells: list, oggetto: str) -> str:
+        # Prima prova: oggetto dell'atto (se cita "entro il gg/mm/aaaa")
+        scadenza = estrai_scadenza(oggetto)
+        if scadenza:
+            return scadenza
+        # Seconda prova: seconda data nella colonna date (data archiviazione albo)
+        if len(cells) >= 3:
+            date_col = cells[2].get_text(separator='|', strip=True)
+            dates = re.findall(r'\d{2}/\d{2}/\d{4}', date_col)
+            if len(dates) >= 2:
+                return dates[1]
+        return ''

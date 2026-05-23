@@ -160,6 +160,36 @@ If the MIUR CSV URL returns 404 (start of new school year), update `MIUR_CSV_URL
 ### Trasparenzascuole.it API details (for `trasparenzascuole_albo` source)
 
 - Step 1 GET: `https://www.trasparenzascuole.it/Public/APDPublic_ExtV2.aspx?CF={codiceFiscale}` → extract `button[data-action=GET_APD_TABLE][data-cust-id]` (GUID per school)
-- Step 2 POST JSON: `https://www.trasparenzascuole.it/Ajax/APP_Ajax_Get.aspx?action=GET_APD_TABLE&Others={custId}` with body `{statopubblicazione:"0", idtipoatto:"", annoselezionato:"", numeroprogressivo:"", numeroprotocollo:"", oggetto:"", dataInizio:"", dataFine:"", searchfield:"", PageNumber:"N"}`
-- Response: HTML fragment (no `Content-Type: text/html` header — raw HTML)
-- Pagination: increment `PageNumber` in JSON body; parse total pages from "Totale pagine X di N" in response text
+- **Step 2 GET (required)**: `https://www.trasparenzascuole.it/Ajax/APP_Ajax_Get.aspx?action=INIT_APD&Others={custId}&_={timestamp_ms}` — must be called before the POST, otherwise POST always returns "Nessuno atto trovato" (server-side session not initialized)
+- Step 3 POST JSON: `https://www.trasparenzascuole.it/Ajax/APP_Ajax_Get.aspx?action=GET_APD_TABLE&Others={custId}` with body `{statopubblicazione:"0", idtipoatto:"", annoselezionato:"", numeroprogressivo:"", numeroprotocollo:"", oggetto:"", dataInizio:"", dataFine:"", searchfield:""}` — add `PageNumber:"N"` for pages > 1
+- `statopubblicazione:"0"` = atti in corso di pubblicazione only (never scaduti); omit or use `""` for all-time history
+- Response: HTML fragment. Row structure: `<tr><td>num</td><td><i>Oggetto: ...</i></td><td>pubDate/scadDate/badge</td><td>Tipo</td><td><button data-idatto="GUID"></td></tr>`
+- Stable_id: `sha256("trasparenzascuole-{cf}-{data-idatto}")` — the GUID per act is stable
+- Pagination: parse "Totale pagine X di N"; increment `PageNumber` in body; 5 results per page typical
+- `GET_APD_ATTO` (allegati): not called — requires active server session, returns error outside the browser flow. The page URL is used as `link` instead.
+
+## Discovering new AJAX sources (`tools/discover_ajax.py`)
+
+When a new school platform behaves unexpectedly or you can't figure out its API from static analysis, use the Playwright-based discovery tool to capture real browser traffic:
+
+```bash
+# One-time setup (dev only — not in requirements.txt)
+pip install -r requirements-dev.txt
+playwright install chromium
+
+# Run discovery: navigates URL, clicks selector, captures all XHR/fetch requests
+python3 tools/discover_ajax.py \
+  --url "https://www.example-school.it/albo?CF=12345" \
+  --click '[data-action="LOAD"]' \
+  --output tools/captures/example_12345.json
+  # add --headed to see the browser window
+  # add --no-click to just capture page load without clicking
+```
+
+The JSON output (`tools/captures/*.json`, gitignored) contains each intercepted XHR: method, URL, request headers + body, response status + body (first 64 KB). Read it to identify:
+1. The exact `Content-Type` and body format of the POST (JSON vs form-encoded)
+2. Any required pre-flight requests (like `INIT_APD` for Trasparenzascuole)
+3. Pagination parameters
+4. How to extract stable IDs (GUIDs, numeric IDs in response HTML)
+
+Then implement the source as `sources/<platform>_albo.py` using plain `requests`, register in `sources/__init__.py`, and test with `--dry-run --source <name>`. Playwright is **not** used at runtime.

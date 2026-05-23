@@ -7,3 +7,4 @@ venv/
 .venv/
 responseargo/
 .claude/
+tools/captures/*.json
