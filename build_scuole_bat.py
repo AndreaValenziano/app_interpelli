@@ -30,6 +30,38 @@ SLEEP_TRA_SCUOLE = 0.5
 
 ARGO_RE = re.compile(r'customerCode=([A-Z]{2}\d+)', re.IGNORECASE)
 
+# Mapping manuale: piattaforma + params per scuola (manuale vince sull'auto-crawling).
+# Chiave: codMec (CODICEISTITUTORIFERIMENTO); valore: (piattaforma, params_dict).
+# Aggiornare se una scuola cambia piattaforma.
+MAPPING_MANUALE: Dict[str, tuple] = {
+    # --- Argo ---
+    "BTIC86200Q": ("argo", {"customerCode": "SC27220"}),
+    "BTIC86300G": ("argo", {"customerCode": "SC26991"}),
+    "BTIC86400B": ("argo", {"customerCode": "SC27353"}),
+    "BTIC89300B": ("argo", {"customerCode": "SC28160"}),
+    "BTIC8AK00P": ("argo", {"customerCode": "SC29430"}),
+    "BTIC8AL00E": ("argo", {"customerCode": "SC29431"}),
+    "BTIC8AM00A": ("argo", {"customerCode": "SC29432"}),
+    "BTIC8AN006": ("argo", {"customerCode": "SC29433"}),
+    "BTEE061002": ("argo", {"customerCode": "SE29246"}),
+    "BTEE06400D": ("argo", {"customerCode": "SE6206"}),
+    "BTIC8AD00A": ("argo", {"customerCode": "SC29283"}),
+    "BTIC852005": ("argo", {"customerCode": "SC27240"}),
+    "BTIC80000C": ("argo", {"customerCode": "SC21815"}),
+    "BTIC801008": ("argo", {"customerCode": "SC12641"}),
+    # --- Nuvola Madisoft ---
+    "BTIC89200G": ("nuvola", {"codMiur": "BAIC89200V"}),
+    # --- Trasparenzascuole.it (Axios) ---
+    "BTIC866003": ("trasparenzascuole", {"codiceFiscale": "90091130725"}),
+    "BTEE06900L": ("trasparenzascuole", {"codiceFiscale": "83004410722"}),
+    "BTIC8AQ00N": ("trasparenzascuole", {"codiceFiscale": "92081880723"}),
+    "BTIC85400R": ("trasparenzascuole", {"codiceFiscale": "90059340746"}),
+    "BTIC8AJ00V": ("trasparenzascuole", {"codiceFiscale": "91121590722"}),
+    "BTEE172009": ("trasparenzascuole", {"codiceFiscale": "83002530729"}),
+    "BTEE173005": ("trasparenzascuole", {"codiceFiscale": "83001990726"}),
+    # Spaggiari (JS-side, fuori scope), custom, sconosciute → piattaforma=null, non in mappa
+}
+
 _GRADI_TARGET = {'PRIMARIA', 'INFANZIA'}
 _ALBO_KEYWORDS = {'albo', 'pretori', 'amministrazione-trasparente', 'portaleargo'}
 _VALORI_VUOTI = {'non disponibile', 'nd', '-', 'n/a', '', 'non disp.', 'nessuno'}
@@ -251,17 +283,29 @@ def main():
             'siti': siti,
             'pec': ist['pec'],
             'gradi': sorted(ist['gradi']),
-            'customerCode': customer_code,
             'piattaforma': 'argo' if customer_code else None,
+            'params': {'customerCode': customer_code} if customer_code else None,
         })
         time.sleep(SLEEP_TRA_SCUOLE)
+
+    # Applica mapping manuale (vince sull'auto-crawling)
+    n_overlay = 0
+    for scuola in scuole:
+        if scuola['codMec'] in MAPPING_MANUALE:
+            piattaforma, params = MAPPING_MANUALE[scuola['codMec']]
+            scuola['piattaforma'] = piattaforma
+            scuola['params'] = params
+            n_overlay += 1
 
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         json.dump(scuole, f, ensure_ascii=False, indent=2)
 
-    argo_count = sum(1 for s in scuole if s['customerCode'])
-    print(f"\n✅ Salvato {OUTPUT_FILE}: {len(scuole)} istituti, {argo_count} con customerCode Argo")
-    print("⚠️  Verifica i customerCode prima di usare in produzione.")
+    from collections import Counter
+    platform_counts = Counter(s['piattaforma'] or 'null' for s in scuole)
+    print(f"\n✅ Salvato {OUTPUT_FILE}: {len(scuole)} istituti ({n_overlay} da mapping manuale)")
+    for plat, cnt in sorted(platform_counts.items()):
+        print(f"   {plat}: {cnt}")
+    print("⚠️  Verifica i params prima di usare in produzione.")
 
 
 if __name__ == '__main__':

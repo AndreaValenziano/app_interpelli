@@ -39,7 +39,9 @@ class ArgoAlboSource(BaseSource):
                 return []
             interpelli = []
             for scuola in scuole:
-                codice = scuola.get('customerCode')
+                if scuola.get('piattaforma') != 'argo':
+                    continue
+                codice = (scuola.get('params') or {}).get('customerCode')
                 if not codice:
                     continue
                 try:
@@ -60,7 +62,7 @@ class ArgoAlboSource(BaseSource):
             return json.load(f)
 
     def _fetch_scuola(self, scuola: Dict) -> List[Dict]:
-        codice = scuola['customerCode']
+        codice = (scuola.get('params') or {}).get('customerCode', '')
         nome = scuola.get('nome', codice)
         url = f"{ARGO_API_BASE}/atti/filters/{codice}"
 
