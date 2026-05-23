@@ -230,15 +230,5 @@ class TrasparenzascuoleAlboSource(BaseSource):
         return risultati
 
     @staticmethod
-    def _estrai_scadenza_da_riga(cells: list, oggetto: str) -> str:
-        # Prima prova: oggetto dell'atto (se cita "entro il gg/mm/aaaa")
-        scadenza = estrai_scadenza(oggetto)
-        if scadenza:
-            return scadenza
-        # Seconda prova: seconda data nella colonna date (data archiviazione albo)
-        if len(cells) >= 3:
-            date_col = cells[2].get_text(separator='|', strip=True)
-            dates = re.findall(r'\d{2}/\d{2}/\d{4}', date_col)
-            if len(dates) >= 2:
-                return dates[1]
-        return ''
+    def _estrai_scadenza_da_riga(_cells: list, oggetto: str) -> str:
+        return estrai_scadenza(oggetto)

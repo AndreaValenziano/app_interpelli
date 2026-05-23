@@ -10,11 +10,26 @@ _SEP = r'[./\-]'
 _DC  = rf'(\d{{2}}{_SEP}\d{{2}}{_SEP}\d{{4}})'   # date con cattura
 _D   = rf'\d{{2}}{_SEP}\d{{2}}{_SEP}\d{{4}}'      # date senza cattura
 
-# Ordine: keyword + data prima, poi "dal X al Y" (prende fine), poi qualsiasi data
-_SCADENZA_PATTERNS = [
-    rf'(?:fino\s+al|entro\s+il|\bal\b|scadenza\s*:?|termine\s*:?)\s*{_DC}',
-    rf'dal\s+{_D}\s+al\s+{_DC}',
-    _DC,
+# Pattern qualificati: corrispondono solo a scadenze per la domanda/candidatura.
+# Non includono pattern generici come "\bal\b DATE" (catturano date di fine contratto).
+# Ordine: da più specifico a più generico — primo match vince.
+_QUALIFIED_PATTERNS = [
+    # "ore HH:MM del [giorno] DATE" — forma canonica negli interpelli scolastici
+    rf'ore\s+\d{{1,2}}[:.]?\d{{0,2}}\s+del\s+(?:giorno\s+)?{_DC}',
+    # "entro (e non oltre) le ore X del [giorno] DATE"
+    rf'entro\s+(?:e\s+non\s+oltre\s+)?le\s+ore\s+\d{{1,2}}[:.]?\d{{0,2}}\s+del\s+(?:giorno\s+)?{_DC}',
+    # "scadenza|termine della/e domanda/candidatura: DATE"
+    rf'(?:scadenza|termine)\s+(?:(?:della\s+)?(?:presentazione\s+)?)?(?:domand[ae]|candidatur[ae])\s*:?\s*{_DC}',
+    # "presentazione della domanda: DATE"
+    rf'presentazione\s+(?:della\s+)?domand[ae]\s*:?\s*{_DC}',
+    # "(domanda|candidatura)... entro ... DATE" — non attraversa punto/punto e virgola
+    rf'(?:domand[ae]|candidatur[ae])\s+[^.;]{{0,80}}?\bentro\b\s+[^.;]{{0,40}}?\b{_DC}',
+    # "(presentare|inviare|pervenire|trasmettere|disponibilità) ... entro ... DATE"
+    rf'(?:presentare|inviare|invia(?:te|to)|far\s+pervenire|pervenire|trasmettere|disponibilit[àa])\s+[^.;]{{0,80}}?\bentro\b\s+[^.;]{{0,40}}?\b{_DC}',
+    # "manifestazione di interesse entro DATE"
+    rf'manifestazion[ei]\s+di\s+interesse\s+[^.;]{{0,60}}?\bentro\b\s+[^.;]{{0,40}}?\b{_DC}',
+    # "entro il termine perentorio del DATE"
+    rf'entro\s+(?:e\s+non\s+oltre\s+)?il\s+termine\s+(?:perentorio\s+)?(?:del\s+)?{_DC}',
 ]
 
 
@@ -38,10 +53,13 @@ def identifica_tipo_interpello(testo: str) -> str:
 
 
 def estrai_scadenza(testo: str) -> str:
-    """Estrae la scadenza da testo libero. Gestisce separatori ./- e keyword (al/entro il/...).
+    """Estrae la scadenza domanda da testo libero. Riconosce solo formule qualificate
+    (es. 'entro le ore X del DD/MM/YYYY', 'domanda entro il DD/MM/YYYY').
+    Non estrae date di fine contratto ('supplenza al X', 'dal X al Y').
     Ritorna 'DD/MM/YYYY' o '' se non trovata."""
-    for pattern in _SCADENZA_PATTERNS:
-        m = re.search(pattern, testo, re.IGNORECASE)
+    testo_norm = re.sub(r'\s+', ' ', testo)
+    for pattern in _QUALIFIED_PATTERNS:
+        m = re.search(pattern, testo_norm, re.IGNORECASE)
         if m:
             raw = m.group(1)
             return re.sub(r'[.\-]', '/', raw)

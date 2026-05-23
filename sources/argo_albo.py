@@ -4,6 +4,8 @@ import time
 from datetime import datetime
 from typing import Dict, List, Optional
 
+import requests
+
 from .base import BaseSource
 from filtering import (
     compute_stable_id,
@@ -11,6 +13,7 @@ from filtering import (
     identifica_tipo_interpello,
     is_sostegno_primaria_infanzia,
 )
+from pdf_utils import estrai_scadenza_da_zip_url
 
 ARGO_API_BASE = "https://www.portaleargo.it/albopretorio/api/public"
 
@@ -104,9 +107,9 @@ class ArgoAlboSource(BaseSource):
         if not is_sostegno_primaria_infanzia(testo):
             return None
 
-        scadenza = estrai_scadenza(testo) or self._formatta_data(atto.get('dataArchiviazione'))
-
         atto_id = atto.get('id')
+        scadenza = estrai_scadenza(testo) or self._estrai_scadenza_da_allegati(atto_id)
+
         link = f"https://www.portaleargo.it/albopretorio/online/#/?customerCode={customer_code}"
 
         return {
@@ -120,12 +123,16 @@ class ArgoAlboSource(BaseSource):
             'data_rilevamento': datetime.now().isoformat(),
         }
 
-    @staticmethod
-    def _formatta_data(data_str: str) -> str:
-        if not data_str:
+    def _estrai_scadenza_da_allegati(self, atto_id) -> str:
+        if not atto_id:
             return ''
         try:
-            d = datetime.strptime(data_str[:10], '%Y-%m-%d')
-            return d.strftime('%d/%m/%Y')
-        except ValueError:
+            url = f"{ARGO_API_BASE}/atti/{atto_id}/allegati"
+            resp = requests.get(url, headers=ARGO_HEADERS, timeout=15)
+            resp.raise_for_status()
+            zip_url = resp.text.strip().strip('"')
+            if not zip_url:
+                return ''
+            return estrai_scadenza_da_zip_url(zip_url)
+        except Exception:
             return ''

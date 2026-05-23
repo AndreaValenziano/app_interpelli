@@ -63,7 +63,7 @@ Each fetcher returns dicts with: `testo`, `title`, `link`, `tipo`, `scadenza`, `
 ### Filtering functions (`filtering.py`)
 
 - `is_sostegno_primaria_infanzia`, `identifica_tipo_interpello`: keyword matching on ADEE/ADAA/EEEE/AAAA.
-- `estrai_scadenza(testo)`: recognizes separators `.`/`/`/`-` and keywords (al/entro il/scadenza/termine/fino al/dal…al). Returns `'DD/MM/YYYY'` or `''`.
+- `estrai_scadenza(testo)`: extracts only **application deadlines** (not contract end dates). Recognizes qualified phrases: `ore HH:MM del [giorno] DATE`, `entro le ore X del DATE`, `domanda|candidatura entro DATE`, `manifestazione di interesse entro DATE`, `scadenza|termine domanda DATE`, `entro il termine perentorio del DATE`. Phrases like `supplenza al DATE`, `dal X al Y`, `fino al DATE` are intentionally ignored. Returns `'DD/MM/YYYY'` or `''`.
 - `parse_data(s)`: parses `'DD/MM/YYYY'` → `date`. Returns `None` on failure.
 - `scadenza_passata(s, oggi=None)`: `True` only if parseable AND < today. Non-parseable → `False` (do not discard).
 - `compute_stable_id(testo)`: `hashlib.sha256` (not Python's `hash()`, which is salted per-process and would break dedup across GitHub Actions runs).
@@ -73,7 +73,8 @@ Each fetcher returns dicts with: `testo`, `title`, `link`, `tipo`, `scadenza`, `
 Each fetcher populates `scadenza` with the first non-empty result:
 1. `estrai_scadenza(testo)` — title + description + allegato filenames.
 2. If link ends in `.pdf` → `estrai_scadenza_da_pdf(link)` (pdf_utils).
-- **Argo** additionally falls back to `dataArchiviazione` (albo archiving date) as last resort — this is *not* the application deadline but is better than nothing. Priority: `estrai_scadenza(testo) or dataArchiviazione`.
+- **Argo** fallback: calls `GET /atti/{attoId}/allegati` (returns a pre-signed S3 ZIP URL), downloads the ZIP, extracts all PDFs, runs `estrai_scadenza` on their text via `pdf_utils.estrai_scadenza_da_zip_url()`. No `dataArchiviazione` fallback — that is the albo archiving date, not the application deadline.
+- If no qualified deadline found in any source → `scadenza = ''`. The interpello is still notified (false negative is worse than false positive).
 
 ### Sources
 
@@ -149,6 +150,7 @@ If the MIUR CSV URL returns 404 (start of new school year), update `MIUR_CSV_URL
 - Body: `{"object": {all nulls}, "page": 0, "size": 100, "sortBy": "dataPubblicazione,numRegistro", "sortDesc": true}`
 - Response: `{page, size, totalRows, list: [{id, descrizione, categoria, tipologiaAtto, dataPubblicazione, dataArchiviazione, allegati: [{id, nome, path}]}]}`
 - `customerCode` format: `SC#####` for IC, `SE#####` for circoli didattici. Argo-internal, not derivable from codice meccanografico.
+- **Allegati download**: `GET /atti/{attoId}/allegati` (same headers) → returns a temporary pre-signed S3 URL (plain text/JSON string) pointing to a ZIP containing all attachments. The ZIP URL is valid for a few minutes. Use `pdf_utils.estrai_scadenza_da_zip_url()` to extract the application deadline from PDFs inside. The `path` field in the allegato JSON is NOT directly downloadable — it's an S3 key protected by access control.
 
 ### Nuvola Madisoft API details (for `nuvola_albo` source)
 

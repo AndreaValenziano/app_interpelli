@@ -3,6 +3,7 @@ Utility per estrarre la scadenza da PDF allegati agli interpelli.
 Usato come fallback quando il testo dell'interpello non contiene una data leggibile.
 """
 import io
+import zipfile
 from typing import Dict
 
 import requests
@@ -33,6 +34,18 @@ def estrai_scadenza_da_pdf(url: str, extra_headers: dict = None) -> str:
     return result
 
 
+def estrai_scadenza_da_zip_url(url: str, extra_headers: dict = None) -> str:
+    """Scarica uno ZIP da URL (es. pre-signed S3) ed estrae la scadenza domanda
+    da tutti i PDF contenuti. Ritorna il primo risultato non vuoto, o '' su errore."""
+    if not url:
+        return ''
+    if url in _cache:
+        return _cache[url]
+    result = _scarica_e_estrai_zip(url, extra_headers)
+    _cache[url] = result
+    return result
+
+
 def _scarica_e_estrai(url: str, extra_headers: dict = None) -> str:
     try:
         headers = dict(_DEFAULT_HEADERS)
@@ -45,5 +58,30 @@ def _scarica_e_estrai(url: str, extra_headers: dict = None) -> str:
         reader = pypdf.PdfReader(io.BytesIO(resp.content))
         testo = ' '.join(page.extract_text() or '' for page in reader.pages)
         return estrai_scadenza(testo)
+    except Exception:
+        return ''
+
+
+def _scarica_e_estrai_zip(url: str, extra_headers: dict = None) -> str:
+    try:
+        headers = dict(_DEFAULT_HEADERS)
+        if extra_headers:
+            headers.update(extra_headers)
+        resp = requests.get(url, headers=headers, timeout=60)
+        resp.raise_for_status()
+        with zipfile.ZipFile(io.BytesIO(resp.content)) as z:
+            for name in z.namelist():
+                if not name.lower().endswith('.pdf'):
+                    continue
+                try:
+                    pdf_bytes = z.read(name)
+                    reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
+                    testo = ' '.join(page.extract_text() or '' for page in reader.pages)
+                    scad = estrai_scadenza(testo)
+                    if scad:
+                        return scad
+                except Exception:
+                    continue
+        return ''
     except Exception:
         return ''
