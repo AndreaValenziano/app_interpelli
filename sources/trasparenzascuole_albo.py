@@ -7,10 +7,9 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List, Optional
 
-import requests
 from bs4 import BeautifulSoup
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+from curl_cffi import requests as cffi_requests
+from curl_cffi.requests.errors import RequestsError
 
 from .base import BaseSource
 from filtering import (
@@ -27,45 +26,12 @@ SCUOLE_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'scuole_b
 SLEEP_TRA_SCUOLE = 1.5
 MAX_PAGINE = 20
 
-_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
-_UA_HINTS = {
-    'sec-ch-ua': '"Chromium";v="131", "Not_A Brand";v="24"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"macOS"',
-}
-
-# Headers per la GET di navigazione (prima richiesta a ogni pagina pubblica)
-_NAV_HEADERS = {
-    'User-Agent': _UA,
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'it-IT,it;q=0.9,en;q=0.8',
-    'Upgrade-Insecure-Requests': '1',
-    'Sec-Fetch-Site': 'none',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-User': '?1',
-    'Sec-Fetch-Dest': 'document',
-    **_UA_HINTS,
-}
-# Headers per la pagina scuola (GET con Referer = homepage)
-_PAGE_HEADERS = {
-    **_NAV_HEADERS,
-    'Sec-Fetch-Site': 'same-origin',
-    'Referer': TRASPARENZA_BASE + '/',
-}
-# Headers per le chiamate AJAX (POST XHR)
-_AJAX_HEADERS = {
-    'User-Agent': _UA,
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'it-IT,it;q=0.9,en;q=0.8',
+# curl_cffi con impersonate="chrome131" gestisce automaticamente UA, Accept, Sec-Fetch-*, sec-ch-ua*.
+# Teniamo solo gli header XHR che il sito verifica e che l'impersonation non può inferire.
+_AJAX_EXTRA = {
     'Content-Type': 'application/json; charset=UTF-8',
     'X-Requested-With': 'XMLHttpRequest',
     'Origin': TRASPARENZA_BASE,
-    'Sec-Fetch-Site': 'same-origin',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Dest': 'empty',
-    **_UA_HINTS,
 }
 
 _BASE_PAYLOAD = {
@@ -80,14 +46,7 @@ _BASE_PAYLOAD = {
     'searchfield': '',
 }
 
-_RETRY = Retry(
-    total=3,
-    backoff_factor=2,
-    status_forcelist=(403, 429, 500, 502, 503, 504),
-    allowed_methods=frozenset(['GET', 'POST']),
-    respect_retry_after_header=True,
-    raise_on_status=False,
-)
+_RETRY_STATUSES = {403, 429, 500, 502, 503, 504}
 
 
 class TrasparenzascuoleAlboSource(BaseSource):
@@ -110,8 +69,8 @@ class TrasparenzascuoleAlboSource(BaseSource):
                 try:
                     trovati = self._fetch_scuola(session, cf, nome)
                     interpelli.extend(trovati)
-                except requests.HTTPError as e:
-                    status = e.response.status_code if e.response is not None else 0
+                except RequestsError as e:
+                    status = getattr(getattr(e, 'response', None), 'status_code', 0) or 0
                     if not errors_by_status[status]:
                         print(f"[{self.name}] Errore per CF {cf} ({nome}): {e}")
                     errors_by_status[status].append(nome)
@@ -129,12 +88,10 @@ class TrasparenzascuoleAlboSource(BaseSource):
             return []
 
     @staticmethod
-    def _make_session() -> requests.Session:
-        session = requests.Session()
-        adapter = HTTPAdapter(max_retries=_RETRY)
-        session.mount('https://', adapter)
+    def _make_session() -> cffi_requests.Session:
+        session = cffi_requests.Session(impersonate="chrome131")
         try:
-            session.get(TRASPARENZA_BASE + '/', headers=_NAV_HEADERS, timeout=15)
+            session.get(TRASPARENZA_BASE + '/', timeout=15)
         except Exception:
             pass  # warm-up fallito: si prosegue comunque
         return session
@@ -145,12 +102,36 @@ class TrasparenzascuoleAlboSource(BaseSource):
         with open(SCUOLE_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
 
-    def _fetch_scuola(self, session: requests.Session, cf: str, nome_scuola: str) -> List[Dict]:
+    def _request_with_retry(
+        self,
+        session: cffi_requests.Session,
+        method: str,
+        url: str,
+        *,
+        headers: Optional[dict] = None,
+        data: Optional[str] = None,
+        timeout: int = 30,
+        max_retries: int = 3,
+    ):
+        for attempt in range(max_retries + 1):
+            try:
+                r = session.request(method, url, headers=headers, data=data, timeout=timeout)
+            except RequestsError:
+                if attempt >= max_retries:
+                    raise
+                time.sleep(2 * (2 ** attempt))  # 2s, 4s, 8s
+                continue
+            if r.status_code in _RETRY_STATUSES and attempt < max_retries:
+                time.sleep(2 * (2 ** attempt))
+                continue
+            r.raise_for_status()
+            return r
+
+    def _fetch_scuola(self, session: cffi_requests.Session, cf: str, nome_scuola: str) -> List[Dict]:
         page_url = f"{TRASPARENZA_PUBLIC}?CF={cf}"
 
         # Step 1: GET pagina → cust_id (GUID della scuola sul bottone Cerca)
-        resp = session.get(page_url, headers=_PAGE_HEADERS, timeout=30)
-        resp.raise_for_status()
+        resp = self._request_with_retry(session, 'GET', page_url, timeout=30)
         soup = BeautifulSoup(resp.text, 'html.parser')
         btn = soup.find('button', {'data-action': 'GET_APD_TABLE'})
         if not btn:
@@ -162,10 +143,13 @@ class TrasparenzascuoleAlboSource(BaseSource):
         # Step 2: GET INIT_APD — necessario per inizializzare la sessione lato server;
         # senza questo passo la POST GET_APD_TABLE restituisce sempre "Nessuno atto trovato"
         init_url = f"{TRASPARENZA_AJAX}?action=INIT_APD&Others={cust_id}&_={int(time.time() * 1000)}"
-        session.get(init_url, headers={**_AJAX_HEADERS, 'Referer': page_url}, timeout=15)
+        try:
+            session.get(init_url, headers={'Referer': page_url}, timeout=15)
+        except Exception:
+            pass
 
         ajax_url = f"{TRASPARENZA_AJAX}?action=GET_APD_TABLE&Others={cust_id}"
-        req_headers = {**_AJAX_HEADERS, 'Referer': page_url}
+        req_headers = {**_AJAX_EXTRA, 'Referer': page_url}
 
         risultati: List[Dict] = []
         for page_num in range(1, MAX_PAGINE + 1):
@@ -174,8 +158,12 @@ class TrasparenzascuoleAlboSource(BaseSource):
                 payload['PageNumber'] = str(page_num)
 
             try:
-                r = session.post(ajax_url, data=json.dumps(payload), headers=req_headers, timeout=30)
-                r.raise_for_status()
+                r = self._request_with_retry(
+                    session, 'POST', ajax_url,
+                    data=json.dumps(payload),
+                    headers=req_headers,
+                    timeout=30,
+                )
             except Exception:
                 break
 

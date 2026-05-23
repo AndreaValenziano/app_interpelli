@@ -169,6 +169,7 @@ If the MIUR CSV URL returns 404 (start of new school year), update `MIUR_CSV_URL
 - Stable_id: `sha256("trasparenzascuole-{cf}-{data-idatto}")` — the GUID per act is stable
 - Pagination: parse "Totale pagine X di N"; increment `PageNumber` in body; 5 results per page typical
 - `GET_APD_ATTO` (allegati): not called — requires active server session, returns error outside the browser flow. The page URL is used as `link` instead.
+- **Note CI**: the source uses `curl_cffi` with `impersonate="chrome131"` instead of `requests`. This impersonates Chrome's TLS handshake (JA3 + HTTP/2 fingerprint), bypassing the Cloudflare WAF that blocks `requests`/OpenSSL TLS signatures from GitHub Actions Azure IPs. Other sources keep using `requests`.
 
 ## Discovering new AJAX sources (`tools/discover_ajax.py`)
 
