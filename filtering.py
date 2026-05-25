@@ -33,6 +33,21 @@ _QUALIFIED_PATTERNS = [
 ]
 
 
+_LIKELY_INTERPELLO_KEYWORDS = (
+    'interpell',        # interpello/interpelli
+    'supplenz',         # supplenza/supplenze
+    'incarico',
+    'messa a disposizione',
+)
+
+
+def is_likely_interpello(testo: str) -> bool:
+    """True se il testo contiene parole chiave che suggeriscono un interpello/supplenza.
+    Usato nei fetcher generici per limitare il logging degli scarti a casi 'vicini al match'."""
+    tl = testo.lower()
+    return any(k in tl for k in _LIKELY_INTERPELLO_KEYWORDS)
+
+
 def is_sostegno_primaria_infanzia(testo: str) -> bool:
     testo_upper = testo.upper()
     return any(k in testo_upper for k in CODICI_OBIETTIVO)

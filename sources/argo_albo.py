@@ -35,7 +35,8 @@ SCUOLE_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'scuole_b
 class ArgoAlboSource(BaseSource):
     name = "argo_albo"
 
-    def fetch(self) -> List[Dict]:
+    def fetch(self, reporter=None) -> List[Dict]:
+        self._reporter = reporter
         try:
             scuole = self._carica_scuole()
             if not scuole:
@@ -105,6 +106,14 @@ class ArgoAlboSource(BaseSource):
         testo = f"{descrizione} {nomi_allegati}".strip()
 
         if not is_sostegno_primaria_infanzia(testo):
+            if self._reporter:
+                self._reporter.record_rejected({
+                    'testo': testo,
+                    'title': f"[{nome_scuola}] {descrizione[:100]}",
+                    'link': f"https://www.portaleargo.it/albopretorio/online/#/?customerCode={customer_code}",
+                    'tipo': '', 'scadenza': '', 'source': self.name,
+                    'stable_id': '', 'data_rilevamento': datetime.now().isoformat(),
+                }, 'codici_non_target', self.name)
             return None
 
         atto_id = atto.get('id')

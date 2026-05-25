@@ -24,7 +24,8 @@ BAT_PROVINCE_KEYWORDS = {
 class ScuolaInterppelliRssSource(BaseSource):
     name = "scuolainterpelli_rss"
 
-    def fetch(self) -> List[Dict]:
+    def fetch(self, reporter=None) -> List[Dict]:
+        self._reporter = reporter
         try:
             feed = feedparser.parse(FEED_URL)
             interpelli = []
@@ -84,7 +85,19 @@ class ScuolaInterppelliRssSource(BaseSource):
 
     def _process_entry(self, element, results: List[Dict]) -> None:
         testo = element.get_text(separator=' ', strip=True)
-        if not testo or not is_sostegno_primaria_infanzia(testo):
+        if not testo:
+            return
+        if not is_sostegno_primaria_infanzia(testo):
+            if self._reporter:
+                link_tag = element.find('a')
+                link = link_tag.get('href') if link_tag else None
+                title = link_tag.get_text(strip=True) if link_tag else testo[:120]
+                self._reporter.record_rejected({
+                    'testo': testo, 'title': title,
+                    'link': link, 'tipo': '',
+                    'scadenza': '', 'source': self.name,
+                    'stable_id': '', 'data_rilevamento': datetime.now().isoformat(),
+                }, 'codici_non_target', self.name)
             return
         link_tag = element.find('a')
         link = link_tag.get('href') if link_tag else None

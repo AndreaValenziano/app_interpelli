@@ -16,6 +16,7 @@ from filtering import (
     compute_stable_id,
     estrai_scadenza,
     identifica_tipo_interpello,
+    is_likely_interpello,
     is_sostegno_primaria_infanzia,
 )
 
@@ -52,7 +53,8 @@ _RETRY_STATUSES = {403, 429, 500, 502, 503, 504}
 class TrasparenzascuoleAlboSource(BaseSource):
     name = "trasparenzascuole_albo"
 
-    def fetch(self) -> List[Dict]:
+    def fetch(self, reporter=None) -> List[Dict]:
+        self._reporter = reporter
         try:
             scuole = self._carica_scuole()
             interpelli = []
@@ -195,6 +197,16 @@ class TrasparenzascuoleAlboSource(BaseSource):
             testo = row.get_text(separator=' ', strip=True)
 
             if not is_sostegno_primaria_infanzia(oggetto or testo):
+                if self._reporter and is_likely_interpello(oggetto or testo):
+                    btn_rej = row.find('button', {'data-action': 'GET_APD_ATTO'})
+                    id_atto_rej = btn_rej.get('data-idatto', '') if btn_rej else ''
+                    self._reporter.record_rejected({
+                        'testo': (oggetto or testo)[:500],
+                        'title': f"[{nome_scuola}] {(oggetto or testo)[:100]}",
+                        'link': page_url,
+                        'tipo': '', 'scadenza': '', 'source': self.name,
+                        'stable_id': id_atto_rej, 'data_rilevamento': datetime.now().isoformat(),
+                    }, 'codici_non_target', self.name)
                 continue
 
             scadenza = self._estrai_scadenza_da_riga(cells, oggetto)

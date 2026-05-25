@@ -17,7 +17,8 @@ FEED_URL = "https://www.istruzionebat.it/category/interpello/feed/"
 class IstruzioneBatRssSource(BaseSource):
     name = "istruzionebat_rss"
 
-    def fetch(self) -> List[Dict]:
+    def fetch(self, reporter=None) -> List[Dict]:
+        self._reporter = reporter
         try:
             feed = feedparser.parse(FEED_URL)
             interpelli = []
@@ -26,6 +27,13 @@ class IstruzioneBatRssSource(BaseSource):
                 summary = entry.get('summary', '')
                 testo = f"{title} {summary}".strip()
                 if not is_sostegno_primaria_infanzia(testo):
+                    if self._reporter:
+                        self._reporter.record_rejected({
+                            'testo': testo, 'title': title,
+                            'link': entry.get('link'), 'tipo': '',
+                            'scadenza': '', 'source': self.name,
+                            'stable_id': '', 'data_rilevamento': datetime.now().isoformat(),
+                        }, 'codici_non_target', self.name)
                     continue
                 link = entry.get('link')
                 interpelli.append({

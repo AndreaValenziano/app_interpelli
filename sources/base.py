@@ -1,13 +1,14 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict
+from typing import List, Dict, Optional
 import requests
 
 
 class BaseSource(ABC):
     name: str = "base"
+    _reporter = None
 
     @abstractmethod
-    def fetch(self) -> List[Dict]:
+    def fetch(self, reporter=None) -> List[Dict]:
         pass
 
     def _http_get(self, url: str):

@@ -12,6 +12,7 @@ from filtering import (
     compute_stable_id,
     estrai_scadenza,
     identifica_tipo_interpello,
+    is_likely_interpello,
     is_sostegno_primaria_infanzia,
 )
 
@@ -23,7 +24,8 @@ SLEEP_TRA_SCUOLE = 1.0
 class NuvolaAlboSource(BaseSource):
     name = "nuvola_albo"
 
-    def fetch(self) -> List[Dict]:
+    def fetch(self, reporter=None) -> List[Dict]:
+        self._reporter = reporter
         try:
             scuole = self._carica_scuole()
             interpelli = []
@@ -98,6 +100,16 @@ class NuvolaAlboSource(BaseSource):
 
             testo = row.get_text(separator=' ', strip=True)
             if not is_sostegno_primaria_infanzia(testo):
+                if self._reporter and is_likely_interpello(testo):
+                    oggetto_rej = cells[1].get_text(strip=True) if len(cells) > 1 else testo[:120]
+                    link_tag_rej = row.find('a', href=True)
+                    self._reporter.record_rejected({
+                        'testo': testo,
+                        'title': f"[{nome_scuola}] {oggetto_rej[:100]}",
+                        'link': link_tag_rej['href'] if link_tag_rej else None,
+                        'tipo': '', 'scadenza': '', 'source': self.name,
+                        'stable_id': '', 'data_rilevamento': datetime.now().isoformat(),
+                    }, 'codici_non_target', self.name)
                 continue
 
             link_tag = row.find('a', href=True)

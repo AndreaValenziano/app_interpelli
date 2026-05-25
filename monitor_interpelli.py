@@ -13,10 +13,12 @@ import argparse
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
+from pathlib import Path
 from typing import List, Dict
 
 from sources import get_enabled_sources
 from filtering import scadenza_passata
+from reporting import RunReporter, prune_old_reports
 
 
 class InterpelliMonitor:
@@ -64,7 +66,7 @@ class InterpelliMonitor:
         with open(self.interpelli_salvati, 'w', encoding='utf-8') as f:
             json.dump(stato, indent=4, ensure_ascii=False, fp=f)
 
-    def filtra_nuovi_interpelli(self, interpelli: List[Dict]) -> List[Dict]:
+    def filtra_nuovi_interpelli(self, interpelli: List[Dict], reporter=None) -> List[Dict]:
         stato = self.load_interpelli_visti()
         seen_ids = set(stato.get("ids", []))
         seen_links = set(stato.get("links", []))
@@ -76,12 +78,16 @@ class InterpelliMonitor:
 
             # Salta se già visto per contenuto O per link (dedup cross-sorgente)
             if sid in seen_ids or (link and link in seen_links):
+                if reporter:
+                    reporter.record_already_seen(interpello)
                 continue
 
             nuovi.append(interpello)
             seen_ids.add(sid)
             if link:
                 seen_links.add(link)
+            if reporter:
+                reporter.record_notified(interpello)
 
         if not self.dry_run:
             self.save_interpelli_visti({"ids": list(seen_ids), "links": list(seen_links)})
@@ -183,6 +189,8 @@ class InterpelliMonitor:
             print("  [MODALITÀ DRY-RUN — nessuna email, nessun salvataggio stato]")
         print(f"{'='*60}\n")
 
+        reporter = RunReporter()
+
         sources = get_enabled_sources()
         if self.source_filter:
             sources = [s for s in sources if s.name == self.source_filter]
@@ -194,18 +202,21 @@ class InterpelliMonitor:
         tutti = []
         for source in sources:
             print(f"🔍 [{source.name}] Recupero interpelli...")
-            risultati = source.fetch()
+            risultati = source.fetch(reporter=reporter)
             print(f"   Trovati {len(risultati)} interpelli corrispondenti ai codici obiettivo")
             tutti.extend(risultati)
 
         print(f"\n📊 Totale grezzo (da tutte le sorgenti): {len(tutti)}")
         n_pre = len(tutti)
+        scaduti = [ip for ip in tutti if scadenza_passata(ip.get('scadenza', ''))]
+        for ip in scaduti:
+            reporter.record_expired(ip)
         tutti = [ip for ip in tutti if not scadenza_passata(ip.get('scadenza', ''))]
-        n_scaduti = n_pre - len(tutti)
+        n_scaduti = len(scaduti)
         if n_scaduti:
             print(f"⏰ Scartati {n_scaduti} interpell{'o' if n_scaduti == 1 else 'i'} scadut{'o' if n_scaduti == 1 else 'i'}")
         print("🆕 Filtro nuovi interpelli (dedup cross-sorgente)...")
-        nuovi = self.filtra_nuovi_interpelli(tutti)
+        nuovi = self.filtra_nuovi_interpelli(tutti, reporter=reporter)
         print(f"✨ Trovati {len(nuovi)} nuovi interpelli")
 
         if nuovi:
@@ -213,6 +224,11 @@ class InterpelliMonitor:
             self.invia_email(nuovi)
         else:
             print("ℹ️  Nessun nuovo interpello da notificare.")
+
+        reports_dir = Path('reports')
+        json_path, md_path = reporter.write(reports_dir)
+        prune_old_reports(reports_dir)
+        print(f"📝 Report: {md_path}")
 
         print(f"\n{'='*60}\n")
 

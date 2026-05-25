@@ -18,7 +18,8 @@ URL = "https://www.istruzionebat.it/interpelli/a-s-2025-2026/"
 class IstruzioneBatHtmlSource(BaseSource):
     name = "istruzionebat_html"
 
-    def fetch(self) -> List[Dict]:
+    def fetch(self, reporter=None) -> List[Dict]:
+        self._reporter = reporter
         try:
             response = self._http_get(URL)
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -28,7 +29,18 @@ class IstruzioneBatHtmlSource(BaseSource):
             interpelli = []
             for elemento in contenuto.find_all(['li', 'p', 'h4']):
                 testo = elemento.get_text(strip=True)
-                if not testo or not is_sostegno_primaria_infanzia(testo):
+                if not testo:
+                    continue
+                if not is_sostegno_primaria_infanzia(testo):
+                    if self._reporter:
+                        link_tag = elemento.find('a')
+                        link = link_tag['href'] if link_tag and link_tag.get('href') else None
+                        self._reporter.record_rejected({
+                            'testo': testo, 'title': testo[:120],
+                            'link': link, 'tipo': '',
+                            'scadenza': '', 'source': self.name,
+                            'stable_id': '', 'data_rilevamento': datetime.now().isoformat(),
+                        }, 'codici_non_target', self.name)
                     continue
                 link_tag = elemento.find('a')
                 link = link_tag['href'] if link_tag and link_tag.get('href') else None
