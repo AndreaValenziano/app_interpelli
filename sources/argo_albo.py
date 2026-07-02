@@ -1,7 +1,7 @@
 import json
 import os
 import time
-from datetime import datetime
+from datetime import date, datetime
 from typing import Dict, List, Optional
 
 import requests
@@ -12,6 +12,7 @@ from filtering import (
     estrai_scadenza,
     identifica_tipo_interpello,
     is_sostegno_primaria_infanzia,
+    parse_data,
 )
 from pdf_utils import estrai_scadenza_da_zip_url
 
@@ -95,6 +96,11 @@ class ArgoAlboSource(BaseSource):
     def _process_atto(self, atto: Dict, customer_code: str, nome_scuola: str) -> Optional[Dict]:
         categoria_desc = (atto.get('categoria') or {}).get('desc', '')
         if 'interpell' not in categoria_desc.lower():
+            return None
+
+        # Atto già archiviato (dataArchiviazione DD/MM/YYYY passata) → non più utile
+        arch = parse_data(atto.get('dataArchiviazione') or '')
+        if arch and arch < date.today():
             return None
 
         descrizione = atto.get('descrizione', '')

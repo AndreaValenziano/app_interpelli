@@ -81,8 +81,12 @@ Each fetcher returns dicts with: `testo`, `title`, `link`, `tipo`, `scadenza`, `
    - direct PDF (detected by `%PDF-` magic bytes or Content-Type — **istruzionebat.it attachment pages serve PDFs from extensionless URLs**);
    - HTML detail page text → `estrai_scadenza`;
    - candidate attachment links inside the page (`.pdf`, `wp-content/uploads`, child pages of the post URL, keyword-matched links), downloaded and sniffed as PDF; one extra level for WP attachment pages embedding the file.
-   - Bails out on `portaleargo.it` (SPA) and `trasparenzascuole.it` (WAF/session) links.
-3. If no qualified deadline found → `scadenza = ''`. The interpello is still notified with a "verify immediately" warning (false negative is worse than false positive).
+   - `portaleargo.it` deep-links (`dettaglio-atto?customerCode=X&id=Y`) resolved via the Argo REST API (allegati → pre-signed ZIP → PDFs), not by fetching the SPA page.
+   - Bails out on `trasparenzascuole.it` (WAF/session) links.
+3. Stale detection for postings with no deadline: `link_resolver.argo_archiviato(link)` — an Argo atto missing from the school's current albo listing OR with past `dataArchiviazione` (format `DD/MM/YYYY`) is dead and gets dropped before notification. `argo_albo` also skips archived atti at fetch time. (`dataArchiviazione` is still never used as the *application deadline*.)
+4. If no qualified deadline found → `scadenza = ''`. The interpello is still notified with a "verify immediately" warning (false negative is worse than false positive). On the dashboard, unknown-deadline postings older than 15 days (`GIORNI_IGNOTA_ATTIVA`) are shown as "PROBABILMENTE SCADUTO" and excluded from the "Attivi" filter.
+
+One-off backfill of the dashboard archive from historical reports: `python3 tools/backfill_dashboard.py`.
 
 ### Sources
 

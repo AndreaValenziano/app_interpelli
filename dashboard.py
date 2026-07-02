@@ -43,6 +43,7 @@ def aggiorna_dashboard(nuovi: List[Dict], dry_run: bool = False, docs_dir: Path 
             'stable_id': ip.get('stable_id', ''),
             'data_rilevamento': ip.get('data_rilevamento', ''),
             'testo': (ip.get('testo') or '')[:400],
+            'archiviato': bool(ip.get('archiviato')),
         })
 
     cutoff = datetime.now() - timedelta(days=GIORNI_RETENTION)
@@ -61,13 +62,28 @@ def aggiorna_dashboard(nuovi: List[Dict], dry_run: bool = False, docs_dir: Path 
     print(f"🖥  Dashboard aggiornata: {docs_dir / 'index.html'} ({len(archivio)} interpelli)")
 
 
+# Un interpello senza scadenza rilevabile più vecchio di così è quasi certamente
+# chiuso (le finestre di candidatura durano pochi giorni)
+GIORNI_IGNOTA_ATTIVA = 15
+
+
 def _genera_html(archivio: List[Dict]) -> str:
     oggi = datetime.now().date()
     for r in archivio:
         d = parse_data(r.get('scadenza', ''))
-        if d is None:
+        if r.get('archiviato'):
+            # atto non più in pubblicazione sull'albo (es. Argo archiviato)
+            r['_stato'] = 'stantio'
+            r['_giorni'] = None
+        elif d is None:
             r['_stato'] = 'ignota'
             r['_giorni'] = None
+            try:
+                ril = datetime.fromisoformat(r.get('data_rilevamento', '')).date()
+                if (oggi - ril).days > GIORNI_IGNOTA_ATTIVA:
+                    r['_stato'] = 'stantio'
+            except ValueError:
+                pass
         elif d < oggi:
             r['_stato'] = 'scaduto'
             r['_giorni'] = (d - oggi).days
@@ -138,12 +154,14 @@ const lista = document.getElementById('lista');
 
 function badge(r) {
   if (r._stato === 'scaduto') return '<span class="badge b-scaduto">SCADUTO</span>';
+  if (r._stato === 'stantio') return '<span class="badge b-scaduto">PROBABILMENTE SCADUTO</span>';
   if (r._stato === 'ignota')  return '<span class="badge b-ignota">SCADENZA DA VERIFICARE</span>';
   if (r._giorni <= 1) return '<span class="badge b-urgente">SCADE ' + (r._giorni === 0 ? 'OGGI' : 'DOMANI') + '</span>';
   return '<span class="badge b-attivo">ATTIVO — ' + r._giorni + ' giorni</span>';
 }
 function card(r) {
-  const cls = r._stato === 'scaduto' ? 'scaduto' : (r._stato === 'attivo' && r._giorni <= 1 ? 'urgente' : r._stato);
+  const cls = (r._stato === 'scaduto' || r._stato === 'stantio') ? 'scaduto'
+    : (r._stato === 'attivo' && r._giorni <= 1 ? 'urgente' : r._stato);
   return '<div class="card ' + cls + '">'
     + '<h3>' + esc(r.title) + '</h3>'
     + '<div>' + badge(r) + '<span class="badge" style="background:#eef3f8;color:var(--blu)">' + esc(r.tipo) + '</span></div>'
@@ -158,7 +176,7 @@ function escAttr(s) { return esc(s).replace(/"/g,'&quot;'); }
 function render() {
   const t = q.value.trim().toLowerCase();
   let rows = DATA.filter(r => {
-    if (filtro === 'attivi' && r._stato === 'scaduto') return false;
+    if (filtro === 'attivi' && (r._stato === 'scaduto' || r._stato === 'stantio')) return false;
     if (filtro === 'sostegno' && !/SOSTEGNO/i.test(r.tipo)) return false;
     if (filtro === 'comune' && !/COMUNE/i.test(r.tipo)) return false;
     if (t && !(r.title + ' ' + r.tipo + ' ' + r.testo).toLowerCase().includes(t)) return false;
@@ -166,7 +184,7 @@ function render() {
   });
   // urgenti prima (scadenza nota ascendente), poi senza scadenza, poi scaduti
   rows.sort((a, b) => {
-    const rank = s => s._stato === 'scaduto' ? 2 : (s._stato === 'ignota' ? 1 : 0);
+    const rank = s => (s._stato === 'scaduto' || s._stato === 'stantio') ? 2 : (s._stato === 'ignota' ? 1 : 0);
     if (rank(a) !== rank(b)) return rank(a) - rank(b);
     if (a._stato === 'attivo' && b._stato === 'attivo') return a._giorni - b._giorni;
     return (b.data_rilevamento || '').localeCompare(a.data_rilevamento || '');

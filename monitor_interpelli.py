@@ -18,7 +18,7 @@ from typing import List, Dict
 
 from sources import get_enabled_sources
 from filtering import scadenza_passata, is_link_dedupabile, parse_data
-from link_resolver import risolvi_scadenza_da_link
+from link_resolver import risolvi_scadenza_da_link, argo_archiviato
 from reporting import RunReporter, prune_old_reports
 from dashboard import aggiorna_dashboard
 
@@ -266,12 +266,19 @@ class InterpelliMonitor:
 
         # Ri-controllo dopo la risoluzione: le scadenze appena scoperte possono
         # essere già passate. Restano comunque nello stato (non vanno rinotificati).
-        scaduti_post = [ip for ip in nuovi if scadenza_passata(ip.get('scadenza', ''))]
+        def _morto(ip):
+            if scadenza_passata(ip.get('scadenza', '')):
+                return True
+            # Senza scadenza rilevabile: se è un atto Argo non più in pubblicazione
+            # (sparito dall'albo o con dataArchiviazione passata) è certamente inutile
+            return not ip.get('scadenza') and argo_archiviato(ip.get('link') or '')
+
+        scaduti_post = [ip for ip in nuovi if _morto(ip)]
         for ip in scaduti_post:
             reporter.record_expired(ip)
-        nuovi = [ip for ip in nuovi if not scadenza_passata(ip.get('scadenza', ''))]
+        nuovi = [ip for ip in nuovi if ip not in scaduti_post]
         if scaduti_post:
-            print(f"⏰ Scartati {len(scaduti_post)} già scaduti (scadenza scoperta dal PDF)")
+            print(f"⏰ Scartati {len(scaduti_post)} già scaduti/archiviati (scoperto da PDF/albo)")
 
         # Ordina per urgenza: scadenza più vicina prima, senza scadenza in fondo
         nuovi.sort(key=lambda ip: (parse_data(ip.get('scadenza', '')) is None,
