@@ -119,7 +119,10 @@ class ArgoAlboSource(BaseSource):
         atto_id = atto.get('id')
         scadenza = estrai_scadenza(testo) or self._estrai_scadenza_da_allegati(atto_id)
 
-        link = f"https://www.portaleargo.it/albopretorio/online/#/?customerCode={customer_code}"
+        # Deep-link per atto: unico per interpello (necessario per il dedup via link)
+        # e coerente con i link pubblicati sull'indice di istruzionebat.it
+        link = (f"https://www.portaleargo.it/albopretorio/online/#/dettaglio-atto"
+                f"?customerCode={customer_code}&id={atto_id}&archivio=false")
 
         return {
             'testo': testo,

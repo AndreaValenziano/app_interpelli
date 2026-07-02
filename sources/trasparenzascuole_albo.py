@@ -216,10 +216,14 @@ class TrasparenzascuoleAlboSource(BaseSource):
             id_atto = btn_atto.get('data-idatto', '') if btn_atto else ''
             sid_base = f"trasparenzascuole-{cf}-{id_atto}" if id_atto else testo
 
+            # Il fragment per-atto rende il link unico per interpello (dedup via link);
+            # il browser ignora il fragment e apre comunque la pagina della scuola.
+            link = f"{page_url}#atto-{id_atto}" if id_atto else page_url
+
             risultati.append({
                 'testo': testo,
                 'title': f"[{nome_scuola}] {(oggetto or testo)[:100]}",
-                'link': page_url,
+                'link': link,
                 'tipo': identifica_tipo_interpello(oggetto or testo),
                 'scadenza': scadenza,
                 'source': self.name,

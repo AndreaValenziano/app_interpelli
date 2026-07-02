@@ -34,9 +34,11 @@ rm interpelli_visti.json
 ### Module layout
 
 ```
-monitor_interpelli.py   # orchestrator + email + dedup + expiry filter
-filtering.py            # shared filter logic (codici, dedup ID, date extraction, expiry)
+monitor_interpelli.py   # orchestrator + email + dedup + expiry filter + scadenza resolution
+filtering.py            # shared filter logic (codici, dedup ID, date extraction, expiry, link dedupability)
+link_resolver.py        # follows posting links (HTML detail pages + attachments) to find deadlines
 pdf_utils.py            # deadline extraction from PDF via pypdf (in-memory cache)
+dashboard.py            # static dashboard generator (docs/index.html + docs/interpelli.json)
 sources/
   __init__.py           # get_enabled_sources() registry
   base.py               # BaseSource ABC + shared _http_get()
@@ -51,10 +53,12 @@ sources/
 
 ### Data flow
 
-1. `esegui()` iterates `get_enabled_sources()` → each `fetch()` returns normalized posting dicts already filtered by target codes.
+1. `esegui()` iterates `get_enabled_sources()` → each `fetch()` returns normalized posting dicts already filtered by target codes. Fetchers only do **cheap text-based** deadline extraction (`estrai_scadenza`); no link-following.
 2. `esegui()` discards expired postings using `scadenza_passata()` (logs "⏰ Scartati N scaduti"). Postings with no parseable deadline are kept (better a false positive than a miss).
-3. `filtra_nuovi_interpelli()` deduplicates: skips if `stable_id` (sha256 of normalized text) OR normalized link already seen. Writes updated state to `interpelli_visti.json` (unless `--dry-run`).
-4. `invia_email()` sends HTML via SMTP+STARTTLS.
+3. `filtra_nuovi_interpelli()` deduplicates: skips if `stable_id` (sha256 of normalized text) OR normalized link already seen. Links are used for dedup **only if `is_link_dedupabile()`** — generic links (school homepage, whole-albo pages shared by many postings) must not suppress later postings from the same school. Returns `(nuovi, stato)` **without saving**.
+4. `risolvi_scadenze()` runs `link_resolver.risolvi_scadenza_da_link()` on NEW postings with empty `scadenza` only (each resolution costs up to ~7 HTTP requests; capped at `MAX_RISOLUZIONI_LINK=40` per run). Postings whose freshly-discovered deadline is already past are dropped (but stay in state).
+5. `invia_email()` sends HTML via SMTP+STARTTLS, sorted by deadline urgency, and returns bool. **State is saved only after a successful send** — an SMTP failure leaves state untouched so the next run retries, and the process exits 1 (workflow does not commit state).
+6. `aggiorna_dashboard()` appends notified postings to `docs/interpelli.json` and regenerates the static `docs/index.html` (GitHub Pages dashboard). Skipped on `--dry-run`.
 
 ### Normalized posting dict fields
 
@@ -62,19 +66,23 @@ Each fetcher returns dicts with: `testo`, `title`, `link`, `tipo`, `scadenza`, `
 
 ### Filtering functions (`filtering.py`)
 
-- `is_sostegno_primaria_infanzia`, `identifica_tipo_interpello`: keyword matching on ADEE/ADAA/EEEE/AAAA.
-- `estrai_scadenza(testo)`: extracts only **application deadlines** (not contract end dates). Recognizes qualified phrases: `ore HH:MM del [giorno] DATE`, `entro le ore X del DATE`, `domanda|candidatura entro DATE`, `manifestazione di interesse entro DATE`, `scadenza|termine domanda DATE`, `entro il termine perentorio del DATE`. Phrases like `supplenza al DATE`, `dal X al Y`, `fino al DATE` are intentionally ignored. Returns `'DD/MM/YYYY'` or `''`.
+- `is_sostegno_primaria_infanzia`: matches (a) GPS codes ADEE/ADAA/EEEE/AAAA, (b) old tipo-posto codes `EH`/`CH` as uppercase tokens when SOSTEGNO is also present (UST BAT still publishes "posto sostegno EH" interpelli), (c) keyword fallback `(PRIMARIA|INFANZIA) + (SOSTEGNO|POSTO COMUNE)` for postings with no explicit code (GRADUATORIA excluded). Recall over precision: a missed interpello is worse than a false positive.
+- `estrai_scadenza(testo)`: extracts only **application deadlines** (not contract end dates). Recognizes qualified phrases: `ore HH:MM del [giorno] DATE`, `entro le ore X del DATE`, `domanda|candidatura entro DATE`, `manifestazione di interesse entro DATE`, `scadenza|termine domanda DATE`, `entro il termine perentorio del DATE`. Dates can be numeric (`3/9/2026`, `03.09.2026`) or textual (`3 dicembre 2025`, `1° luglio 2026`), optionally preceded by a weekday name. Phrases like `supplenza al DATE`, `dal X al Y`, `fino al DATE` are intentionally ignored. Returns `'DD/MM/YYYY'` (validated) or `''`.
+- `is_link_dedupabile(link)`: False for links shared by multiple postings (Argo albo without `id=`, trasparenzascuole page without `#atto-` fragment, bare school homepages). Only dedupable links go into the `links` state.
 - `parse_data(s)`: parses `'DD/MM/YYYY'` → `date`. Returns `None` on failure.
 - `scadenza_passata(s, oggi=None)`: `True` only if parseable AND < today. Non-parseable → `False` (do not discard).
 - `compute_stable_id(testo)`: `hashlib.sha256` (not Python's `hash()`, which is salted per-process and would break dedup across GitHub Actions runs).
 
-### Deadline resolution per source (fallback chain)
+### Deadline resolution (fallback chain)
 
-Each fetcher populates `scadenza` with the first non-empty result:
-1. `estrai_scadenza(testo)` — title + description + allegato filenames.
-2. If link ends in `.pdf` → `estrai_scadenza_da_pdf(link)` (pdf_utils).
-- **Argo** fallback: calls `GET /atti/{attoId}/allegati` (returns a pre-signed S3 ZIP URL), downloads the ZIP, extracts all PDFs, runs `estrai_scadenza` on their text via `pdf_utils.estrai_scadenza_da_zip_url()`. No `dataArchiviazione` fallback — that is the albo archiving date, not the application deadline.
-- If no qualified deadline found in any source → `scadenza = ''`. The interpello is still notified (false negative is worse than false positive).
+1. In-fetcher: `estrai_scadenza(testo)` — title + description + allegato filenames (cheap, no HTTP).
+   - **Argo** keeps its in-fetcher fallback: `GET /atti/{attoId}/allegati` (pre-signed S3 ZIP URL) → `pdf_utils.estrai_scadenza_da_zip_url()`. The generic resolver can't handle Argo (JS SPA). No `dataArchiviazione` fallback — that is the albo archiving date, not the application deadline.
+2. Post-dedup, NEW postings only: `link_resolver.risolvi_scadenza_da_link(link)`:
+   - direct PDF (detected by `%PDF-` magic bytes or Content-Type — **istruzionebat.it attachment pages serve PDFs from extensionless URLs**);
+   - HTML detail page text → `estrai_scadenza`;
+   - candidate attachment links inside the page (`.pdf`, `wp-content/uploads`, child pages of the post URL, keyword-matched links), downloaded and sniffed as PDF; one extra level for WP attachment pages embedding the file.
+   - Bails out on `portaleargo.it` (SPA) and `trasparenzascuole.it` (WAF/session) links.
+3. If no qualified deadline found → `scadenza = ''`. The interpello is still notified with a "verify immediately" warning (false negative is worse than false positive).
 
 ### Sources
 
@@ -107,9 +115,9 @@ Old format of `interpelli_visti.json` was a bare `[]` list — `load_interpelli_
 
 ## Scheduling via GitHub Actions
 
-The workflow `.github/workflows/monitor.yml` runs at 06:00, 12:00, 16:00 UTC (~3×/day). GitHub cron is UTC and best-effort (±15 min delay). After each run it commits the updated `interpelli_visti.json` back to the repo (`[skip ci]` prevents re-triggering). Credentials go in repo Settings → Secrets and variables → Actions.
+The workflow `.github/workflows/monitor.yml` runs hourly 05:00–17:00 UTC (~07–19 Italy; interpelli often have ~24h application windows). GitHub cron is UTC and best-effort (±15 min delay). A `concurrency` group prevents overlapping runs. After each run it commits `interpelli_visti.json`, `reports/` and `docs/` back to the repo (`[skip ci]` prevents re-triggering). The state-commit step must NOT use `if: always()`: on SMTP failure the monitor exits 1 and state must not be committed, so the next run retries the notification. Credentials go in repo Settings → Secrets and variables → Actions.
 
-**Note:** GitHub Pages cannot run this (static hosting only). GitHub Actions is the correct mechanism.
+**Note:** GitHub Pages cannot run this (static hosting only) but serves the generated dashboard from `docs/` (Settings → Pages → Deploy from branch → main, `/docs`). GitHub Actions is the correct mechanism for the monitor itself.
 
 ## Building the BAT school list (`build_scuole_bat.py`)
 

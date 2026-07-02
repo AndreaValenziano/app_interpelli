@@ -4,6 +4,7 @@ import re
 import time
 from datetime import datetime
 from typing import Dict, List, Optional
+from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
@@ -92,8 +93,9 @@ class NuvolaAlboSource(BaseSource):
         if not table:
             return risultati
 
-        rows = table.find_all('tr')
-        for row in rows[1:]:  # salta header
+        # La tabella Nuvola NON ha riga di intestazione: tutte le <tr> sono dati.
+        # Un'eventuale riga header avrebbe <th> e viene comunque scartata (niente <td>).
+        for row in table.find_all('tr'):
             cells = row.find_all('td')
             if not cells:
                 continue
@@ -113,7 +115,7 @@ class NuvolaAlboSource(BaseSource):
                 continue
 
             link_tag = row.find('a', href=True)
-            link = link_tag['href'] if link_tag else None
+            link = urljoin('https://nuvola.madisoft.it/', link_tag['href']) if link_tag else None
 
             doc_id = self._estrai_doc_id(link) if link else None
             sid_base = f"nuvola-{cod_miur}-{doc_id}" if doc_id else testo

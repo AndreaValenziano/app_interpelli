@@ -4,16 +4,19 @@ Programma Python per monitorare automaticamente gli interpelli per supplenze su 
 
 ## 📋 Caratteristiche
 
-- ✅ Monitora il sito ufficiale dell'Ufficio Scolastico BAT
+- ✅ Monitora il sito ufficiale dell'Ufficio Scolastico BAT + albi delle singole scuole (Argo, Nuvola, Trasparenzascuole) + aggregatore nazionale
 - ✅ Filtra automaticamente interpelli per:
     - **ADEE** - Sostegno scuola primaria
     - **ADAA** - Sostegno scuola infanzia
     - **EEEE** - Posto comune scuola primaria
     - **AAAA** - Posto comune scuola infanzia
-- ✅ Invia notifiche email solo per nuovi interpelli
+    - anche con i vecchi codici (**EH**/**CH**) o senza codice esplicito
+- ✅ **Estrae la scadenza della domanda anche dai PDF allegati**, seguendo i link delle pagine di dettaglio
+- ✅ Scarta gli interpelli già scaduti (niente notifiche inutili)
+- ✅ Invia notifiche email solo per nuovi interpelli, ordinate per urgenza (scadenza più vicina prima)
 - ✅ Evita duplicati grazie al tracciamento degli interpelli già visti
-- ✅ Estrae informazioni chiave (tipo, scadenza, link)
-- ✅ Email HTML formattate e facilmente leggibili
+- ✅ **Dashboard web** (`docs/index.html`) con tutti gli interpelli, filtri e badge di urgenza — pubblicabile gratis su GitHub Pages
+- ✅ Controllo automatico **ogni ora** (7–19 ora italiana) via GitHub Actions
 
 ## 🚀 Installazione
 

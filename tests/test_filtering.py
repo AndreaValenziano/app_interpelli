@@ -5,7 +5,12 @@ from datetime import date
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from filtering import estrai_scadenza, scadenza_passata
+from filtering import (
+    estrai_scadenza,
+    scadenza_passata,
+    is_sostegno_primaria_infanzia,
+    is_link_dedupabile,
+)
 
 
 class TestEstraiScadenzaQualificata(unittest.TestCase):
@@ -125,6 +130,95 @@ class TestEstraiScadenzaEdge(unittest.TestCase):
     def test_spazi_multipli_normalizzati(self):
         testo = "domanda   dovrà   pervenire  entro  il  18/05/2026"
         self.assertEqual(estrai_scadenza(testo), "18/05/2026")
+
+
+class TestEstraiScadenzaFormatiEstesi(unittest.TestCase):
+    """Formati data aggiunti: mese testuale, giorno a 1 cifra, giorno della settimana, ore con virgola."""
+
+    def test_mese_testuale(self):
+        testo = "entro le ore 12:00 del giorno 3 dicembre 2025"
+        self.assertEqual(estrai_scadenza(testo), "03/12/2025")
+
+    def test_mese_testuale_con_ordinale(self):
+        testo = "la domanda dovrà pervenire entro il 1° luglio 2026"
+        self.assertEqual(estrai_scadenza(testo), "01/07/2026")
+
+    def test_giorno_una_cifra(self):
+        testo = "entro le ore 12:00 del 3/9/2026"
+        self.assertEqual(estrai_scadenza(testo), "03/09/2026")
+
+    def test_giorno_settimana(self):
+        testo = "entro le ore 10:00 del giorno venerdì 12/09/2026"
+        self.assertEqual(estrai_scadenza(testo), "12/09/2026")
+
+    def test_ore_con_virgola(self):
+        testo = "entro le ore 12,00 del 18/05/2026"
+        self.assertEqual(estrai_scadenza(testo), "18/05/2026")
+
+    def test_data_invalida_scartata(self):
+        testo = "entro le ore 12:00 del 45/13/2026"
+        self.assertEqual(estrai_scadenza(testo), "")
+
+
+class TestFiltroAllargato(unittest.TestCase):
+    """Il filtro deve riconoscere anche vecchi codici (EH/CH) e keyword senza codici."""
+
+    def test_codice_gps(self):
+        self.assertTrue(is_sostegno_primaria_infanzia("interpello ADEE 24h"))
+
+    def test_vecchio_codice_eh(self):
+        self.assertTrue(is_sostegno_primaria_infanzia(
+            "Interpello nazionale scuola primaria posto sostegno EH"))
+
+    def test_vecchio_codice_ch(self):
+        self.assertTrue(is_sostegno_primaria_infanzia(
+            "Interpello per supplenza posto sostegno CH scuola dell'infanzia"))
+
+    def test_keyword_senza_codice(self):
+        self.assertTrue(is_sostegno_primaria_infanzia(
+            "interpello per supplenza scuola infanzia posto comune"))
+
+    def test_ch_minuscolo_non_match(self):
+        # 'ch' dentro parole comuni non deve attivare il vecchio codice
+        self.assertFalse(is_sostegno_primaria_infanzia(
+            "interpello per docente di chimica scuola secondaria sostegno"))
+
+    def test_dsga_escluso(self):
+        self.assertFalse(is_sostegno_primaria_infanzia(
+            "interpello per incarico di DSGA sostituzione"))
+
+    def test_graduatoria_esclusa_da_fallback(self):
+        self.assertFalse(is_sostegno_primaria_infanzia(
+            "graduatoria interpello scuola primaria sostegno"))
+
+
+class TestLinkDedupabile(unittest.TestCase):
+    """I link generici (condivisi da più interpelli) non vanno usati per il dedup."""
+
+    def test_argo_senza_id_generico(self):
+        self.assertFalse(is_link_dedupabile(
+            "https://www.portaleargo.it/albopretorio/online/#/?customerCode=SC27220"))
+
+    def test_argo_deep_link_ok(self):
+        self.assertTrue(is_link_dedupabile(
+            "https://www.portaleargo.it/albopretorio/online/#/dettaglio-atto?customerCode=SC29432&id=4416677&archivio=false"))
+
+    def test_trasparenza_senza_fragment_generico(self):
+        self.assertFalse(is_link_dedupabile(
+            "https://www.trasparenzascuole.it/Public/APDPublic_ExtV2.aspx?CF=90091020728"))
+
+    def test_trasparenza_con_fragment_ok(self):
+        self.assertTrue(is_link_dedupabile(
+            "https://www.trasparenzascuole.it/Public/APDPublic_ExtV2.aspx?CF=90091020728#atto-abc"))
+
+    def test_homepage_scuola_generica(self):
+        self.assertFalse(is_link_dedupabile("https://www.icjannuzzimonsdidonna.edu.it"))
+
+    def test_pagina_articolo_ok(self):
+        self.assertTrue(is_link_dedupabile("https://www.istruzionebat.it/2025/12/02/interpello-x/"))
+
+    def test_vuoto(self):
+        self.assertFalse(is_link_dedupabile(""))
 
 
 class TestScadenzaPassata(unittest.TestCase):
