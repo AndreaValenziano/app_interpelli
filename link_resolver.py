@@ -14,14 +14,20 @@ Per portaleargo.it (SPA JavaScript, il GET restituisce solo l'app shell) i deep-
 endpoint allegati → ZIP → PDF. `argo_archiviato()` rileva inoltre gli atti non più
 in pubblicazione (spariti dal listing o con dataArchiviazione passata).
 
+I link diretti a documento di trasparenzascuole.it (`view_doc.aspx?p=...`) vengono
+scaricati con curl_cffi (impersonazione Chrome, supera il WAF da IP residenziali;
+da GitHub Actions il WAF risponde 403 e il resolver ritorna '' senza errori).
+I file DOCX (moduli Word) vengono letti oltre ai PDF.
+
 NON gestisce:
-- trasparenzascuole.it: richiede sessione curl_cffi + WAF Cloudflare.
+- le pagine albo di trasparenzascuole.it (APDPublic): richiedono sessione server-side.
 
 Va chiamato DOPO il dedup, solo per gli interpelli nuovi: ogni risoluzione può
 costare fino a ~7 richieste HTTP.
 """
 import io
 import re
+import zipfile
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urljoin, urlparse
 
@@ -154,6 +160,8 @@ def argo_archiviato(url: str, oggi: Optional[date] = None) -> bool:
 
 def _risolvi(url: str) -> str:
     low = url.lower()
+    if 'trasparenzascuole.it' in low and 'view_doc.aspx' in low:
+        return _risolvi_view_doc(url)
     if any(d in low for d in _DOMINI_NON_RISOLVIBILI):
         return ''
     if 'portaleargo.it' in low:
@@ -164,8 +172,9 @@ def _risolvi(url: str) -> str:
         return ''
     body, content_type = scaricato
 
-    if _sembra_pdf(body, content_type):
-        return _scadenza_da_pdf_bytes(body)
+    scad = _scadenza_da_documento(body, content_type)
+    if scad:
+        return scad
     if 'html' not in content_type:
         return ''
 
@@ -176,19 +185,29 @@ def _risolvi(url: str) -> str:
     if scad:
         return scad
 
+    candidati = _link_allegati(contenuto, url)
+    # Alcuni temi (es. "Design Scuole Italia" sui siti .edu.it) mettono la
+    # sezione allegati FUORI dal contenitore del contenuto: se lì non si è
+    # trovato nulla, riprova sull'intera pagina (testo + link).
+    if contenuto is not soup:
+        if not candidati:
+            scad = estrai_scadenza(soup.get_text(separator=' ', strip=True))
+            if scad:
+                return scad
+        gia = set(candidati)
+        candidati += [c for c in _link_allegati(soup, url) if c not in gia]
+        candidati = candidati[:MAX_ALLEGATI_PER_PAGINA]
+
     # Livello 1: scarica gli allegati candidati e cerca nei PDF
-    for cand in _link_allegati(contenuto, url):
+    for cand in candidati:
         sub = _scarica(cand)
         if sub is None:
             continue
         b, ct = sub
-        if _sembra_pdf(b, ct):
-            scad = _scadenza_da_pdf_bytes(b)
-        elif 'html' in ct:
+        scad = _scadenza_da_documento(b, ct)
+        if not scad and 'html' in ct:
             # pagina allegato che incapsula il PDF: cerca URL di file diretti
             scad = _scadenza_da_pdf_embedded(b, cand)
-        else:
-            scad = ''
         if scad:
             return scad
     return ''
@@ -207,6 +226,40 @@ def _scarica(url: str) -> Optional[Tuple[bytes, str]]:
 
 def _sembra_pdf(body: bytes, content_type: str) -> bool:
     return body[:5] == b'%PDF-' or 'pdf' in content_type
+
+
+def _scadenza_da_documento(body: bytes, content_type: str) -> str:
+    """Scadenza da un file scaricato: PDF o DOCX (riconosciuti dai magic bytes)."""
+    if _sembra_pdf(body, content_type):
+        return _scadenza_da_pdf_bytes(body)
+    if body[:4] == b'PK\x03\x04':  # zip: possibile DOCX
+        return _scadenza_da_docx_bytes(body)
+    return ''
+
+
+def _scadenza_da_docx_bytes(body: bytes) -> str:
+    try:
+        with zipfile.ZipFile(io.BytesIO(body)) as z:
+            xml = z.read('word/document.xml').decode('utf-8', errors='replace')
+        testo = re.sub(r'<[^>]+>', ' ', xml)
+        return estrai_scadenza(testo)
+    except Exception:
+        return ''
+
+
+def _risolvi_view_doc(url: str) -> str:
+    """Documento diretto di trasparenzascuole.it: il WAF Cloudflare blocca
+    requests/OpenSSL, serve l'impersonazione TLS di curl_cffi (come la source).
+    Da IP datacenter (GitHub Actions) risponde comunque 403 → ritorna ''."""
+    try:
+        from curl_cffi import requests as creq
+        resp = creq.get(url, impersonate='chrome131', timeout=30)
+        if resp.status_code != 200 or len(resp.content) > MAX_BYTES:
+            return ''
+        ct = (resp.headers.get('Content-Type') or '').lower()
+        return _scadenza_da_documento(resp.content, ct)
+    except Exception:
+        return ''
 
 
 def _scadenza_da_pdf_bytes(body: bytes) -> str:

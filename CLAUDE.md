@@ -80,9 +80,9 @@ Each fetcher returns dicts with: `testo`, `title`, `link`, `tipo`, `scadenza`, `
 2. Post-dedup, NEW postings only: `link_resolver.risolvi_scadenza_da_link(link)`:
    - direct PDF (detected by `%PDF-` magic bytes or Content-Type — **istruzionebat.it attachment pages serve PDFs from extensionless URLs**);
    - HTML detail page text → `estrai_scadenza`;
-   - candidate attachment links inside the page (`.pdf`, `wp-content/uploads`, child pages of the post URL, keyword-matched links), downloaded and sniffed as PDF; one extra level for WP attachment pages embedding the file.
+   - candidate attachment links inside the page (`.pdf`, `wp-content/uploads`, child pages of the post URL, keyword-matched links), downloaded and sniffed as PDF **or DOCX** (magic bytes; DOCX text read from `word/document.xml`); one extra level for WP attachment pages embedding the file. If the main content container yields nothing, the **whole page** is retried — some themes (e.g. "Design Scuole Italia" on .edu.it sites) place the attachments section outside `<main>`/`entry-content`.
    - `portaleargo.it` deep-links (`dettaglio-atto?customerCode=X&id=Y`) resolved via the Argo REST API (allegati → pre-signed ZIP → PDFs), not by fetching the SPA page.
-   - Bails out on `trasparenzascuole.it` (WAF/session) links.
+   - `trasparenzascuole.it` direct-document links (`view_doc.aspx?p=...`) downloaded via `curl_cffi` chrome131 impersonation (works from residential IPs; from GitHub Actions the Cloudflare WAF returns 403 → resolver returns `''` silently). Albo pages (`APDPublic`) still bail out (server-side session required).
 3. Stale detection for postings with no deadline: `link_resolver.argo_archiviato(link)` — an Argo atto missing from the school's current albo listing OR with past `dataArchiviazione` (format `DD/MM/YYYY`) is dead and gets dropped before notification. `argo_albo` also skips archived atti at fetch time. (`dataArchiviazione` is still never used as the *application deadline*.)
 4. If no qualified deadline found → `scadenza = ''`. The interpello is still notified with a "verify immediately" warning (false negative is worse than false positive). On the dashboard, unknown-deadline postings older than 15 days (`GIORNI_IGNOTA_ATTIVA`) are shown as "PROBABILMENTE SCADUTO" and excluded from the "Attivi" filter.
 
