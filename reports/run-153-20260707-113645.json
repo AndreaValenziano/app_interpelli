@@ -1,0 +1,85 @@
+{
+  "run": {
+    "number": "153",
+    "id": "28863158171",
+    "attempt": "1",
+    "event": "schedule",
+    "url": "https://github.com/AndreaValenziano/app_interpelli/actions/runs/28863158171",
+    "started_at": "2026-07-07T11:36:45.595008",
+    "ended_at": "2026-07-07T11:39:13.740819"
+  },
+  "summary": {
+    "fetched_total": 5,
+    "notified": 0,
+    "already_seen": 2,
+    "expired": 0,
+    "wrong_codes": 3,
+    "by_source": {
+      "nuvola_albo": 5
+    }
+  },
+  "notified": [],
+  "already_seen": [
+    {
+      "status": "already_seen",
+      "source": "nuvola_albo",
+      "title": "[I.C. \"M.D'AZEGLIO-G.DE NITTIS\"] ",
+      "link": "https://nuvola.madisoft.it/bacheca-digitale/7789/documento/BAIC89200V",
+      "tipo": "SOSTEGNO PRIMARIA (ADEE)",
+      "scadenza": "",
+      "stable_id": "052a7b8ae2a1e47c50db5d76563e50c4e831d61a4be6e0e14e665dcb4e0419b9",
+      "data_rilevamento": "2026-07-07T11:37:15.275278",
+      "testo": "Avviso - Interpello per selezione personale docente di Scuola Primaria Sostegno EH- cl. di conc. ADEE per 24 ore sett/li fino al 27/05/2026. VII.1 - Organici, lavoratori socialmente utili, graduatorie 0002602 16-03-2026 16-03-2026 15-03-2031"
+    },
+    {
+      "status": "already_seen",
+      "source": "nuvola_albo",
+      "title": "[I.C. \"M.D'AZEGLIO-G.DE NITTIS\"] ",
+      "link": "https://nuvola.madisoft.it/bacheca-digitale/7164/documento/BAIC89200V",
+      "tipo": "SOSTEGNO PRIMARIA (ADEE)",
+      "scadenza": "",
+      "stable_id": "da6cce6923ac2629d6473997ee04212aeea4fa1b214a78b0104eaa39d61dfc5a",
+      "data_rilevamento": "2026-07-07T11:37:15.275547",
+      "testo": "Decreto Pubblicazione Graduatoria Provvisoria dell’Interpello Prot. 10036 del 11/11/2025 di personale docente presso l’I.C.” D’Azeglio De Nittis” – Barletta – Classe di concorso ADEE – Scuola primaria per un incarico fino al 30/06/2026. VII.1 - Organici, lavoratori socialmente utili, graduatorie 0010300 18-11-2025 18-11-2025 18-12-2026"
+    }
+  ],
+  "expired": [],
+  "wrong_codes": [
+    {
+      "status": "wrong_codes",
+      "source": "nuvola_albo",
+      "title": "[I.C. \"M.D'AZEGLIO-G.DE NITTIS\"] ",
+      "link": "https://nuvola.madisoft.it/bacheca-digitale/8414/documento/BAIC89200V",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-07-07T11:37:15.269873",
+      "testo": "Avviso interno per il conferimento di incarico di Responsabile del Servizio di Prevenzione e di Protezione\r\n(ai sensi del D. Lvo n° 81 del 09/04/08 e succ. 106/09) . VI.9 - DVR e sicurezza 0006741 29-06-2026 29-06-2026 29-07-2026",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "nuvola_albo",
+      "title": "[I.C. \"M.D'AZEGLIO-G.DE NITTIS\"] ",
+      "link": "https://nuvola.madisoft.it/bacheca-digitale/5437/documento/BAIC89200V",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-07-07T11:37:15.275729",
+      "testo": "LETTERA DI INCARICO DS - A.S. 2024/2025 - Formazione del personale scolastico per la transizione digitale (D.M. 66/2023) - “Insieme verso la transizione digitale” II.5 - Dirigente scolastico DS 0008329 26-10-2024 26-10-2024",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "nuvola_albo",
+      "title": "[I.C. \"M.D'AZEGLIO-G.DE NITTIS\"] ",
+      "link": "https://nuvola.madisoft.it/bacheca-digitale/1739/documento/BAIC89200V",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-07-07T11:37:15.275841",
+      "testo": "Prot. 25031 - del 30/06/2022 - AOODGPER - D.G. per il personale scolastico : Graduatorie ad Esaurimento e Graduatorie Provinciali per Supplenze. Comunicazione aperura funzioni per la presentazione telematica delle istanze VII - PERSONALE 0005080 01-07-2022 01-07-2022",
+      "rejection_reason": "codici_non_target"
+    }
+  ]
+}
