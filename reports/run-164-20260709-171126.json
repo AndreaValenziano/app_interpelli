@@ -1,0 +1,143 @@
+{
+  "run": {
+    "number": "164",
+    "id": "29036137436",
+    "attempt": "1",
+    "event": "schedule",
+    "url": "https://github.com/AndreaValenziano/app_interpelli/actions/runs/29036137436",
+    "started_at": "2026-07-09T17:11:26.108822",
+    "ended_at": "2026-07-09T17:13:50.247326"
+  },
+  "summary": {
+    "fetched_total": 10,
+    "notified": 0,
+    "already_seen": 5,
+    "expired": 0,
+    "wrong_codes": 5,
+    "by_source": {
+      "istruzionebat_rss": 5,
+      "nuvola_albo": 5
+    }
+  },
+  "notified": [],
+  "already_seen": [
+    {
+      "status": "already_seen",
+      "source": "istruzionebat_rss",
+      "title": "INTERPELLO NAZIONALE PER SELEZIONE PERSONALE DOCENTE  SCUOLA PRIMARIA – POSTO COMUNE – CLASSE DI CONCORSO EEEE – PER N. 12 ORE SETTIMANALI",
+      "link": "https://www.istruzionebat.it/2025/12/02/interpello-nazionale-per-selezione-personale-docente-scuola-primaria-posto-comune-classe-di-concorso-eeee-per-n-12-ore-settimanali/",
+      "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+      "scadenza": "",
+      "stable_id": "8d87e6fea16cb3a13555035ef23fb2e46f5e017961469edd5fdbe26cd6b317fa",
+      "data_rilevamento": "2026-07-09T17:11:26.760459",
+      "testo": "INTERPELLO NAZIONALE PER SELEZIONE PERSONALE DOCENTE  SCUOLA PRIMARIA – POSTO COMUNE – CLASSE DI CONCORSO EEEE – PER N. 12 ORE SETTIMANALI timbro_interpello per n. 1 posto comune scuola primaria modulo disponibilità"
+    },
+    {
+      "status": "already_seen",
+      "source": "istruzionebat_rss",
+      "title": "Interpello nazionale per selezione personale docente scuola primaria posto sostegno EH – per n. 24 ore settimanali",
+      "link": "https://www.istruzionebat.it/2025/12/02/interpello-nazionale-per-selezione-personale-docente-scuola-primaria-posto-sostegno-eh-per-n-24-ore-settimanali/",
+      "tipo": "SOSTEGNO PRIMARIA",
+      "scadenza": "",
+      "stable_id": "fd3e93bdcd3a702f8f53fa8b27e18364cedae313b6a7d7bb891db7cead434b53",
+      "data_rilevamento": "2026-07-09T17:11:26.760582",
+      "testo": "Interpello nazionale per selezione personale docente scuola primaria posto sostegno EH – per n. 24 ore settimanali timbro_interpello per n. 1posti di sostegno EH scuola primaria modulo disponibilità"
+    },
+    {
+      "status": "already_seen",
+      "source": "istruzionebat_rss",
+      "title": "Interpello nazionale per selezione personale docente scuola dell’infanzia – posto sostegno EH – pe n. 25 ore settimanali",
+      "link": "https://www.istruzionebat.it/2025/12/02/interpello-nazionale-per-selezione-personale-docente-scuola-dellinfanzia-posto-sostegno-eh-pe-n-25-ore-settimanali/",
+      "tipo": "SOSTEGNO INFANZIA",
+      "scadenza": "",
+      "stable_id": "b584ed65c97bf5d5795a2e23429066a4bb652ef29de2b9d42bd1387e33b1a546",
+      "data_rilevamento": "2026-07-09T17:11:26.760674",
+      "testo": "Interpello nazionale per selezione personale docente scuola dell’infanzia – posto sostegno EH – pe n. 25 ore settimanali timbro_interpello per n. 1posti di sostegno scuola dell&#8217;infanzia 02-12-2025- modulo disponibilità"
+    },
+    {
+      "status": "already_seen",
+      "source": "nuvola_albo",
+      "title": "[I.C. \"M.D'AZEGLIO-G.DE NITTIS\"] ",
+      "link": "https://nuvola.madisoft.it/bacheca-digitale/7789/documento/BAIC89200V",
+      "tipo": "SOSTEGNO PRIMARIA (ADEE)",
+      "scadenza": "",
+      "stable_id": "052a7b8ae2a1e47c50db5d76563e50c4e831d61a4be6e0e14e665dcb4e0419b9",
+      "data_rilevamento": "2026-07-09T17:11:54.537096",
+      "testo": "Avviso - Interpello per selezione personale docente di Scuola Primaria Sostegno EH- cl. di conc. ADEE per 24 ore sett/li fino al 27/05/2026. VII.1 - Organici, lavoratori socialmente utili, graduatorie 0002602 16-03-2026 16-03-2026 15-03-2031"
+    },
+    {
+      "status": "already_seen",
+      "source": "nuvola_albo",
+      "title": "[I.C. \"M.D'AZEGLIO-G.DE NITTIS\"] ",
+      "link": "https://nuvola.madisoft.it/bacheca-digitale/7164/documento/BAIC89200V",
+      "tipo": "SOSTEGNO PRIMARIA (ADEE)",
+      "scadenza": "",
+      "stable_id": "da6cce6923ac2629d6473997ee04212aeea4fa1b214a78b0104eaa39d61dfc5a",
+      "data_rilevamento": "2026-07-09T17:11:54.537326",
+      "testo": "Decreto Pubblicazione Graduatoria Provvisoria dell’Interpello Prot. 10036 del 11/11/2025 di personale docente presso l’I.C.” D’Azeglio De Nittis” – Barletta – Classe di concorso ADEE – Scuola primaria per un incarico fino al 30/06/2026. VII.1 - Organici, lavoratori socialmente utili, graduatorie 0010300 18-11-2025 18-11-2025 18-12-2026"
+    }
+  ],
+  "expired": [],
+  "wrong_codes": [
+    {
+      "status": "wrong_codes",
+      "source": "istruzionebat_rss",
+      "title": "AVVISO DI INTERPELLO PER IL CONFERIMENTO DI INCARICO DI SOSTITUZIONE PER LO SVOLGIMENTO FINO AL 02.03.2026 (SALVO PROROGA) DI FUNZIONI DI DIRETTORE DEI SERVIZI GENERALI E AMMINISTRATIVI PRESSO L’I.C. “GIOVANNI PAOLO II” DI BARLETTA (COD. MECC. BTIC8AD00A) – ANNO SCOLASTICO 2025-2026 – PROVINCIA DI BARLETTA-ANDRIA-TRANI",
+      "link": "https://www.istruzionebat.it/2026/02/12/avviso-di-interpello-per-il-conferimento-di-incarico-di-sostituzione-per-lo-svolgimento-fino-al-02-03-2026-salvo-proroga-di-funzioni-di-direttore-dei-servizi-generali-e-amministrativi-presso-l/",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-07-09T17:11:26.754642",
+      "testo": "AVVISO DI INTERPELLO PER IL CONFERIMENTO DI INCARICO DI SOSTITUZIONE PER LO SVOLGIMENTO FINO AL 02.03.2026 (SALVO PROROGA) DI FUNZIONI DI DIRETTORE DEI SERVIZI GENERALI E AMMINISTRATIVI PRESSO L’I.C. “GIOVANNI PAOLO II” DI BARLETTA (COD. MECC. BTIC8AD00A) – ANNO SCOLASTICO 2025-2026 – PROVINCIA DI BARLETTA-ANDRIA-TRANI",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "istruzionebat_rss",
+      "title": "Gli INTERPELLI sono pubblicati nella sezione DOCENTI – A.S. 2025/2026",
+      "link": "https://www.istruzionebat.it/2025/10/14/gli-interpelli-sono-pubblicati-nella-sezione-docenti-a-s-2025-2026/",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-07-09T17:11:26.760686",
+      "testo": "Gli INTERPELLI sono pubblicati nella sezione DOCENTI – A.S. 2025/2026 &#160;",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "nuvola_albo",
+      "title": "[I.C. \"M.D'AZEGLIO-G.DE NITTIS\"] ",
+      "link": "https://nuvola.madisoft.it/bacheca-digitale/8414/documento/BAIC89200V",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-07-09T17:11:54.536453",
+      "testo": "Avviso interno per il conferimento di incarico di Responsabile del Servizio di Prevenzione e di Protezione\r\n(ai sensi del D. Lvo n° 81 del 09/04/08 e succ. 106/09) . VI.9 - DVR e sicurezza 0006741 29-06-2026 29-06-2026 29-07-2026",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "nuvola_albo",
+      "title": "[I.C. \"M.D'AZEGLIO-G.DE NITTIS\"] ",
+      "link": "https://nuvola.madisoft.it/bacheca-digitale/5437/documento/BAIC89200V",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-07-09T17:11:54.537521",
+      "testo": "LETTERA DI INCARICO DS - A.S. 2024/2025 - Formazione del personale scolastico per la transizione digitale (D.M. 66/2023) - “Insieme verso la transizione digitale” II.5 - Dirigente scolastico DS 0008329 26-10-2024 26-10-2024",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "nuvola_albo",
+      "title": "[I.C. \"M.D'AZEGLIO-G.DE NITTIS\"] ",
+      "link": "https://nuvola.madisoft.it/bacheca-digitale/1739/documento/BAIC89200V",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-07-09T17:11:54.537667",
+      "testo": "Prot. 25031 - del 30/06/2022 - AOODGPER - D.G. per il personale scolastico : Graduatorie ad Esaurimento e Graduatorie Provinciali per Supplenze. Comunicazione aperura funzioni per la presentazione telematica delle istanze VII - PERSONALE 0005080 01-07-2022 01-07-2022",
+      "rejection_reason": "codici_non_target"
+    }
+  ]
+}
