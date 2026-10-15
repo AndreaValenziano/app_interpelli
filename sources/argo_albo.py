@@ -18,7 +18,7 @@ from filtering import (
     normalizza_codici,
     parse_data,
 )
-from pdf_utils import estrai_scadenza_da_zip_url, testo_da_zip_url
+from pdf_utils import testo_da_zip_url, testo_scadenza_da_zip_url
 
 ARGO_API_BASE = "https://www.portaleargo.it/albopretorio/api/public"
 
@@ -105,6 +105,7 @@ class ArgoAlboSource(BaseSource):
         title = f"[{nome_scuola}] {descrizione[:100]}"
         testo = descrizione
         scadenza = ''
+        testo_documento = ''
 
         # Il listing non riporta più i nomi degli allegati: se la descrizione non dice
         # la classe di concorso, il codice si cerca nei PDF dell'atto
@@ -114,6 +115,7 @@ class ArgoAlboSource(BaseSource):
             if codici:
                 testo = f"{descrizione} {' '.join(codici)}"
                 scadenza = estrai_scadenza(testo_allegati)
+                testo_documento = testo_allegati
 
         if 'graduatoria' in descrizione.lower() or not is_sostegno_primaria_infanzia(testo):
             if self._reporter:
@@ -124,7 +126,10 @@ class ArgoAlboSource(BaseSource):
                 }, 'codici_non_target', self.name)
             return None
 
-        scadenza = scadenza or estrai_scadenza(testo) or self._estrai_scadenza_da_allegati(atto_id)
+        scadenza = scadenza or estrai_scadenza(testo)
+        if not scadenza:
+            testo_documento = self._testo_scadenza_allegati(atto_id)
+            scadenza = estrai_scadenza(testo_documento)
         return {
             'testo': testo,
             'title': title,
@@ -134,6 +139,8 @@ class ArgoAlboSource(BaseSource):
             'source': self.name,
             'stable_id': compute_stable_id(f"argo-{customer_code}-{atto_id}"),
             'data_rilevamento': datetime.now().isoformat(),
+            # testo del PDF letto: da qui il monitor estrae ora, periodo, ore e sede
+            'testo_documento': testo_documento,
         }
 
     def _url_zip_allegati(self, atto_id) -> str:
@@ -148,8 +155,9 @@ class ArgoAlboSource(BaseSource):
         except Exception:
             return ''
 
-    def _estrai_scadenza_da_allegati(self, atto_id) -> str:
-        return estrai_scadenza_da_zip_url(self._url_zip_allegati(atto_id))
+    def _testo_scadenza_allegati(self, atto_id) -> str:
+        """Testo del PDF allegato che contiene la scadenza, o ''."""
+        return testo_scadenza_da_zip_url(self._url_zip_allegati(atto_id))
 
 
 def data_archiviazione(atto: Dict) -> str:

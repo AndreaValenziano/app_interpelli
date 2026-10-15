@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch
 
 import link_resolver
-from link_resolver import _risolvi
+from link_resolver import risolvi_da_link, risolvi_scadenza_da_link
 
 
 PDF_CON_SCADENZA = b'%PDF-FINTO'
@@ -36,9 +36,9 @@ class TestAllegatiFuoriContenuto(unittest.TestCase):
             return PAGINA_ALLEGATI_FUORI_MAIN, 'text/html'
 
         with patch.object(link_resolver, '_scarica', side_effect=fake_scarica), \
-             patch.object(link_resolver, '_scadenza_da_pdf_bytes',
-                          return_value='29/10/2025'):
-            self.assertEqual(_risolvi('https://scuola.example/interpello-adee/'),
+             patch.object(link_resolver, '_testo_da_pdf_bytes',
+                          return_value='domanda entro le ore 12:00 del 29/10/2025'):
+            self.assertEqual(risolvi_scadenza_da_link('https://scuola.example/interpello-adee/'),
                              '29/10/2025')
 
     def test_scadenza_nel_testo_fuori_dal_main(self):
@@ -47,7 +47,15 @@ class TestAllegatiFuoriContenuto(unittest.TestCase):
                   b'</body></html>')
         with patch.object(link_resolver, '_scarica',
                           return_value=(pagina, 'text/html')):
-            self.assertEqual(_risolvi('https://scuola.example/x/'), '15/09/2026')
+            self.assertEqual(risolvi_scadenza_da_link('https://scuola.example/x/'), '15/09/2026')
+
+    def test_restituisce_anche_il_testo_per_i_dettagli(self):
+        pagina = (b'<html><body><main><p>Interpello ADEE per 12 ore settimanali, '
+                  b'domanda entro le ore 10:00 del 15/09/2026</p></main></body></html>')
+        with patch.object(link_resolver, '_scarica', return_value=(pagina, 'text/html')):
+            scadenza, testo = risolvi_da_link('https://scuola.example/y/')
+        self.assertEqual(scadenza, '15/09/2026')
+        self.assertIn('12 ore settimanali', testo)
 
 
 if __name__ == '__main__':

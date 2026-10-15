@@ -247,6 +247,10 @@ class TestLinkArgoNuovoFormato(unittest.TestCase):
         # lo stato storico salva i link in minuscolo
         self.assertEqual(chiave_link(self.VECCHIO.lower()), 'argo:SC21815:4690295')
 
+    def test_chiave_gia_canonica_resta_invariata(self):
+        # lo stato salva le chiavi canoniche e le rilegge con chiave_link
+        self.assertEqual(chiave_link('argo:SC21815:4690295'), 'argo:SC21815:4690295')
+
     def test_chiave_link_generico_vuota(self):
         self.assertEqual(chiave_link("https://www.icminervinomurge.edu.it/"), '')
 

@@ -38,7 +38,7 @@ from bs4 import BeautifulSoup
 from datetime import date
 
 from filtering import estrai_scadenza, parse_data, parse_link_argo
-from pdf_utils import estrai_scadenza_da_zip_url
+from pdf_utils import testo_scadenza_da_zip_url
 from sources.argo_albo import data_archiviazione, lista_atti
 
 _HEADERS = {
@@ -74,22 +74,33 @@ _SKIP_HREF = (
     'privacy', 'cookie', '/category/', '/tag/', '/author/', '/feed',
 )
 
-# Cache in-memory per run: url → scadenza ('' incluso)
-_cache: Dict[str, str] = {}
+# Cache in-memory per run: url → (scadenza, testo) ('' inclusi)
+_cache: Dict[str, Tuple[str, str]] = {}
 
 
 def risolvi_scadenza_da_link(url: str) -> str:
     """Segue il link dell'interpello e ritorna la scadenza 'DD/MM/YYYY' o ''."""
+    return risolvi_da_link(url)[0]
+
+
+def risolvi_da_link(url: str) -> Tuple[str, str]:
+    """Segue il link dell'interpello e ritorna (scadenza, testo del documento in cui
+    è stata trovata), oppure ('', '') — il testo serve a estrarre i dettagli."""
     if not url:
-        return ''
-    if url in _cache:
-        return _cache[url]
-    try:
-        risultato = _risolvi(url)
-    except Exception:
-        risultato = ''
-    _cache[url] = risultato
-    return risultato
+        return '', ''
+    if url not in _cache:
+        try:
+            testo = _risolvi(url)
+        except Exception:
+            testo = ''
+        _cache[url] = (estrai_scadenza(testo), testo) if testo else ('', '')
+    return _cache[url]
+
+
+def _se_scadenza(testo: str) -> str:
+    """Il testo se contiene una scadenza, altrimenti ''. Le funzioni interne del
+    resolver restituiscono così il documento utile invece della sola data."""
+    return testo if testo and estrai_scadenza(testo) else ''
 
 
 def _argo_listing(customer_code: str) -> Optional[dict]:
@@ -103,7 +114,7 @@ def _argo_listing(customer_code: str) -> Optional[dict]:
 
 
 def _risolvi_argo_atto(atto_id: str) -> str:
-    """Scadenza di un atto Argo: API allegati → ZIP pre-firmato → PDF."""
+    """Testo del PDF con la scadenza di un atto Argo: API allegati → ZIP pre-firmato."""
     try:
         resp = requests.get(f"{_ARGO_API}/atti/{atto_id}/allegati",
                             headers=_ARGO_HEADERS, timeout=15)
@@ -111,7 +122,7 @@ def _risolvi_argo_atto(atto_id: str) -> str:
         zip_url = resp.text.strip().strip('"')
         if not zip_url:
             return ''
-        return estrai_scadenza_da_zip_url(zip_url)
+        return testo_scadenza_da_zip_url(zip_url)
     except Exception:
         return ''
 
@@ -137,6 +148,7 @@ def argo_archiviato(url: str, oggi: Optional[date] = None) -> bool:
 
 
 def _risolvi(url: str) -> str:
+    """Testo (pagina o allegato) che contiene la scadenza, o ''."""
     low = url.lower()
     if 'trasparenzascuole.it' in low and 'view_doc.aspx' in low:
         return _risolvi_view_doc(url)
@@ -151,18 +163,18 @@ def _risolvi(url: str) -> str:
         return ''
     body, content_type = scaricato
 
-    scad = _scadenza_da_documento(body, content_type)
-    if scad:
-        return scad
+    trovato = _testo_da_documento(body, content_type)
+    if trovato:
+        return trovato
     if 'html' not in content_type:
         return ''
 
     soup = BeautifulSoup(body, 'html.parser')
     contenuto = (soup.find('div', class_='entry-content') or soup.find('main')
                  or soup.find('article') or soup.body or soup)
-    scad = estrai_scadenza(contenuto.get_text(separator=' ', strip=True))
-    if scad:
-        return scad
+    trovato = _se_scadenza(contenuto.get_text(separator=' ', strip=True))
+    if trovato:
+        return trovato
 
     candidati = _link_allegati(contenuto, url)
     # Alcuni temi (es. "Design Scuole Italia" sui siti .edu.it) mettono la
@@ -170,9 +182,9 @@ def _risolvi(url: str) -> str:
     # trovato nulla, riprova sull'intera pagina (testo + link).
     if contenuto is not soup:
         if not candidati:
-            scad = estrai_scadenza(soup.get_text(separator=' ', strip=True))
-            if scad:
-                return scad
+            trovato = _se_scadenza(soup.get_text(separator=' ', strip=True))
+            if trovato:
+                return trovato
         gia = set(candidati)
         candidati += [c for c in _link_allegati(soup, url) if c not in gia]
         candidati = candidati[:MAX_ALLEGATI_PER_PAGINA]
@@ -183,12 +195,12 @@ def _risolvi(url: str) -> str:
         if sub is None:
             continue
         b, ct = sub
-        scad = _scadenza_da_documento(b, ct)
-        if not scad and 'html' in ct:
+        trovato = _testo_da_documento(b, ct)
+        if not trovato and 'html' in ct:
             # pagina allegato che incapsula il PDF: cerca URL di file diretti
-            scad = _scadenza_da_pdf_embedded(b, cand)
-        if scad:
-            return scad
+            trovato = _testo_da_pdf_embedded(b, cand)
+        if trovato:
+            return trovato
     return ''
 
 
@@ -207,21 +219,21 @@ def _sembra_pdf(body: bytes, content_type: str) -> bool:
     return body[:5] == b'%PDF-' or 'pdf' in content_type
 
 
-def _scadenza_da_documento(body: bytes, content_type: str) -> str:
+def _testo_da_documento(body: bytes, content_type: str) -> str:
     """Scadenza da un file scaricato: PDF o DOCX (riconosciuti dai magic bytes)."""
     if _sembra_pdf(body, content_type):
-        return _scadenza_da_pdf_bytes(body)
+        return _testo_da_pdf_bytes(body)
     if body[:4] == b'PK\x03\x04':  # zip: possibile DOCX
-        return _scadenza_da_docx_bytes(body)
+        return _testo_da_docx_bytes(body)
     return ''
 
 
-def _scadenza_da_docx_bytes(body: bytes) -> str:
+def _testo_da_docx_bytes(body: bytes) -> str:
     try:
         with zipfile.ZipFile(io.BytesIO(body)) as z:
             xml = z.read('word/document.xml').decode('utf-8', errors='replace')
         testo = re.sub(r'<[^>]+>', ' ', xml)
-        return estrai_scadenza(testo)
+        return _se_scadenza(testo)
     except Exception:
         return ''
 
@@ -236,21 +248,21 @@ def _risolvi_view_doc(url: str) -> str:
         if resp.status_code != 200 or len(resp.content) > MAX_BYTES:
             return ''
         ct = (resp.headers.get('Content-Type') or '').lower()
-        return _scadenza_da_documento(resp.content, ct)
+        return _testo_da_documento(resp.content, ct)
     except Exception:
         return ''
 
 
-def _scadenza_da_pdf_bytes(body: bytes) -> str:
+def _testo_da_pdf_bytes(body: bytes) -> str:
     try:
         reader = pypdf.PdfReader(io.BytesIO(body))
         testo = ' '.join(page.extract_text() or '' for page in reader.pages)
-        return estrai_scadenza(testo)
+        return _se_scadenza(testo)
     except Exception:
         return ''
 
 
-def _scadenza_da_pdf_embedded(html_body: bytes, base_url: str) -> str:
+def _testo_da_pdf_embedded(html_body: bytes, base_url: str) -> str:
     """Da una pagina HTML allegato, prova gli URL di file diretti (.pdf / uploads)."""
     try:
         html = html_body.decode('utf-8', errors='replace')
@@ -267,9 +279,9 @@ def _scadenza_da_pdf_embedded(html_body: bytes, base_url: str) -> str:
             break
         sub = _scarica(u)
         if sub and _sembra_pdf(*sub):
-            scad = _scadenza_da_pdf_bytes(sub[0])
-            if scad:
-                return scad
+            trovato = _testo_da_pdf_bytes(sub[0])
+            if trovato:
+                return trovato
     return ''
 
 

@@ -173,6 +173,74 @@ def estrai_scadenza(testo: str) -> str:
     return ''
 
 
+# --- Dettagli dell'interpello (per email e dashboard) ---
+# Ora: pypdf a volte spezza le cifre ('ore 1 2:00')
+_ORA = r'(\d\s?\d?)(?:\s?[:.,]\s?(\d{2}))?'
+_ORA_PRIMA_RE = re.compile(rf'\bore\s+{_ORA}\s+(?:{_DEL_GIORNO})?{_DC}', re.IGNORECASE)
+_ORA_DOPO_RE = re.compile(rf'{_DC}\s*,?\s*(?:alle|entro\s+le|ore)\s+(?:ore\s+)?{_ORA}\b', re.IGNORECASE)
+_PERIODO_DAL_AL_RE = re.compile(rf'\bdal\s+{_DC}\s+al\s+{_DC}', re.IGNORECASE)
+_PERIODO_FINO_AL_RE = re.compile(rf'\b(?:fino|sino)\s+al\s+{_DC}', re.IGNORECASE)
+_PERIODO_TESTUALE = [
+    (re.compile(r"\bfino\s+all['’]\s*avente\s+diritto", re.IGNORECASE), "fino all'avente diritto"),
+    (re.compile(r'\bfino\s+al\s+termine\s+delle\s+attivit[àa]\s+didattiche', re.IGNORECASE),
+     'fino al termine delle attività didattiche'),
+    (re.compile(r'\bfino\s+al\s+rientro\s+del(?:la)?\s+titolare', re.IGNORECASE), 'fino al rientro del titolare'),
+]
+_ORE_RE = re.compile(r'\b(\d{1,2})\s*(?:ore|h)\s*(?:settimanali|sett\b)', re.IGNORECASE)
+_SEDE_RE = re.compile(r'\bsede\s+di\s+servizio\s*:?\s*', re.IGNORECASE)
+# Dove finisce la sede: elenco puntato, punto e virgola o inizio della frase successiva
+_FINE_SEDE_RE = re.compile(r'\s*(?:[•;]|\.\s|\s(?:La|Le|Gli|Il|I)\s+(?:domand|aspirant|candidat|docent))')
+
+
+def _ora(ore: str, minuti: Optional[str]) -> str:
+    h = int(ore.replace(' ', ''))
+    return f"{h:02d}:{minuti or '00'}" if h < 24 else ''
+
+
+def estrai_dettagli(testo: str, scadenza: str = '') -> dict:
+    """Dettagli utili alla candidatura, solo quelli trovati: 'ora_scadenza' (HH:MM,
+    solo se riferita alla data di scadenza), 'periodo' della supplenza, 'ore'
+    settimanali, 'sede' di servizio."""
+    testo = re.sub(r'\s+', ' ', testo or '')
+    dettagli = {}
+    if scadenza:
+        for m in _ORA_PRIMA_RE.finditer(testo):
+            if normalizza_data(m.group(3)) == scadenza and _ora(m.group(1), m.group(2)):
+                dettagli['ora_scadenza'] = _ora(m.group(1), m.group(2))
+                break
+        else:
+            for m in _ORA_DOPO_RE.finditer(testo):
+                if normalizza_data(m.group(1)) == scadenza and _ora(m.group(2), m.group(3)):
+                    dettagli['ora_scadenza'] = _ora(m.group(2), m.group(3))
+                    break
+
+    m = _PERIODO_DAL_AL_RE.search(testo)
+    if m and normalizza_data(m.group(1)) and normalizza_data(m.group(2)):
+        dettagli['periodo'] = f"dal {normalizza_data(m.group(1))} al {normalizza_data(m.group(2))}"
+    else:
+        m = _PERIODO_FINO_AL_RE.search(testo)
+        if m and normalizza_data(m.group(1)):
+            dettagli['periodo'] = f"fino al {normalizza_data(m.group(1))}"
+        else:
+            for regex, etichetta in _PERIODO_TESTUALE:
+                if regex.search(testo):
+                    dettagli['periodo'] = etichetta
+                    break
+
+    m = _ORE_RE.search(testo)
+    if m and 0 < int(m.group(1)) <= 40:
+        dettagli['ore'] = f"{int(m.group(1))} h/sett"
+
+    m = _SEDE_RE.search(testo)
+    if m:
+        resto = testo[m.end():m.end() + 120]
+        fine = _FINE_SEDE_RE.search(resto)
+        sede = (resto[:fine.start()] if fine else resto[:80]).strip(' –-:,')
+        if 2 < len(sede) <= 80:
+            dettagli['sede'] = sede
+    return dettagli
+
+
 def parse_data(s: str) -> Optional[date]:
     """Parsa 'DD/MM/YYYY' → date. Ritorna None se non parsabile."""
     if not s:
@@ -204,6 +272,7 @@ def compute_stable_id(testo: str) -> str:
 _ARGO_NUOVO_RE = re.compile(r'#/(S[CE]\d+)/atti/(\d+)', re.IGNORECASE)
 _ARGO_CODE_RE = re.compile(r'customerCode=(S[CE]\d+)', re.IGNORECASE)
 _ARGO_ID_RE = re.compile(r'[?&]id=(\d+)', re.IGNORECASE)
+_CHIAVE_ARGO_RE = re.compile(r'argo:S[CE]\d+:\d+')
 
 
 def parse_link_argo(link: str) -> Optional[tuple]:
@@ -222,6 +291,8 @@ def parse_link_argo(link: str) -> Optional[tuple]:
 def chiave_link(link: str) -> str:
     """Chiave di dedup del link: 'argo:SC:ID' per gli atti Argo (stessa chiave per
     entrambi i formati), il link normalizzato per gli altri, '' se generico."""
+    if _CHIAVE_ARGO_RE.fullmatch(link or ''):
+        return link  # già canonica (rilettura dello stato)
     argo = parse_link_argo(link)
     if argo:
         return f"argo:{argo[0]}:{argo[1]}"

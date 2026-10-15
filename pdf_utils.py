@@ -17,6 +17,8 @@ _DEFAULT_HEADERS = {
 
 # Cache in-memory per evitare di scaricare lo stesso PDF più volte nella stessa run
 _cache: Dict[str, str] = {}
+# url ZIP → testo del PDF con la scadenza ('' incluso)
+_cache_testi: Dict[str, str] = {}
 
 
 def estrai_scadenza_da_pdf(url: str, extra_headers: dict = None) -> str:
@@ -37,13 +39,17 @@ def estrai_scadenza_da_pdf(url: str, extra_headers: dict = None) -> str:
 def estrai_scadenza_da_zip_url(url: str, extra_headers: dict = None) -> str:
     """Scarica uno ZIP da URL (es. pre-signed S3) ed estrae la scadenza domanda
     da tutti i PDF contenuti. Ritorna il primo risultato non vuoto, o '' su errore."""
+    return estrai_scadenza(testo_scadenza_da_zip_url(url, extra_headers))
+
+
+def testo_scadenza_da_zip_url(url: str, extra_headers: dict = None) -> str:
+    """Testo del primo PDF dello ZIP che contiene una scadenza domanda, o ''.
+    Serve anche a estrarre i dettagli dell'interpello (ora, periodo, ore, sede)."""
     if not url:
         return ''
-    if url in _cache:
-        return _cache[url]
-    result = _scarica_e_estrai_zip(url, extra_headers)
-    _cache[url] = result
-    return result
+    if url not in _cache_testi:
+        _cache_testi[url] = next((t for _, t in _testi_zip(url, extra_headers) if estrai_scadenza(t)), '')
+    return _cache_testi[url]
 
 
 def testo_da_zip_url(url: str, extra_headers: dict = None) -> str:
@@ -69,14 +75,6 @@ def _scarica_e_estrai(url: str, extra_headers: dict = None) -> str:
         return estrai_scadenza(testo)
     except Exception:
         return ''
-
-
-def _scarica_e_estrai_zip(url: str, extra_headers: dict = None) -> str:
-    for _, testo in _testi_zip(url, extra_headers):
-        scad = estrai_scadenza(testo)
-        if scad:
-            return scad
-    return ''
 
 
 def _testi_zip(url: str, extra_headers: dict = None) -> List[Tuple[str, str]]:

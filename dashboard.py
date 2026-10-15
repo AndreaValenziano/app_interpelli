@@ -40,6 +40,8 @@ def aggiorna_dashboard(nuovi: List[Dict], dry_run: bool = False, docs_dir: Path 
                 esistente['scadenza'] = ip['scadenza']
             if ip.get('archiviato'):
                 esistente['archiviato'] = True
+            if ip.get('dettagli') and not esistente.get('dettagli'):
+                esistente['dettagli'] = ip['dettagli']
             continue
         archivio.append({
             'title': ip.get('title', ''),
@@ -51,6 +53,7 @@ def aggiorna_dashboard(nuovi: List[Dict], dry_run: bool = False, docs_dir: Path 
             'data_rilevamento': ip.get('data_rilevamento', ''),
             'testo': (ip.get('testo') or '')[:400],
             'archiviato': bool(ip.get('archiviato')),
+            'dettagli': ip.get('dettagli') or {},
         })
 
     cutoff = datetime.now() - timedelta(days=GIORNI_RETENTION)
@@ -173,10 +176,17 @@ function card(r) {
     + '<h3>' + esc(r.title) + '</h3>'
     + '<div>' + badge(r) + '<span class="badge" style="background:#eef3f8;color:var(--blu)">' + esc(r.tipo) + '</span></div>'
     + '<div class="meta">📅 Scadenza: ' + (r.scadenza || 'non rilevata')
+    + (r.dettagli && r.dettagli.ora_scadenza ? ' ore ' + esc(r.dettagli.ora_scadenza) : '')
     + ' · rilevato il ' + (r.data_rilevamento || '').slice(0,10).split('-').reverse().join('/')
     + ' · fonte: ' + esc(r.source) + '</div>'
+    + dettagli(r.dettagli)
     + (r.link ? '<a href="' + escAttr(r.link) + '" target="_blank" rel="noopener">Apri l\\'interpello →</a>' : '')
     + '</div>';
+}
+function dettagli(d) {
+  if (!d) return '';
+  const voci = [['🗓', d.periodo], ['⌛', d.ore], ['📍', d.sede]].filter(v => v[1]);
+  return voci.length ? '<div class="meta">' + voci.map(v => v[0] + ' ' + esc(v[1])).join(' · ') + '</div>' : '';
 }
 function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function escAttr(s) { return esc(s).replace(/"/g,'&quot;'); }

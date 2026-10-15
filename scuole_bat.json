@@ -204,7 +204,7 @@
     ],
     "piattaforma": "trasparenzascuole",
     "params": {
-      "codiceFiscale": "90059340746"
+      "codiceFiscale": "90091020728"
     }
   },
   {
@@ -219,8 +219,10 @@
       "SCUOLA PRIMARIA",
       "SCUOLA PRIMO GRADO"
     ],
-    "piattaforma": null,
-    "params": null
+    "piattaforma": "nuvola",
+    "params": {
+      "codMiur": "BAIC86000B"
+    }
   },
   {
     "codMec": "BTIC86200Q",
@@ -401,8 +403,10 @@
       "SCUOLA PRIMARIA",
       "SCUOLA PRIMO GRADO"
     ],
-    "piattaforma": null,
-    "params": null
+    "piattaforma": "trasparenzascuole",
+    "params": {
+      "codiceFiscale": "92081860725"
+    }
   },
   {
     "codMec": "BTIC8AF002",
@@ -416,8 +420,10 @@
       "SCUOLA PRIMARIA",
       "SCUOLA PRIMO GRADO"
     ],
-    "piattaforma": null,
-    "params": null
+    "piattaforma": "trasparenzascuole",
+    "params": {
+      "codiceFiscale": "90126880724"
+    }
   },
   {
     "codMec": "BTIC8AJ00V",
@@ -431,9 +437,9 @@
       "SCUOLA PRIMARIA",
       "SCUOLA PRIMO GRADO"
     ],
-    "piattaforma": "trasparenzascuole",
+    "piattaforma": "argo",
     "params": {
-      "codiceFiscale": "91121590722"
+      "customerCode": "SC29429"
     }
   },
   {

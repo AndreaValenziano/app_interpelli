@@ -2,13 +2,13 @@ name: monitor-interpelli
 
 on:
   schedule:
-    # Ogni ora dalle 5 alle 20 UTC (≈07–22 ora italiana): gli interpelli BAT escono
-    # spesso verso le 17-18 e scadono la mattina dopo, la sera va coperta.
-    # Minuto 17 e non 0: allo scoccare dell'ora GitHub è sovraccarico e scarta molte
-    # esecuzioni (a ottobre 2026 ne partivano 2-3 al giorno su 13 programmate).
-    # GitHub cron resta best-effort; repo pubblico = minuti gratuiti.
-    - cron: "17 5-20 * * *"
-  workflow_dispatch: {}    # esecuzione manuale dal tab Actions di GitHub
+    # Riserva al trigger esterno (cron-job.org → workflow_dispatch ogni 30 min):
+    # ogni ora dalle 6 alle 20 UTC, che copre le 8-22 italiane con ora legale e solare.
+    # La fascia di invio la decide il monitor (in_fascia_invio): fuori fascia non fa nulla.
+    # Minuto 17 e non 0: allo scoccare dell'ora GitHub scarta molte esecuzioni
+    # (a ottobre 2026 ne partivano 2-3 al giorno su 13 programmate).
+    - cron: "17 6-20 * * *"
+  workflow_dispatch: {}    # manuale dal tab Actions, o via API dal trigger esterno
 
 permissions:
   contents: write          # necessario per il commit di interpelli_visti.json

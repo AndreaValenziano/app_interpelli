@@ -29,7 +29,7 @@ class TestProcessAtto(unittest.TestCase):
     def setUp(self):
         self.src = ArgoAlboSource()
         self.src._reporter = None
-        patcher = patch.object(ArgoAlboSource, '_estrai_scadenza_da_allegati', return_value='')
+        patcher = patch.object(ArgoAlboSource, '_testo_scadenza_allegati', return_value='')
         patcher.start()
         self.addCleanup(patcher.stop)
 
@@ -83,6 +83,7 @@ class TestProcessAtto(unittest.TestCase):
         self.assertIsNotNone(ip)
         self.assertEqual(ip['tipo'], 'SOSTEGNO PRIMARIA (ADEE)')
         self.assertEqual(ip['scadenza'], '20/10/2026')
+        self.assertIn('ore 11:00', ip['testo_documento'])
 
     def test_interpello_senza_codice_e_allegati_di_altra_classe(self):
         with patch.object(ArgoAlboSource, '_url_zip_allegati', return_value='https://s3/zip'), \
@@ -131,8 +132,9 @@ class TestResolverArgo(unittest.TestCase):
         link_resolver._cache.clear()
 
     def test_risolve_link_nuovo_formato(self):
-        with patch.object(link_resolver, '_risolvi_argo_atto', return_value='15/10/2026') as m:
-            self.assertEqual(link_resolver._risolvi(self.NUOVO), '15/10/2026')
+        with patch.object(link_resolver, '_risolvi_argo_atto',
+                          return_value='domanda entro le ore 12:00 del 15/10/2026') as m:
+            self.assertEqual(link_resolver.risolvi_scadenza_da_link(self.NUOVO), '15/10/2026')
         m.assert_called_once_with('4690295')
 
     def test_archiviato_usa_data_archiviazione_effettiva(self):

@@ -57,6 +57,7 @@ sources/
 2. `esegui()` discards expired postings using `scadenza_passata()` (logs "⏰ Scartati N scaduti"). Postings with no parseable deadline are kept (better a false positive than a miss).
 3. `filtra_nuovi_interpelli()` deduplicates: skips if `stable_id` (sha256 of normalized text) OR `chiave_link(link)` already seen. Links are used for dedup **only if `is_link_dedupabile()`** — generic links (school homepage, whole-albo pages shared by many postings) must not suppress later postings from the same school. Returns `(nuovi, stato)` **without saving**.
 4. `risolvi_scadenze()` runs `link_resolver.risolvi_scadenza_da_link()` on NEW postings with empty `scadenza` only (each resolution costs up to ~7 HTTP requests; capped at `MAX_RISOLUZIONI_LINK=40` per run). Postings whose freshly-discovered deadline is already past are dropped (but stay in state).
+4b. `aggiungi_dettagli()` fills `ip['dettagli']` from `testo_documento` (the PDF/page text in which the deadline was found: set by `argo_albo` and by `risolvi_scadenze` via `link_resolver.risolvi_da_link() -> (scadenza, testo)`) and, for missing keys, from `testo`. No HTTP. `testo_documento` is never persisted.
 5. `invia_email()` sends HTML via SMTP+STARTTLS, sorted by deadline urgency, and returns bool. **State is saved only after a successful send** — an SMTP failure leaves state untouched so the next run retries, and the process exits 1 (workflow does not commit state).
 6. `aggiorna_dashboard()` appends notified postings to `docs/interpelli.json` and regenerates the static `docs/index.html` (GitHub Pages dashboard). Skipped on `--dry-run`.
 
@@ -69,9 +70,10 @@ Each fetcher returns dicts with: `testo`, `title`, `link`, `tipo`, `scadenza`, `
 - `is_sostegno_primaria_infanzia`: matches (a) GPS codes ADEE/ADAA/EEEE/AAAA, (b) old tipo-posto codes `EH`/`CH` as uppercase tokens when SOSTEGNO is also present (UST BAT still publishes "posto sostegno EH" interpelli), (c) keyword fallback `(PRIMARIA|INFANZIA) + (SOSTEGNO|POSTO COMUNE)` for postings with no explicit code (GRADUATORIA excluded). Recall over precision: a missed interpello is worse than a false positive.
 - `estrai_scadenza(testo)`: extracts only **application deadlines** (not contract end dates). Recognizes qualified phrases: `ore HH:MM del [giorno] DATE`, `entro le ore X del DATE`, `domanda|candidatura entro DATE`, `manifestazione di interesse entro DATE`, `scadenza|termine domanda DATE`, `entro il termine perentorio del DATE`. Dates can be numeric (`3/9/2026`, `03.09.2026`) or textual (`3 dicembre 2025`, `1° luglio 2026`), optionally preceded by a weekday name. Phrases like `supplenza al DATE`, `dal X al Y`, `fino al DATE` are intentionally ignored. Returns `'DD/MM/YYYY'` (validated) or `''`.
 - `is_link_dedupabile(link)`: False for links shared by multiple postings (Argo albo without an atto id, trasparenzascuole page without `#atto-` fragment, bare school homepages).
-- `chiave_link(link)`: dedup key stored in the `links` state — `argo:SC#####:ID` for Argo atti (same key for both deep-link formats, `#/dettaglio-atto?customerCode=X&id=Y` and `#/SC#####/atti/Y`, the latter used by istruzionebat.it/scuolainterpelli.it since 2026), the lowercased link otherwise, `''` for generic links. `filtra_nuovi_interpelli` converts the stored legacy links with the same function.
+- `chiave_link(link)`: dedup key stored in the `links` state — `argo:SC#####:ID` for Argo atti (same key for both deep-link formats, `#/dettaglio-atto?customerCode=X&id=Y` and `#/SC#####/atti/Y`, the latter used by istruzionebat.it/scuolainterpelli.it since 2026), the lowercased link otherwise, `''` for generic links. `filtra_nuovi_interpelli` converts the stored legacy links with the same function, so an already-canonical `argo:…` key must be returned unchanged (lowercasing it broke dedup).
 - `normalizza_codici(testo)`: rejoins target codes split by spaces (`E EEE`, `EE EE`, `AD EE`) — istruzionebat.it titles contain them. Applied by `is_sostegno_primaria_infanzia` and `identifica_tipo_interpello`.
 - `is_esito_interpello(testo)`: verbali, esiti, `individuazione da interpello`, `atto di nomina/individuazione`, annullamenti close an interpello → excluded by `is_sostegno_primaria_infanzia` even with a target code (`individuazione` alone is NOT excluded, it appears in real notices).
+- `estrai_dettagli(testo, scadenza)`: details shown in email and dashboard, only those found — `ora_scadenza` (HH:MM, only if attached to the deadline date; tolerates pypdf splitting digits, `ore 1 2:00`), `periodo` (`dal X al Y`, `fino al X`, `fino all'avente diritto`…), `ore` (`24 h/sett`), `sede` (after `sede di servizio:`).
 - `parse_data(s)`: parses `'DD/MM/YYYY'` → `date`. Returns `None` on failure.
 - `scadenza_passata(s, oggi=None)`: `True` only if parseable AND < today. Non-parseable → `False` (do not discard).
 - `compute_stable_id(testo)`: `hashlib.sha256` (not Python's `hash()`, which is salted per-process and would break dedup across GitHub Actions runs).
@@ -122,13 +124,15 @@ Old format of `interpelli_visti.json` was a bare `[]` list — `load_interpelli_
 
 ## Scheduling via GitHub Actions
 
-The workflow `.github/workflows/monitor.yml` runs hourly at minute 17, 05:00–20:00 UTC (~07–22 Italy; BAT interpelli are often published around 17-18 and expire the next morning). Minute 17 instead of 0 because GitHub drops many top-of-the-hour scheduled runs (October 2026: 2-3 runs/day out of 13). GitHub cron is UTC and best-effort. A `concurrency` group prevents overlapping runs. After each run it commits `interpelli_visti.json`, `reports/` and `docs/` back to the repo (`[skip ci]` prevents re-triggering). The monitor step has `continue-on-error: true`; the commit step always commits `reports/` and `docs/` (so un-notified postings stay visible on the dashboard) but adds `interpelli_visti.json` only when `steps.monitor.outcome == 'success'` — on SMTP failure the monitor exits 1 and state must not be committed, so the next run retries the notification. A final step re-fails the job so GitHub still sends the "Run failed" email (the only alarm when SMTP is broken). SMTP errors log the failing phase (connessione/starttls/login/invio); a `535` (`SMTPAuthenticationError`) means the Gmail app password was revoked — regenerate it and update the `PASSWORD_EMAIL` secret (set it from a real terminal or the web UI: `! gh secret set` has no TTY and stores an empty value). Credentials go in repo Settings → Secrets and variables → Actions.
+**Send window:** the monitor does nothing outside 08:00–22:00 Europe/Rome (`in_fascia_invio()`, `ORA_INIZIO_INVIO`/`ORA_FINE_INVIO`; DST-aware): no fetch, no email, state untouched, so night postings arrive with the first morning run. `--dry-run` ignores the window.
+
+**Triggers:** the main trigger is external (cron-job.org calling the `workflow_dispatch` API every 30 minutes, with a fine-grained PAT with Actions read/write on this repo), because GitHub drops many scheduled runs (October 2026: 2-3 runs/day out of 13). The workflow's own cron (`17 6-20 * * *` UTC, minute 17 because top-of-the-hour runs are dropped more often) is the backup; it covers 08–22 Italy in both DST and standard time, the code enforces the exact window. BAT interpelli are often published around 17-18 and expire the next morning. A `concurrency` group prevents overlapping runs. After each run it commits `interpelli_visti.json`, `reports/` and `docs/` back to the repo (`[skip ci]` prevents re-triggering). The monitor step has `continue-on-error: true`; the commit step always commits `reports/` and `docs/` (so un-notified postings stay visible on the dashboard) but adds `interpelli_visti.json` only when `steps.monitor.outcome == 'success'` — on SMTP failure the monitor exits 1 and state must not be committed, so the next run retries the notification. A final step re-fails the job so GitHub still sends the "Run failed" email (the only alarm when SMTP is broken). SMTP errors log the failing phase (connessione/starttls/login/invio); a `535` (`SMTPAuthenticationError`) means the Gmail app password was revoked — regenerate it and update the `PASSWORD_EMAIL` secret (set it from a real terminal or the web UI: `! gh secret set` has no TTY and stores an empty value). Credentials go in repo Settings → Secrets and variables → Actions.
 
 **Note:** GitHub Pages cannot run this (static hosting only) but serves the generated dashboard from `docs/` (Settings → Pages → Deploy from branch → main, `/docs`). GitHub Actions is the correct mechanism for the monitor itself.
 
 ## Building the BAT school list (`build_scuole_bat.py`)
 
-Run once (not part of the regular monitor cycle) to produce `scuole_bat.json`:
+Run once (not part of the regular monitor cycle) to produce `scuole_bat.json`. Verify trasparenzascuole CFs on the IPA index (`indicepa.gov.it/ipa-dati/api/3/action/datastore_search`, field `Codice_MIUR`): in October 2026 two CFs belonged to same-name schools in other provinces.
 
 ```bash
 python3 build_scuole_bat.py
@@ -136,7 +140,7 @@ python3 build_scuole_bat.py
 
 The script downloads the MIUR open-data CSV `SCUANAGRAFESTAT`, **groups by `CODICEISTITUTORIFERIMENTO`** (principal institution, not individual plessi), filters to institutions with at least one `SCUOLA PRIMARIA` or `SCUOLA (DELL')INFANZIA` plesso (≈31 IC/circoli; excludes CPIA), then crawls each school's site for `customerCode=SC#####`. After crawling, applies `MAPPING_MANUALE` (constant in the script) — manual mapping wins over auto-crawling. Schools not in the manual mapping that weren't auto-detected get `piattaforma=null`.
 
-**Platform breakdown (31 schools, 2025-26):** 17 Argo, 7 Trasparenzascuole, 1 Nuvola, 6 null (1 Spaggiari JS-side, 2 custom, 3 unknown).
+**Platform breakdown (31 schools, October 2026):** 18 Argo, 8 Trasparenzascuole, 2 Nuvola, 3 null.
 
 `scuole_bat.json` schema per entry:
 ```json
@@ -172,7 +176,7 @@ If the MIUR CSV URL returns 404 (start of new school year), update `MIUR_CSV_URL
 - URL: `GET https://nuvola.madisoft.it/bacheca-digitale/bacheca/{codMiur}/{tipologia}/IN_PUBBLICAZIONE/0/show`
 - `codMiur` is the MIUR codice meccanografico (often starts with `BA`, not `BT`, for the reference institution)
 - The adapter discovers available tipologie from the school root page first; if none found, tries `[5, 1, 2, 3, 4]`
-- Response: server-side HTML with `<table>` (no header row — all `<tr>` are data)
+- Response: server-side HTML `<table>`; columns differ per school/tipologia, so `Oggetto` and `Data pubblicazione su bacheca` are located from the `<th>` header row. Data rows are those with a `/bacheca-digitale/{id}/documento/` link (skips the filter row). The board keeps interpelli "in pubblicazione" for months/years: rows published more than `MAX_GIORNI_PUBBLICAZIONE` (30) days ago are skipped.
 
 ### Trasparenzascuole.it API details (for `trasparenzascuole_albo` source)
 

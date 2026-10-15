@@ -49,14 +49,21 @@ MAPPING_MANUALE: Dict[str, tuple] = {
     "BTIC852005": ("argo", {"customerCode": "SC27240"}),
     "BTIC80000C": ("argo", {"customerCode": "SC21815"}),
     "BTIC801008": ("argo", {"customerCode": "SC12641"}),
+    # De Amicis-Giovanni XXIII, San Ferdinando: albo Argo dal sito della scuola (ottobre 2026)
+    "BTIC8AJ00V": ("argo", {"customerCode": "SC29429"}),
     # --- Nuvola Madisoft ---
     "BTIC89200G": ("nuvola", {"codMiur": "BAIC89200V"}),
+    "BTIC860004": ("nuvola", {"codMiur": "BAIC86000B"}),
     # --- Trasparenzascuole.it (Axios) ---
     "BTIC866003": ("trasparenzascuole", {"codiceFiscale": "90091130725"}),
     "BTEE06900L": ("trasparenzascuole", {"codiceFiscale": "83004410722"}),
     "BTIC8AQ00N": ("trasparenzascuole", {"codiceFiscale": "92081880723"}),
-    "BTIC85400R": ("trasparenzascuole", {"codiceFiscale": "90059340746"}),
-    "BTIC8AJ00V": ("trasparenzascuole", {"codiceFiscale": "91121590722"}),
+    # CF verificati sull'indice IPA (campo Codice_MIUR): i precedenti erano di scuole
+    # omonime di Brindisi (90059340746) e Bari (91121590722)
+    "BTIC85400R": ("trasparenzascuole", {"codiceFiscale": "90091020728"}),
+    "BTIC8AF002": ("trasparenzascuole", {"codiceFiscale": "90126880724"}),
+    # 92073170729 è la vecchia S.M.S. Rocca-Bovio-Palumbo (BAMM302003), non l'IC
+    "BTIC8AE006": ("trasparenzascuole", {"codiceFiscale": "92081860725"}),
     "BTEE172009": ("trasparenzascuole", {"codiceFiscale": "83002530729"}),
     "BTEE173005": ("trasparenzascuole", {"codiceFiscale": "83001990726"}),
     # Spaggiari (JS-side, fuori scope), custom, sconosciute → piattaforma=null, non in mappa

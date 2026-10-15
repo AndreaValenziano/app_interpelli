@@ -14,12 +14,13 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 from html import escape as html_escape
+from zoneinfo import ZoneInfo
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from sources import get_enabled_sources
-from filtering import scadenza_passata, chiave_link, parse_data
-from link_resolver import risolvi_scadenza_da_link, argo_archiviato
+from filtering import scadenza_passata, chiave_link, estrai_dettagli, parse_data
+from link_resolver import risolvi_da_link, argo_archiviato
 from reporting import RunReporter, prune_old_reports
 from dashboard import aggiorna_dashboard
 
@@ -30,12 +31,34 @@ MAX_RISOLUZIONI_LINK = 40
 SMTP_TIMEOUT = 30
 
 
-def _label_scadenza(scadenza: str) -> str:
+# Le email si inviano solo in questa fascia (ora italiana, estremi [inizio, fine)):
+# fuori fascia il run non fa nulla e gli interpelli arrivano col primo run del mattino
+ORA_INIZIO_INVIO = 8
+ORA_FINE_INVIO = 22
+FUSO_ORARIO = ZoneInfo('Europe/Rome')
+
+
+def in_fascia_invio(adesso: Optional[datetime] = None) -> bool:
+    ora = (adesso or datetime.now(FUSO_ORARIO)).astimezone(FUSO_ORARIO).hour
+    return ORA_INIZIO_INVIO <= ora < ORA_FINE_INVIO
+
+
+def _html_dettagli(dettagli: Dict) -> str:
+    """Riga con periodo, ore settimanali e sede (solo quelli trovati)."""
+    voci = [(icona, dettagli.get(k)) for icona, k in
+            (('🗓', 'periodo'), ('⌛', 'ore'), ('📍', 'sede'))]
+    voci = [f"{icona} {html_escape(v)}" for icona, v in voci if v]
+    return f'<p class="dettagli">{" · ".join(voci)}</p>' if voci else ''
+
+
+def _label_scadenza(scadenza: str, ora: str = '') -> str:
     """Etichetta leggibile con indicazione di urgenza per l'email."""
     d = parse_data(scadenza)
     if d is None:
         return '⚠️ non rilevata — apri il link e verifica subito'
     giorni = (d - datetime.now().date()).days
+    if ora:
+        scadenza = f"{scadenza} ore {ora}"
     if giorni <= 0:
         return f'<strong style="color:#c0392b">{scadenza} — SCADE OGGI!</strong>'
     if giorni == 1:
@@ -127,10 +150,19 @@ class InterpelliMonitor:
             return
         print(f"🔎 Risoluzione scadenze via link/PDF per {len(da_risolvere)} interpelli...")
         for ip in da_risolvere[:MAX_RISOLUZIONI_LINK]:
-            scad = risolvi_scadenza_da_link(ip['link'])
+            scad, testo = risolvi_da_link(ip['link'])
             if scad:
                 ip['scadenza'] = scad
+                ip['testo_documento'] = testo
                 print(f"   ✓ {scad} ← {ip['title'][:70]}")
+
+    def aggiungi_dettagli(self, interpelli: List[Dict]):
+        """Ora di scadenza, periodo, ore settimanali e sede: dal documento letto (PDF o
+        pagina) e, per ciò che manca, dal testo dell'interpello. Nessuna richiesta HTTP."""
+        for ip in interpelli:
+            scad = ip.get('scadenza', '')
+            ip['dettagli'] = {**estrai_dettagli(ip.get('testo', ''), scad),
+                              **estrai_dettagli(ip.get('testo_documento', ''), scad)}
 
     def crea_email_html(self, interpelli: List[Dict]) -> str:
         html = f"""
@@ -147,6 +179,7 @@ class InterpelliMonitor:
                 }}
                 .tipo {{ color: #e74c3c; font-weight: bold; }}
                 .scadenza {{ color: #f39c12; }}
+                .dettagli {{ color: #2c3e50; }}
                 .fonte {{ color: #95a5a6; font-size: 11px; }}
                 .link {{ color: #3498db; }}
                 .footer {{
@@ -167,11 +200,13 @@ class InterpelliMonitor:
         """
 
         for i, interpello in enumerate(interpelli, 1):
+            dettagli = interpello.get('dettagli') or {}
             html += f"""
             <div class="interpello">
                 <h3>Interpello #{i}</h3>
                 <p class="tipo">📋 Tipo: {interpello['tipo']}</p>
-                <p class="scadenza">📅 Scadenza domanda: {_label_scadenza(interpello['scadenza'])}</p>
+                <p class="scadenza">📅 Scadenza domanda: {_label_scadenza(interpello['scadenza'], dettagli.get('ora_scadenza', ''))}</p>
+                {_html_dettagli(dettagli)}
                 <p class="fonte">Fonte: {interpello['source']}</p>
                 <p><strong>Descrizione:</strong><br>{interpello['testo'][:300]}...</p>
             """
@@ -217,6 +252,8 @@ class InterpelliMonitor:
                 print(f"  [{i}] [{ip['source']}] {ip['title'][:80]}")
                 print(f"       Tipo: {ip['tipo']} | Scadenza: {ip['scadenza'] or 'Non specificata'}")
                 print(f"       Link: {ip.get('link') or '—'}")
+                if ip.get('dettagli'):
+                    print(f"       Dettagli: {ip['dettagli']}")
             return True
 
         n = len(interpelli)
@@ -256,6 +293,13 @@ class InterpelliMonitor:
         if self.dry_run:
             print("  [MODALITÀ DRY-RUN — nessuna email, nessun salvataggio stato]")
         print(f"{'='*60}\n")
+
+        # Fuori fascia nessuna azione: niente email di notte, e lo stato resta com'è
+        # così gli interpelli trovati arrivano col primo run in fascia
+        if not self.dry_run and not in_fascia_invio():
+            print(f"🌙 Fuori dalla fascia di invio ({ORA_INIZIO_INVIO}-{ORA_FINE_INVIO} ora italiana): "
+                  f"nessuna esecuzione.")
+            return
 
         reporter = RunReporter()
 
@@ -302,6 +346,7 @@ class InterpelliMonitor:
 
         # Risoluzione scadenze via link/PDF SOLO sui nuovi (costa richieste HTTP)
         self.risolvi_scadenze(nuovi)
+        self.aggiungi_dettagli(nuovi)
 
         # Ri-controllo dopo la risoluzione: le scadenze appena scoperte possono
         # essere già passate. Restano comunque nello stato (non vanno rinotificati).

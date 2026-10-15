@@ -2,7 +2,7 @@ import json
 import os
 import re
 import time
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from typing import Dict, List, Optional
 from urllib.parse import urljoin
 
@@ -15,11 +15,16 @@ from filtering import (
     identifica_tipo_interpello,
     is_likely_interpello,
     is_sostegno_primaria_infanzia,
+    normalizza_data,
+    parse_data,
 )
 
 NUVOLA_BASE = "https://nuvola.madisoft.it/bacheca-digitale/bacheca"
 SCUOLE_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'scuole_bat.json')
 SLEEP_TRA_SCUOLE = 1.0
+# La bacheca tiene 'in pubblicazione' anche interpelli di mesi/anni prima: oltre
+# questa età dalla pubblicazione sono certamente chiusi
+MAX_GIORNI_PUBBLICAZIONE = 30
 
 
 class NuvolaAlboSource(BaseSource):
@@ -87,41 +92,54 @@ class NuvolaAlboSource(BaseSource):
         except Exception:
             return []
 
-    def _parse_tabella(self, soup: BeautifulSoup, cod_miur: str, nome_scuola: str) -> List[Dict]:
+    def _parse_tabella(self, soup: BeautifulSoup, cod_miur: str, nome_scuola: str,
+                       oggi: Optional[date] = None) -> List[Dict]:
         risultati = []
         table = soup.find('table')
         if not table:
             return risultati
 
-        # La tabella Nuvola NON ha riga di intestazione: tutte le <tr> sono dati.
-        # Un'eventuale riga header avrebbe <th> e viene comunque scartata (niente <td>).
+        # Le colonne cambiano tra scuole e tipologie ('Oggetto' 2a o 3a colonna):
+        # si leggono dall'intestazione <th>, se c'è
+        idx_oggetto, idx_pubblicazione = 1, None
+        intestazione = table.find('tr')
+        if intestazione and intestazione.find('th'):
+            nomi = [th.get_text(' ', strip=True).lower() for th in intestazione.find_all('th')]
+            idx_oggetto = next((i for i, n in enumerate(nomi) if n == 'oggetto'), 1)
+            idx_pubblicazione = next((i for i, n in enumerate(nomi)
+                                      if n.startswith('data pubblicazione')), None)
+        limite = (oggi or date.today()) - timedelta(days=MAX_GIORNI_PUBBLICAZIONE)
+
         for row in table.find_all('tr'):
             cells = row.find_all('td')
-            if not cells:
+            # Righe senza <td> (intestazione) o senza link al documento (riga dei filtri)
+            link_tag = row.find('a', href=re.compile(r'/bacheca-digitale/\d+/documento/'))
+            if not cells or not link_tag:
                 continue
 
             testo = row.get_text(separator=' ', strip=True)
+            oggetto = (cells[idx_oggetto].get_text(' ', strip=True)
+                       if len(cells) > idx_oggetto else '') or testo[:120]
+            link = urljoin('https://nuvola.madisoft.it/', link_tag['href'])
+
+            if idx_pubblicazione is not None and len(cells) > idx_pubblicazione:
+                pubblicato = parse_data(normalizza_data(cells[idx_pubblicazione].get_text(strip=True)))
+                if pubblicato and pubblicato < limite:
+                    continue
+
             if not is_sostegno_primaria_infanzia(testo):
                 if self._reporter and is_likely_interpello(testo):
-                    oggetto_rej = cells[1].get_text(strip=True) if len(cells) > 1 else testo[:120]
-                    link_tag_rej = row.find('a', href=True)
                     self._reporter.record_rejected({
                         'testo': testo,
-                        'title': f"[{nome_scuola}] {oggetto_rej[:100]}",
-                        'link': link_tag_rej['href'] if link_tag_rej else None,
+                        'title': f"[{nome_scuola}] {oggetto[:100]}",
+                        'link': link,
                         'tipo': '', 'scadenza': '', 'source': self.name,
                         'stable_id': '', 'data_rilevamento': datetime.now().isoformat(),
                     }, 'codici_non_target', self.name)
                 continue
 
-            link_tag = row.find('a', href=True)
-            link = urljoin('https://nuvola.madisoft.it/', link_tag['href']) if link_tag else None
-
-            doc_id = self._estrai_doc_id(link) if link else None
+            doc_id = self._estrai_doc_id(link)
             sid_base = f"nuvola-{cod_miur}-{doc_id}" if doc_id else testo
-
-            # Oggetto tipicamente in 2a colonna
-            oggetto = cells[1].get_text(strip=True) if len(cells) > 1 else testo[:120]
 
             risultati.append({
                 'testo': testo,

@@ -35,6 +35,15 @@ class TestMergeArchivio(unittest.TestCase):
         self.assertEqual(len(recs), 1)
         self.assertEqual(recs[0]['scadenza'], '29/10/2025')
 
+    def test_dettagli_salvati_e_testo_documento_no(self):
+        rec = dict(_rec('a'), dettagli={'ora_scadenza': '12:00', 'ore': '24 h/sett'},
+                   testo_documento='testo lungo del PDF')
+        aggiorna_dashboard([rec], docs_dir=self.docs)
+        [salvato] = self._leggi()
+        self.assertEqual(salvato['dettagli'], {'ora_scadenza': '12:00', 'ore': '24 h/sett'})
+        self.assertNotIn('testo_documento', salvato)
+        self.assertIn('dettagli', (self.docs / 'index.html').read_text(encoding='utf-8'))
+
     def test_scadenza_esistente_non_viene_sovrascritta_da_vuota(self):
         aggiorna_dashboard([_rec('a', scadenza='29/10/2025')], docs_dir=self.docs)
         aggiorna_dashboard([_rec('a')], docs_dir=self.docs)
