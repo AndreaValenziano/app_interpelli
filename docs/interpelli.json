@@ -1,5 +1,27 @@
 [
  {
+  "title": "VISUALIZZA INTERPELLI",
+  "tipo": "SOSTEGNO PRIMARIA (ADEE)",
+  "scadenza": "",
+  "link": "https://www.icminervinomurge.edu.it/",
+  "source": "scuolainterpelli_rss",
+  "stable_id": "9c68a2a88f6e046f5a6dc54fb605cac55cd0ff0051e188002b92f2ac931e4953",
+  "data_rilevamento": "2026-10-15T13:47:44.500015",
+  "testo": "ADEE – VISUALIZZA INTERPELLI",
+  "archiviato": false
+ },
+ {
+  "title": "VISUALIZZA INTERPELLI",
+  "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+  "scadenza": "",
+  "link": "https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4685557",
+  "source": "scuolainterpelli_rss",
+  "stable_id": "9c5434ee6c889e6b883b226d8c65376cd68e4df109e9ccddc83a425602bf1acb",
+  "data_rilevamento": "2026-10-15T13:47:44.371513",
+  "testo": "EEEE – VISUALIZZA INTERPELLI",
+  "archiviato": false
+ },
+ {
   "title": "Interpello nazionale per n. 3 supplenze su classe di concorso ADAA Posto Sostegno Sc. Infanzia fino al 30/06/2026 –https",
   "tipo": "SOSTEGNO INFANZIA (ADAA)",
   "scadenza": "03/02/2026",
