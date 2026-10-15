@@ -1,0 +1,389 @@
+{
+  "run": {
+    "number": "722",
+    "id": "38759597039",
+    "attempt": "1",
+    "event": "workflow_dispatch",
+    "url": "https://github.com/AndreaValenziano/app_interpelli/actions/runs/38759597039",
+    "started_at": "2026-10-15T15:21:39.433736",
+    "ended_at": "2026-10-15T15:24:34.494585"
+  },
+  "summary": {
+    "fetched_total": 30,
+    "notified": 0,
+    "already_seen": 10,
+    "expired": 2,
+    "wrong_codes": 18,
+    "by_source": {
+      "istruzionebat_rss": 5,
+      "istruzionebat_html": 11,
+      "scuolainterpelli_rss": 1,
+      "argo_albo": 12,
+      "nuvola_albo": 1
+    },
+    "source_errors": 2
+  },
+  "source_errors": {
+    "istruzionebat_rss": [
+      "Feed fermo: ultima voce del 12/02/2026"
+    ],
+    "trasparenzascuole_albo": [
+      "Bloccato da WAF Cloudflare su 8 scuole: 2 C.D. \"PROF. ARC. CAPUTI\", 1 C.D. \"DE AMICIS\" (TRANI), 2 C.D. \"MONS. PETRONELLI\", I.C. \"GIOVANNI XXIII-G.PASCOLI\", I.C. \"MUSTI - DIMICCOLI\", I.C. \"ROCCA-BOVIO-PALUMBO-D'ANN, I.C. DON MILANI-GARIBALDI-LEONE, IC DON P. UVA-BATTISTI-FERRARIS"
+    ]
+  },
+  "notified": [],
+  "already_seen": [
+    {
+      "status": "already_seen",
+      "source": "istruzionebat_rss",
+      "title": "INTERPELLO NAZIONALE PER SELEZIONE PERSONALE DOCENTE  SCUOLA PRIMARIA – POSTO COMUNE – CLASSE DI CONCORSO EEEE – PER N. 12 ORE SETTIMANALI",
+      "link": "https://www.istruzionebat.it/2025/12/02/interpello-nazionale-per-selezione-personale-docente-scuola-primaria-posto-comune-classe-di-concorso-eeee-per-n-12-ore-settimanali/",
+      "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+      "scadenza": "",
+      "stable_id": "ffbcd95b3e4e65ba936ab0229f53f8d26e64dabd8da9cf7a7e96596e50528a60",
+      "data_rilevamento": "2026-10-15T15:21:40.297176",
+      "testo": "INTERPELLO NAZIONALE PER SELEZIONE PERSONALE DOCENTE  SCUOLA PRIMARIA – POSTO COMUNE – CLASSE DI CONCORSO EEEE – PER N. 12 ORE SETTIMANALI timbro_interpello per n."
+    },
+    {
+      "status": "already_seen",
+      "source": "istruzionebat_rss",
+      "title": "Interpello nazionale per selezione personale docente scuola primaria posto sostegno EH – per n. 24 ore settimanali",
+      "link": "https://www.istruzionebat.it/2025/12/02/interpello-nazionale-per-selezione-personale-docente-scuola-primaria-posto-sostegno-eh-per-n-24-ore-settimanali/",
+      "tipo": "SOSTEGNO PRIMARIA",
+      "scadenza": "",
+      "stable_id": "88a8baf1678a69d8097dd05270b929d32b277ed9b2d4f92ae36c88d5f0656f99",
+      "data_rilevamento": "2026-10-15T15:21:40.297253",
+      "testo": "Interpello nazionale per selezione personale docente scuola primaria posto sostegno EH – per n. 24 ore settimanali timbro_interpello per n."
+    },
+    {
+      "status": "already_seen",
+      "source": "istruzionebat_rss",
+      "title": "Interpello nazionale per selezione personale docente scuola dell’infanzia – posto sostegno EH – pe n. 25 ore settimanali",
+      "link": "https://www.istruzionebat.it/2025/12/02/interpello-nazionale-per-selezione-personale-docente-scuola-dellinfanzia-posto-sostegno-eh-pe-n-25-ore-settimanali/",
+      "tipo": "SOSTEGNO INFANZIA",
+      "scadenza": "",
+      "stable_id": "3cf22d1b15e16c98e8bbb0fb1ee0fde8402f3fa77732685d38ace6df3e0ca2f1",
+      "data_rilevamento": "2026-10-15T15:21:40.297319",
+      "testo": "Interpello nazionale per selezione personale docente scuola dell’infanzia – posto sostegno EH – pe n. 25 ore settimanali timbro_interpello per n."
+    },
+    {
+      "status": "already_seen",
+      "source": "istruzionebat_html",
+      "title": "Interpello nazionale per supplenza docente su classe di concorso E EEE – Posto Comune – https://www.portaleargo.it/albop",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4690295",
+      "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+      "scadenza": "",
+      "stable_id": "18c530ce44dd408e970dfac5b5f75175c9dae58ca18b5de6c8074b3afe69b633",
+      "data_rilevamento": "2026-10-15T15:21:40.836337",
+      "testo": "-Interpello nazionale per supplenza docente su classe di concorso E EEE – Posto Comune – https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4690295"
+    },
+    {
+      "status": "already_seen",
+      "source": "istruzionebat_html",
+      "title": "Interpello nazionale per supplenza docente su classe di concorso EEEE (Posto Comune Scuola Primaria) – https://www.porta",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4685557",
+      "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+      "scadenza": "",
+      "stable_id": "421b2ed5f854fedccc309263e2c0fb8afd09d54e3d34a924ea0ef3d2711b8a88",
+      "data_rilevamento": "2026-10-15T15:21:40.836425",
+      "testo": "-Interpello nazionale per supplenza docente su classe di concorso EEEE (Posto Comune Scuola Primaria) – https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4685557"
+    },
+    {
+      "status": "already_seen",
+      "source": "istruzionebat_html",
+      "title": "Interpello nazionale per supplenza docente su classe di concorso EEEE – Posto Comune – https://www.portaleargo.it/albopr",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4685557",
+      "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+      "scadenza": "",
+      "stable_id": "eacd1d72b60db4ecf4cfaea31d746cca9360e66f318c60b84f29fe38c49ed0b5",
+      "data_rilevamento": "2026-10-15T15:21:40.836526",
+      "testo": "-Interpello nazionale per supplenza docente su classe di concorso EEEE – Posto Comune – https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4685557"
+    },
+    {
+      "status": "already_seen",
+      "source": "istruzionebat_html",
+      "title": "Interpello nazionale per supplenza docente su classe di concorso ADEE (Posto Sostegno Scuola Primaria) https://www.icmin",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4666558",
+      "tipo": "SOSTEGNO PRIMARIA (ADEE)",
+      "scadenza": "",
+      "stable_id": "162aa013e77a19b5c553b83965447eaa94c552a86dd26124525bbdc02fa1dd7b",
+      "data_rilevamento": "2026-10-15T15:21:40.836702",
+      "testo": "-Interpello nazionale per supplenza docente su classe di concorso ADEE (Posto Sostegno Scuola Primaria) https://www.icminervinomurge.edu.it/"
+    },
+    {
+      "status": "already_seen",
+      "source": "istruzionebat_html",
+      "title": "Interpello Nazionale per selezione personale docente di SCUOLA PRIMARIA  ADEE SOSTEGNO NELLA SCUOLA PRIMARIA – supplenza",
+      "link": "https://www.trasparenzascuole.it/Public/APDPublic_ExtV2.aspx?CF=90091020728",
+      "tipo": "SOSTEGNO PRIMARIA (ADEE)",
+      "scadenza": "",
+      "stable_id": "1d4203769d704d02118124c941e0e29a82f73505e29e81785a6551a844fb83db",
+      "data_rilevamento": "2026-10-15T15:21:40.836849",
+      "testo": "– Interpello Nazionale per selezione personale docente di SCUOLA PRIMARIA  ADEE SOSTEGNO NELLA SCUOLA PRIMARIA – supplenza breve e saltuaria dal 01/10/2026 al 30/11/2026 https://www.trasparenzascuole.it/Public/APDPublic_ExtV2.aspx?CF=90091020728"
+    },
+    {
+      "status": "already_seen",
+      "source": "scuolainterpelli_rss",
+      "title": "EEEE – albo Argo SC21815 atto 4685557 – 12/10/2026",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4685557",
+      "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+      "scadenza": "",
+      "stable_id": "5b4dcb690f86a7bd06f298f8b55f7e256cf7ae1e496261a6b478538274d777a5",
+      "data_rilevamento": "2026-10-15T15:21:44.282616",
+      "testo": "EEEE – VISUALIZZA INTERPELLI 12/10/2026"
+    },
+    {
+      "status": "already_seen",
+      "source": "argo_albo",
+      "title": "[I.C. \"PIETROCOLA - MAZZINI\"] Interpello nazionale per supplenza docente su classe di concorso EEEE (Posto Comune Scuola Primaria)",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4690295",
+      "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+      "scadenza": "15/10/2026",
+      "stable_id": "1ef232830956e92e6360115c7c4292293212f0518b52d8b8c5ba9e93ffbe5690",
+      "data_rilevamento": "2026-10-15T15:21:48.989988",
+      "testo": "Interpello nazionale per supplenza docente su classe di concorso EEEE (Posto Comune Scuola Primaria)"
+    }
+  ],
+  "expired": [
+    {
+      "status": "expired",
+      "source": "argo_albo",
+      "title": "[I.C. \"PIETROCOLA - MAZZINI\"] Interpello nazionale per supplenza docente su classe di concorso EEEE (Posto Comune Scuola Primaria)",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4685557",
+      "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+      "scadenza": "13/10/2026",
+      "stable_id": "8d1b0556341616a437c3c1f1ef1277bd3dd92dadbeb82eee9d503db7bc18c8eb",
+      "data_rilevamento": "2026-10-15T15:21:49.579865",
+      "testo": "Interpello nazionale per supplenza docente su classe di concorso EEEE (Posto Comune Scuola Primaria)"
+    },
+    {
+      "status": "expired",
+      "source": "argo_albo",
+      "title": "[I.C. \"PIETROCOLA - MAZZINI\"] Interpello nazionale per supplenza docente su classe di concorso ADEE (Posto Sostegno Scuola Primari",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4666558",
+      "tipo": "SOSTEGNO PRIMARIA (ADEE)",
+      "scadenza": "08/10/2026",
+      "stable_id": "d70fedd23e616a41455e0acbb48eeb3615f6396630791c87cf6d301661c1f969",
+      "data_rilevamento": "2026-10-15T15:21:50.290225",
+      "testo": "Interpello nazionale per supplenza docente su classe di concorso ADEE (Posto Sostegno Scuola Primaria)"
+    }
+  ],
+  "wrong_codes": [
+    {
+      "status": "wrong_codes",
+      "source": "istruzionebat_rss",
+      "title": "AVVISO DI INTERPELLO PER IL CONFERIMENTO DI INCARICO DI SOSTITUZIONE PER LO SVOLGIMENTO FINO AL 02.03.2026 (SALVO PROROGA) DI FUNZIONI DI DIRETTORE DEI SERVIZI GENERALI E AMMINISTRATIVI PRESSO L’I.C. “GIOVANNI PAOLO II” DI BARLETTA (COD. MECC. BTIC8AD00A) – ANNO SCOLASTICO 2025-2026 – PROVINCIA DI BARLETTA-ANDRIA-TRANI",
+      "link": "https://www.istruzionebat.it/2026/02/12/avviso-di-interpello-per-il-conferimento-di-incarico-di-sostituzione-per-lo-svolgimento-fino-al-02-03-2026-salvo-proroga-di-funzioni-di-direttore-dei-servizi-generali-e-amministrativi-presso-l/",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:40.293221",
+      "testo": "AVVISO DI INTERPELLO PER IL CONFERIMENTO DI INCARICO DI SOSTITUZIONE PER LO SVOLGIMENTO FINO AL 02.03.2026 (SALVO PROROGA) DI FUNZIONI DI DIRETTORE DEI SERVIZI GENERALI E AMMINISTRATIVI PRESSO L’I.C. “GIOVANNI PAOLO II” DI BARLETTA (COD. MECC. BTIC8AD00A) – ANNO SCOLASTICO 2025-2026 – PROVINCIA DI BARLETTA-ANDRIA-TRANI",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "istruzionebat_rss",
+      "title": "SEZIONE INTERPELLI DOCENTI",
+      "link": "https://www.istruzionebat.it/2025/10/14/gli-interpelli-sono-pubblicati-nella-sezione-docenti-a-s-2025-2026/",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:40.297330",
+      "testo": "SEZIONE INTERPELLI DOCENTI",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "istruzionebat_html",
+      "title": "-Interpello nazionale per supplenza docente su classe di concorso B B 0 2 CONVERSAZIONE IN LINGUA – https://www.portalea",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC12641/atti/4684220",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:40.836459",
+      "testo": "-Interpello nazionale per supplenza docente su classe di concorso B B 0 2 CONVERSAZIONE IN LINGUA – https://www.portaleargo.it/albopretorio/online/#/SC12641/atti/4684220",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "istruzionebat_html",
+      "title": "– INTERPELLO nazionale per individuazione/reclutamento personale docente, ai sensi dell’art. 14 c. 22 O.M. 27/2026 – Con",
+      "link": null,
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:40.836565",
+      "testo": "– INTERPELLO nazionale per individuazione/reclutamento personale docente, ai sensi dell’art. 14 c. 22 O.M. 27/2026 – Conversazione Lingua FRANCESE(cl. conc. BA02) – All’Albo online e al sito istituzionale Amministrazione Trasparente del Liceo “Da Vinci” di Bisceglie",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "istruzionebat_html",
+      "title": "-INTERPELLO PER UNA SUPPLENZA BREVE SU CLASSE DI CONCORSO BA02 – CONVERSAZIONE IN LINGUA STRANIERA (FRANCESE) – https://",
+      "link": "https://liceocafiero.edu.it/2026/10/08/interpello-nazionale-per-selezione-personale-docente-scuola-secondaria-di-secondo-grado-per-n-10-ore-settimanali-ba02-conversazione-in-lingua-straniera-francese/",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:40.836606",
+      "testo": "-INTERPELLO PER UNA SUPPLENZA BREVE SU CLASSE DI CONCORSO BA02 – CONVERSAZIONE IN LINGUA STRANIERA (FRANCESE) – https://liceocafiero.edu.it/2026/10/08/interpello-nazionale-per-selezione-personale-docente-scuola-secondaria-di-secondo-grado-per-n-10-ore-settimanali-ba02-conversazione-in-lingua-straniera-francese/",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "istruzionebat_html",
+      "title": "-Interpello nazionale per la selezione di n.1 posto personale docente di scuola secondaria di I grado su classe di conco",
+      "link": "https://www.trasparenzascuole.it/Public/APDPublic_ExtV2.aspx?CF=81002150720",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:40.836642",
+      "testo": "-Interpello nazionale per la selezione di n.1 posto personale docente di scuola secondaria di I grado su classe di concorso AI56 – strumento musicale PERCUSSIONI – ht tps://www.trasparenzascuole.it/Public/APDPublic_ExtV2.aspx?CF=81002150720",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "istruzionebat_html",
+      "title": "– Interpello nazionale per supplenza docente su classe di concorso B B 0 2 CONVERSAZIONE IN LINGUA STRANIERA (INGLESE) –",
+      "link": "https://www.icspinazzola.edu.it/",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:40.836747",
+      "testo": "– Interpello nazionale per supplenza docente su classe di concorso B B 0 2 CONVERSAZIONE IN LINGUA STRANIERA (INGLESE) – All’Albo del sito WEB dell’Istituzione Scolastica https://www.icspinazzola.edu.it/",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "istruzionebat_html",
+      "title": "– INTERPELLO nazionale per individuazione/reclutamento personale docente, ai sensi dell’art. 14 c. 22 O.M. 27/2026 – Con",
+      "link": null,
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:40.836886",
+      "testo": "– INTERPELLO nazionale per individuazione/reclutamento personale docente, ai sensi dell’art. 14 c. 22 O.M. 27/2026 – Conversazione Lingua CINESE (cl. conc. BI02) – All’Albo online e al sito istituzionale del liceo “F. De Sanctis” di Trani.",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "argo_albo",
+      "title": "[I.C. \"PIETROCOLA - MAZZINI\"] Verbale esito interpello del 12-10-2026",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4691451",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:48.226208",
+      "testo": "Verbale esito interpello del 12-10-2026",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "argo_albo",
+      "title": "[I.C. \"PIETROCOLA - MAZZINI\"] VERBALE DELLE OPERAZIONI  PER L’INDIVIDUAZIONE DI N.1 DOCENTE DI SOSTEGNO DI SCUOLA PRIMARIA (INTERP",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4681128",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:49.579942",
+      "testo": "VERBALE DELLE OPERAZIONI  PER L’INDIVIDUAZIONE DI N.1 DOCENTE DI SOSTEGNO DI SCUOLA PRIMARIA (INTERPELLO DEL 01/10/2026)",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "argo_albo",
+      "title": "[I.OC. \"MAZZINI-DE CESARE-FERMI\"] Interpello nazionale per supplenza docente su classe di concorso BA02    CONVERSAZIONE IN LINGUA STR",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC12641/atti/4684220",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:51.613385",
+      "testo": "Interpello nazionale per supplenza docente su classe di concorso BA02    CONVERSAZIONE IN LINGUA STRANIERA (FRANCESE)",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "argo_albo",
+      "title": "[I.OC. \"MAZZINI-DE CESARE-FERMI\"] Interpello nazionale per supplenza docente su classe di concorso BB02    CONVERSAZIONE IN LINGUA STR",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC12641/atti/4649899",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:51.613471",
+      "testo": "Interpello nazionale per supplenza docente su classe di concorso BB02    CONVERSAZIONE IN LINGUA STRANIERA (INGLESE)",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "argo_albo",
+      "title": "[I.C. MARCON-CAREL-LOSIT-BOVIO] Annullamento in autotutela della convocazione  prot. n. 8788 del 08/08/2026,  dei docenti appartenen",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC27372/atti/4694605",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:54.978897",
+      "testo": "Annullamento in autotutela della convocazione  prot. n. 8788 del 08/08/2026,  dei docenti appartenenti alla classe di concorso ADEE",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "argo_albo",
+      "title": "[I.C. \"G. VERDI - P. CAFARO\"] Individuazione da interpello docente SCHIAVONE Giulio",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC26991/atti/4371740",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:57.456342",
+      "testo": "Individuazione da interpello docente SCHIAVONE Giulio",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "argo_albo",
+      "title": "[I.C. \"G. VERDI - P. CAFARO\"] Individuazione da interpello docente NENNA Rita",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC26991/atti/4279434",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:57.456390",
+      "testo": "Individuazione da interpello docente NENNA Rita",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "argo_albo",
+      "title": "[I.C. \"G. VERDI - P. CAFARO\"] Individuazione da interpello docente CARLONE Gaia Valentina",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC26991/atti/4240340",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:57.456418",
+      "testo": "Individuazione da interpello docente CARLONE Gaia Valentina",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "argo_albo",
+      "title": "[I.C. \"G. VERDI - P. CAFARO\"] Individuazione da interpello per supplenza breve cl. di concorso ADEE fino al 01.04.2026",
+      "link": "https://www.portaleargo.it/albopretorio/online/#/SC26991/atti/4195370",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:21:57.456441",
+      "testo": "Individuazione da interpello per supplenza breve cl. di concorso ADEE fino al 01.04.2026",
+      "rejection_reason": "codici_non_target"
+    },
+    {
+      "status": "wrong_codes",
+      "source": "nuvola_albo",
+      "title": "[I.C. \"M.D'AZEGLIO-G.DE NITTIS\"] DECRETO NOMINA RUP - Lettera incarico Assunzione di incarico quale Direttore e Coordinatore - scheda",
+      "link": "https://nuvola.madisoft.it/bacheca-digitale/8757/documento/BAIC89200V",
+      "tipo": "",
+      "scadenza": "",
+      "stable_id": "",
+      "data_rilevamento": "2026-10-15T15:22:18.060519",
+      "testo": "DECRETO NOMINA RUP - Lettera incarico Assunzione di incarico quale Direttore e Coordinatore - scheda finanziaria DM 233 BT DEF IV.2 - Attività extracurricolari 0009098 03-10-2026 03-10-2026 02-11-2026",
+      "rejection_reason": "codici_non_target"
+    }
+  ]
+}
