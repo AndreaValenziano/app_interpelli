@@ -38,7 +38,7 @@
 <body>
 <header>
   <h1>📋 Interpelli BAT — Primaria e Infanzia</h1>
-  <p>ADEE · ADAA · EEEE · AAAA — aggiornato al 15/10/2026 14:33</p>
+  <p>ADEE · ADAA · EEEE · AAAA — aggiornato al 15/10/2026 15:00</p>
 </header>
 <div class="wrap">
   <div class="controls">
@@ -70,10 +70,17 @@ function card(r) {
     + '<h3>' + esc(r.title) + '</h3>'
     + '<div>' + badge(r) + '<span class="badge" style="background:#eef3f8;color:var(--blu)">' + esc(r.tipo) + '</span></div>'
     + '<div class="meta">📅 Scadenza: ' + (r.scadenza || 'non rilevata')
+    + (r.dettagli && r.dettagli.ora_scadenza ? ' ore ' + esc(r.dettagli.ora_scadenza) : '')
     + ' · rilevato il ' + (r.data_rilevamento || '').slice(0,10).split('-').reverse().join('/')
     + ' · fonte: ' + esc(r.source) + '</div>'
+    + dettagli(r.dettagli)
     + (r.link ? '<a href="' + escAttr(r.link) + '" target="_blank" rel="noopener">Apri l\'interpello →</a>' : '')
     + '</div>';
+}
+function dettagli(d) {
+  if (!d) return '';
+  const voci = [['🗓', d.periodo], ['⌛', d.ore], ['📍', d.sede]].filter(v => v[1]);
+  return voci.length ? '<div class="meta">' + voci.map(v => v[0] + ' ' + esc(v[1])).join(' · ') + '</div>' : '';
 }
 function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function escAttr(s) { return esc(s).replace(/"/g,'&quot;'); }
