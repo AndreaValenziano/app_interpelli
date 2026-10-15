@@ -77,16 +77,16 @@ class TrasparenzascuoleAlboSource(BaseSource):
                         print(f"[{self.name}] Errore per CF {cf} ({nome}): {e}")
                     errors_by_status[status].append(nome)
                 except Exception as e:
-                    print(f"[{self.name}] Errore per CF {cf} ({nome}): {e}")
+                    self.segnala_errore(f"Errore per CF {cf} ({nome}): {e}")
                 time.sleep(SLEEP_TRA_SCUOLE + random.uniform(0, 0.8))
 
+            # Un solo avviso per codice HTTP (il 403 del WAF colpisce tutte le scuole)
             for status, nomi in errors_by_status.items():
-                if len(nomi) > 1:
-                    label = "Bloccato da WAF Cloudflare" if status == 403 else f"HTTP {status}"
-                    print(f"[{self.name}] ⚠  {label} su {len(nomi)} scuole (probabile block IP su runner CI)")
+                label = "Bloccato da WAF Cloudflare" if status == 403 else f"HTTP {status or '?'}"
+                self.segnala_errore(f"{label} su {len(nomi)} scuole: {', '.join(nomi)}")
             return interpelli
         except Exception as e:
-            print(f"[{self.name}] Errore: {e}")
+            self.segnala_errore(f"Errore: {e}")
             return []
 
     @staticmethod

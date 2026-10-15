@@ -41,11 +41,11 @@ class NuvolaAlboSource(BaseSource):
                     trovati = self._fetch_scuola(cod_miur, nome)
                     interpelli.extend(trovati)
                 except Exception as e:
-                    print(f"[{self.name}] Errore per {cod_miur} ({nome}): {e}")
+                    self.segnala_errore(f"Errore per {cod_miur} ({nome}): {e}")
                 time.sleep(SLEEP_TRA_SCUOLE)
             return interpelli
         except Exception as e:
-            print(f"[{self.name}] Errore: {e}")
+            self.segnala_errore(f"Errore: {e}")
             return []
 
     def _carica_scuole(self) -> List[Dict]:

@@ -10,6 +10,8 @@ from filtering import (
     scadenza_passata,
     is_sostegno_primaria_infanzia,
     is_link_dedupabile,
+    chiave_link,
+    identifica_tipo_interpello,
 )
 
 
@@ -219,6 +221,90 @@ class TestLinkDedupabile(unittest.TestCase):
 
     def test_vuoto(self):
         self.assertFalse(is_link_dedupabile(""))
+
+
+class TestLinkArgoNuovoFormato(unittest.TestCase):
+    """Dal 2026 istruzionebat.it e scuolainterpelli.it linkano gli atti Argo come
+    '#/SC21815/atti/ID' invece di '#/dettaglio-atto?customerCode=..&id=..': i due
+    formati devono dedupare tra loro (stesso atto da sorgenti diverse)."""
+
+    NUOVO = "https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4690295"
+    VECCHIO = ("https://www.portaleargo.it/albopretorio/online/#/dettaglio-atto"
+               "?customerCode=SC21815&id=4690295&archivio=false")
+
+    def test_nuovo_formato_dedupabile(self):
+        self.assertTrue(is_link_dedupabile(self.NUOVO))
+
+    def test_albo_senza_atto_nel_nuovo_formato_generico(self):
+        self.assertFalse(is_link_dedupabile(
+            "https://www.portaleargo.it/albopretorio/online/#/SC21815/atti"))
+
+    def test_chiave_canonica_uguale_per_i_due_formati(self):
+        self.assertEqual(chiave_link(self.NUOVO), 'argo:SC21815:4690295')
+        self.assertEqual(chiave_link(self.VECCHIO), 'argo:SC21815:4690295')
+
+    def test_chiave_da_link_gia_minuscolo(self):
+        # lo stato storico salva i link in minuscolo
+        self.assertEqual(chiave_link(self.VECCHIO.lower()), 'argo:SC21815:4690295')
+
+    def test_chiave_link_generico_vuota(self):
+        self.assertEqual(chiave_link("https://www.icminervinomurge.edu.it/"), '')
+
+    def test_chiave_link_normale_minuscola(self):
+        self.assertEqual(chiave_link(" https://www.IstruzioneBat.it/2026/x/ "),
+                         'https://www.istruzionebat.it/2026/x/')
+
+
+class TestCodiciSpezzati(unittest.TestCase):
+    """istruzionebat.it pubblica titoli con codici spezzati da spazi ('E EEE',
+    'B B 0 2'): l'EEEE del 13/10/2026 (Pietrocola) è stato perso per questo."""
+
+    def test_e_eee(self):
+        self.assertTrue(is_sostegno_primaria_infanzia(
+            "Interpello nazionale per supplenza docente su classe di concorso E EEE – Posto Comune"))
+
+    def test_ee_ee(self):
+        self.assertTrue(is_sostegno_primaria_infanzia("supplenza classe di concorso EE EE"))
+
+    def test_ad_ee(self):
+        self.assertTrue(is_sostegno_primaria_infanzia("classe di concorso AD EE sostegno"))
+
+    def test_tipo_con_codice_spezzato(self):
+        self.assertEqual(identifica_tipo_interpello("classe di concorso E EEE"),
+                         'POSTO COMUNE PRIMARIA (EEEE)')
+
+    def test_codice_non_target_spezzato_resta_escluso(self):
+        self.assertFalse(is_sostegno_primaria_infanzia(
+            "Interpello classe di concorso B B 0 2 CONVERSAZIONE IN LINGUA"))
+
+    def test_lettere_in_parole_non_diventano_codici(self):
+        self.assertFalse(is_sostegno_primaria_infanzia("A ADA E AEE graduatoria"))
+
+
+class TestEsitiEVerbaliEsclusi(unittest.TestCase):
+    """Verbali, esiti e atti di individuazione/nomina chiudono un interpello: non
+    sono candidabili anche se contengono il codice o 'primaria sostegno'."""
+
+    def test_verbale_operazioni(self):
+        self.assertFalse(is_sostegno_primaria_infanzia(
+            "VERBALE DELLE OPERAZIONI PER L'INDIVIDUAZIONE DI N.1 DOCENTE DI SOSTEGNO "
+            "DI SCUOLA PRIMARIA (INTERPELLO DEL 05/10/2026)"))
+
+    def test_esito_con_codice(self):
+        self.assertFalse(is_sostegno_primaria_infanzia("Esito interpello ADEE del 05/10/2026"))
+
+    def test_individuazione_da_interpello(self):
+        self.assertFalse(is_sostegno_primaria_infanzia(
+            "Individuazione da interpello per supplenza breve cl. di concorso ADEE fino al 01.04.2026"))
+
+    def test_atto_di_nomina(self):
+        self.assertFalse(is_sostegno_primaria_infanzia(
+            "ATTO DI NOMINA CONTRATTO A T.D. DOCENTE SOSTEGNO SCUOLA PRIMARIA"))
+
+    def test_interpello_per_individuazione_resta_valido(self):
+        # 'individuazione' da sola compare anche negli avvisi veri
+        self.assertTrue(is_sostegno_primaria_infanzia(
+            "Interpello per l'individuazione di un docente ADEE"))
 
 
 class TestScadenzaPassata(unittest.TestCase):

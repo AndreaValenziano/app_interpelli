@@ -62,6 +62,33 @@ def is_likely_interpello(testo: str) -> bool:
     return any(k in tl for k in _LIKELY_INTERPELLO_KEYWORDS)
 
 
+# Codici spezzati da spazi nei titoli di istruzionebat.it ('E EEE', 'EE EE', 'AD EE'):
+# ricomposti prima del confronto. Solo maiuscole, per non fondere lettere di parole.
+_CODICI_SPEZZATI_RE = [
+    (re.compile(r'\b' + r'\s*'.join(codice) + r'\b'), codice) for codice in CODICI_OBIETTIVO
+]
+
+
+def normalizza_codici(testo: str) -> str:
+    """Ricompone i codici obiettivo scritti con spazi interni ('E EEE' → 'EEEE')."""
+    for regex, codice in _CODICI_SPEZZATI_RE:
+        testo = regex.sub(codice, testo)
+    return testo
+
+
+# Atti che chiudono un interpello (verbali, esiti, individuazioni, nomine): non
+# candidabili anche se citano il codice. 'individuazione' da sola NON basta, compare
+# anche negli avvisi ('interpello per l'individuazione di un docente').
+_ESITO_RE = re.compile(
+    r'\b(?:VERBAL[EI]|ESIT[OI]|ANNULLAMENTO|DECRETO\s+DI\s+(?:INDIVIDUAZIONE|NOMINA|ASSEGNAZIONE)'
+    r'|ATTO\s+DI\s+(?:INDIVIDUAZIONE|NOMINA)|INDIVIDUAZIONE\s+DA\s+INTERPELLO)\b')
+
+
+def is_esito_interpello(testo: str) -> bool:
+    """True per verbali/esiti/nomine che chiudono un interpello."""
+    return bool(_ESITO_RE.search(testo.upper()))
+
+
 # Vecchi codici tipo-posto sostegno (EH = primaria, CH = infanzia). Token maiuscoli
 # nel testo originale, per non confondere 'ch'/'eh' dentro parole comuni.
 _CODICI_VECCHI_RE = re.compile(r'\b(EH|CH)\b')
@@ -72,7 +99,10 @@ def is_sostegno_primaria_infanzia(testo: str) -> bool:
     Riconosce i codici GPS (ADEE/ADAA/EEEE/AAAA), i vecchi codici tipo-posto (EH/CH)
     e — in mancanza di codici — la combinazione di parole chiave grado+tipo posto.
     Meglio un falso positivo che un interpello perso."""
+    testo = normalizza_codici(testo)
     testo_upper = testo.upper()
+    if is_esito_interpello(testo_upper):
+        return False
     if any(k in testo_upper for k in CODICI_OBIETTIVO):
         return True
     # Le graduatorie (esito di un interpello già chiuso) non sono candidabili:
@@ -88,6 +118,7 @@ def is_sostegno_primaria_infanzia(testo: str) -> bool:
 
 
 def identifica_tipo_interpello(testo: str) -> str:
+    testo = normalizza_codici(testo)
     testo_upper = testo.upper()
     tipi = []
     if 'ADEE' in testo_upper:
@@ -109,7 +140,7 @@ def identifica_tipo_interpello(testo: str) -> str:
     return 'PRIMARIA/INFANZIA'
 
 
-def _normalizza_data(raw: str) -> str:
+def normalizza_data(raw: str) -> str:
     """Converte una data catturata (numerica o testuale) in 'DD/MM/YYYY'.
     Ritorna '' se non valida (es. 45/13/2026)."""
     raw = raw.strip()
@@ -136,7 +167,7 @@ def estrai_scadenza(testo: str) -> str:
     for pattern in _QUALIFIED_PATTERNS:
         m = re.search(pattern, testo_norm, re.IGNORECASE)
         if m:
-            data = _normalizza_data(m.group(1))
+            data = normalizza_data(m.group(1))
             if data:
                 return data
     return ''
@@ -168,6 +199,37 @@ def compute_stable_id(testo: str) -> str:
     return hashlib.sha256(normalizza_testo(testo).encode('utf-8')).hexdigest()
 
 
+# Atto Argo nei due formati di deep-link: '#/dettaglio-atto?customerCode=X&id=Y'
+# (argo_albo, vecchi indici) e '#/SC21815/atti/Y' (istruzionebat.it, scuolainterpelli.it dal 2026)
+_ARGO_NUOVO_RE = re.compile(r'#/(S[CE]\d+)/atti/(\d+)', re.IGNORECASE)
+_ARGO_CODE_RE = re.compile(r'customerCode=(S[CE]\d+)', re.IGNORECASE)
+_ARGO_ID_RE = re.compile(r'[?&]id=(\d+)', re.IGNORECASE)
+
+
+def parse_link_argo(link: str) -> Optional[tuple]:
+    """(customerCode, attoId) da un deep-link Argo in uno dei due formati, o None."""
+    if not link or 'portaleargo.it' not in link.lower():
+        return None
+    m = _ARGO_NUOVO_RE.search(link)
+    if m:
+        return m.group(1).upper(), m.group(2)
+    m_code, m_id = _ARGO_CODE_RE.search(link), _ARGO_ID_RE.search(link)
+    if m_code and m_id:
+        return m_code.group(1).upper(), m_id.group(1)
+    return None
+
+
+def chiave_link(link: str) -> str:
+    """Chiave di dedup del link: 'argo:SC:ID' per gli atti Argo (stessa chiave per
+    entrambi i formati), il link normalizzato per gli altri, '' se generico."""
+    argo = parse_link_argo(link)
+    if argo:
+        return f"argo:{argo[0]}:{argo[1]}"
+    if not is_link_dedupabile(link):
+        return ''
+    return link.strip().lower()
+
+
 def is_link_dedupabile(link: str) -> bool:
     """True se il link identifica UN SINGOLO interpello e può essere usato per il dedup.
     I link generici (homepage di scuola, albo intero) sono condivisi da più interpelli:
@@ -177,7 +239,7 @@ def is_link_dedupabile(link: str) -> bool:
     low = link.strip().lower()
     # Albo Argo: dedupabile solo il deep-link con id atto
     if 'portaleargo.it' in low and 'albopretorio' in low:
-        return bool(re.search(r'[?&]id=\d', low))
+        return parse_link_argo(link) is not None
     # Trasparenzascuole: la pagina è per-scuola; serve il fragment per-atto
     if 'trasparenzascuole.it' in low:
         return '#atto-' in low

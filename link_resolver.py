@@ -10,9 +10,9 @@ Gestisce i casi reali osservati:
   allegati Nuvola) da scaricare e leggere come PDF (riconosciuti dai magic bytes).
 
 Per portaleargo.it (SPA JavaScript, il GET restituisce solo l'app shell) i deep-link
-`dettaglio-atto?customerCode=X&id=Y` vengono risolti tramite l'API REST pubblica:
-endpoint allegati → ZIP → PDF. `argo_archiviato()` rileva inoltre gli atti non più
-in pubblicazione (spariti dal listing o con dataArchiviazione passata).
+(`dettaglio-atto?customerCode=X&id=Y` o `#/SC…/atti/Y`) vengono risolti tramite l'API
+REST pubblica: endpoint allegati → ZIP → PDF. `argo_archiviato()` rileva inoltre gli
+atti non più in pubblicazione (spariti dal listing o con archiviazione passata).
 
 I link diretti a documento di trasparenzascuole.it (`view_doc.aspx?p=...`) vengono
 scaricati con curl_cffi (impersonazione Chrome, supera il WAF da IP residenziali;
@@ -37,8 +37,9 @@ from bs4 import BeautifulSoup
 
 from datetime import date
 
-from filtering import estrai_scadenza, parse_data
+from filtering import estrai_scadenza, parse_data, parse_link_argo
 from pdf_utils import estrai_scadenza_da_zip_url
+from sources.argo_albo import data_archiviazione, lista_atti
 
 _HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
@@ -60,7 +61,7 @@ _ARGO_HEADERS = {
     'User-Agent': _HEADERS['User-Agent'],
 }
 # Cache del listing albo per customerCode (una chiamata per scuola per run)
-_argo_listing_cache: Dict[str, Optional[list]] = {}
+_argo_listing_cache: Dict[str, Optional[dict]] = {}
 
 # Parole in href/testo del link che suggeriscono un allegato di interpello
 _KEYWORDS_ALLEGATO = (
@@ -91,43 +92,18 @@ def risolvi_scadenza_da_link(url: str) -> str:
     return risultato
 
 
-def _parse_argo_link(url: str) -> Optional[tuple]:
-    """Estrae (customerCode, attoId) da un deep-link Argo dettaglio-atto, o None."""
-    m_code = re.search(r'customerCode=(S[CE]\d+)', url)
-    m_id = re.search(r'[?&]id=(\d+)', url)
-    if m_code and m_id:
-        return m_code.group(1), m_id.group(1)
-    return None
-
-
-def _argo_listing(customer_code: str) -> Optional[list]:
+def _argo_listing(customer_code: str) -> Optional[dict]:
     """Listing corrente dell'albo Argo per la scuola (cache per run). None su errore."""
-    if customer_code in _argo_listing_cache:
-        return _argo_listing_cache[customer_code]
-    try:
-        body = {
-            "object": {"pubblicazioneDal": None, "pubblicazioneAl": None,
-                       "archiviazioneDal": None, "archiviazioneAl": None,
-                       "descrizione": None, "tipologiaAtto": None, "categoria": None},
-            "page": 0, "size": 100,
-            "sortBy": "dataPubblicazione,numRegistro", "sortDesc": True,
-        }
-        resp = requests.post(f"{_ARGO_API}/atti/filters/{customer_code}",
-                             json=body, headers=_ARGO_HEADERS, timeout=30)
-        resp.raise_for_status()
-        listing = resp.json().get('list', [])
-    except Exception:
-        listing = None
-    _argo_listing_cache[customer_code] = listing
-    return listing
+    if customer_code not in _argo_listing_cache:
+        try:
+            _argo_listing_cache[customer_code] = lista_atti(customer_code)
+        except Exception:
+            _argo_listing_cache[customer_code] = None
+    return _argo_listing_cache[customer_code]
 
 
-def _risolvi_argo(url: str) -> str:
-    """Scadenza da un deep-link Argo: API allegati → ZIP pre-firmato → PDF."""
-    parsed = _parse_argo_link(url)
-    if not parsed:
-        return ''
-    _, atto_id = parsed
+def _risolvi_argo_atto(atto_id: str) -> str:
+    """Scadenza di un atto Argo: API allegati → ZIP pre-firmato → PDF."""
     try:
         resp = requests.get(f"{_ARGO_API}/atti/{atto_id}/allegati",
                             headers=_ARGO_HEADERS, timeout=15)
@@ -141,20 +117,22 @@ def _risolvi_argo(url: str) -> str:
 
 
 def argo_archiviato(url: str, oggi: Optional[date] = None) -> bool:
-    """True se l'atto Argo non è più in pubblicazione: sparito dal listing corrente
-    dell'albo oppure con dataArchiviazione passata. False su errore o link non-Argo
-    (nel dubbio non si scarta)."""
-    parsed = _parse_argo_link(url)
+    """True se l'atto Argo non è più in pubblicazione: con data di archiviazione
+    passata, oppure assente da un listing completo dell'albo. False su errore, link
+    non-Argo o listing troncato (nel dubbio non si scarta)."""
+    parsed = parse_link_argo(url)
     if not parsed:
         return False
     customer_code, atto_id = parsed
     listing = _argo_listing(customer_code)
     if listing is None:
         return False
-    atto = next((a for a in listing if str(a.get('id')) == atto_id), None)
+    atti = listing.get('list') or []
+    atto = next((a for a in atti if str(a.get('id')) == atto_id), None)
     if atto is None:
-        return True  # non più nell'albo → archiviato
-    arch = parse_data(atto.get('dataArchiviazione') or '')
+        # Sparito dall'albo, ma solo se l'abbiamo scaricato tutto
+        return (listing.get('totalRows') or 0) <= len(atti)
+    arch = parse_data(data_archiviazione(atto))
     return bool(arch and arch < (oggi or date.today()))
 
 
@@ -165,7 +143,8 @@ def _risolvi(url: str) -> str:
     if any(d in low for d in _DOMINI_NON_RISOLVIBILI):
         return ''
     if 'portaleargo.it' in low:
-        return _risolvi_argo(url)
+        parsed = parse_link_argo(url)
+        return _risolvi_argo_atto(parsed[1]) if parsed else ''
 
     scaricato = _scarica(url)
     if scaricato is None:

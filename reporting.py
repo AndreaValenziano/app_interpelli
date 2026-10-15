@@ -28,6 +28,11 @@ class RunReporter:
         self._already_seen: List[Dict] = []
         self._expired: List[Dict] = []
         self._wrong_codes: List[Dict] = []
+        self._source_errors: Dict[str, List[str]] = {}
+
+    def record_source_errors(self, source: str, errori: List[str]):
+        if errori:
+            self._source_errors.setdefault(source, []).extend(errori)
 
     def record_rejected(self, interpello: Dict, reason: str, source: str):
         record = self._make_record(interpello, 'wrong_codes')
@@ -72,7 +77,9 @@ class RunReporter:
                 'expired': len(self._expired),
                 'wrong_codes': len(self._wrong_codes),
                 'by_source': by_source,
+                'source_errors': sum(len(v) for v in self._source_errors.values()),
             },
+            'source_errors': self._source_errors,
             'notified': self._notified,
             'already_seen': self._already_seen,
             'expired': self._expired,
@@ -125,6 +132,12 @@ class RunReporter:
             f"| Codici non target | {summary['wrong_codes']} |",
             '',
         ]
+
+        if data['source_errors']:
+            lines += ['## ⚠️ Sorgenti con problemi', '']
+            for src, errori in data['source_errors'].items():
+                lines += [f"- **{src}**: {e}" for e in errori]
+            lines.append('')
 
         def table(items: List[Dict], empty_msg: str) -> List[str]:
             if not items:

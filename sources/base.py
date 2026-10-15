@@ -7,6 +7,15 @@ class BaseSource(ABC):
     name: str = "base"
     _reporter = None
 
+    def __init__(self):
+        # Problemi della sorgente in questa run (errori HTTP, pagina cambiata, feed
+        # fermo): finiscono nel report, negli avvisi del workflow e nell'email
+        self.errori: List[str] = []
+
+    def segnala_errore(self, messaggio: str) -> None:
+        print(f"[{self.name}] ⚠️  {messaggio}")
+        self.errori.append(messaggio)
+
     @abstractmethod
     def fetch(self, reporter=None) -> List[Dict]:
         pass

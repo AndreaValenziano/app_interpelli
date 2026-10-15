@@ -4,7 +4,7 @@ Usato come fallback quando il testo dell'interpello non contiene una data leggib
 """
 import io
 import zipfile
-from typing import Dict
+from typing import Dict, List, Tuple
 
 import requests
 import pypdf
@@ -46,6 +46,15 @@ def estrai_scadenza_da_zip_url(url: str, extra_headers: dict = None) -> str:
     return result
 
 
+def testo_da_zip_url(url: str, extra_headers: dict = None) -> str:
+    """Nomi dei file e testo dei PDF contenuti nello ZIP (es. allegati Argo), per
+    cercare il codice classe di concorso quando la descrizione dell'atto non lo dice.
+    '' su errore."""
+    if not url:
+        return ''
+    return ' '.join(f"{nome} {testo}" for nome, testo in _testi_zip(url, extra_headers))
+
+
 def _scarica_e_estrai(url: str, extra_headers: dict = None) -> str:
     try:
         headers = dict(_DEFAULT_HEADERS)
@@ -63,25 +72,33 @@ def _scarica_e_estrai(url: str, extra_headers: dict = None) -> str:
 
 
 def _scarica_e_estrai_zip(url: str, extra_headers: dict = None) -> str:
+    for _, testo in _testi_zip(url, extra_headers):
+        scad = estrai_scadenza(testo)
+        if scad:
+            return scad
+    return ''
+
+
+def _testi_zip(url: str, extra_headers: dict = None) -> List[Tuple[str, str]]:
+    """[(nome_file, testo)] per ogni file dello ZIP; testo vuoto per i non-PDF o i PDF
+    illeggibili. Lista vuota su errore di download."""
     try:
         headers = dict(_DEFAULT_HEADERS)
         if extra_headers:
             headers.update(extra_headers)
         resp = requests.get(url, headers=headers, timeout=60)
         resp.raise_for_status()
+        risultati = []
         with zipfile.ZipFile(io.BytesIO(resp.content)) as z:
             for name in z.namelist():
-                if not name.lower().endswith('.pdf'):
-                    continue
-                try:
-                    pdf_bytes = z.read(name)
-                    reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
-                    testo = ' '.join(page.extract_text() or '' for page in reader.pages)
-                    scad = estrai_scadenza(testo)
-                    if scad:
-                        return scad
-                except Exception:
-                    continue
-        return ''
+                testo = ''
+                if name.lower().endswith('.pdf'):
+                    try:
+                        reader = pypdf.PdfReader(io.BytesIO(z.read(name)))
+                        testo = ' '.join(page.extract_text() or '' for page in reader.pages)
+                    except Exception:
+                        pass
+                risultati.append((name, testo))
+        return risultati
     except Exception:
-        return ''
+        return []

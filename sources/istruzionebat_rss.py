@@ -1,6 +1,6 @@
 import feedparser
-from datetime import datetime
-from typing import List, Dict
+from datetime import date, datetime
+from typing import List, Dict, Optional
 
 from .base import BaseSource
 from filtering import (
@@ -10,6 +10,11 @@ from filtering import (
     compute_stable_id,
 )
 FEED_URL = "https://www.istruzionebat.it/category/interpello/feed/"
+
+
+# Oltre questa età dell'ultima voce il feed è considerato fermo (a febbraio 2026
+# il feed ha smesso di aggiornarsi mentre la pagina indice continuava)
+GIORNI_FEED_FERMO = 30
 
 
 class IstruzioneBatRssSource(BaseSource):
@@ -46,7 +51,20 @@ class IstruzioneBatRssSource(BaseSource):
                     'stable_id': compute_stable_id(testo),
                     'data_rilevamento': datetime.now().isoformat(),
                 })
+            self._controlla_aggiornamento(feed)
             return interpelli
         except Exception as e:
-            print(f"[{self.name}] Errore: {e}")
+            self.segnala_errore(f"Errore: {e}")
             return []
+
+    def _controlla_aggiornamento(self, feed, oggi: Optional[date] = None) -> None:
+        if not feed.entries:
+            self.segnala_errore(f"Feed vuoto o illeggibile: {feed.get('bozo_exception', '')}")
+            return
+        date_voci = [date(*e.published_parsed[:3]) for e in feed.entries
+                     if e.get('published_parsed')]
+        if not date_voci:
+            return
+        ultima = max(date_voci)
+        if ((oggi or date.today()) - ultima).days > GIORNI_FEED_FERMO:
+            self.segnala_errore(f"Feed fermo: ultima voce del {ultima.strftime('%d/%m/%Y')}")

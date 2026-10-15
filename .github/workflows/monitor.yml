@@ -2,10 +2,12 @@ name: monitor-interpelli
 
 on:
   schedule:
-    # Ogni ora dalle 5 alle 17 UTC (≈07–19 ora italiana): gli interpelli hanno
-    # spesso scadenze a 24h, tre controlli al giorno non bastavano.
-    # GitHub cron è best-effort (ritardi fino a ~15 min); repo pubblico = minuti gratuiti.
-    - cron: "0 5-17 * * *"
+    # Ogni ora dalle 5 alle 20 UTC (≈07–22 ora italiana): gli interpelli BAT escono
+    # spesso verso le 17-18 e scadono la mattina dopo, la sera va coperta.
+    # Minuto 17 e non 0: allo scoccare dell'ora GitHub è sovraccarico e scarta molte
+    # esecuzioni (a ottobre 2026 ne partivano 2-3 al giorno su 13 programmate).
+    # GitHub cron resta best-effort; repo pubblico = minuti gratuiti.
+    - cron: "17 5-20 * * *"
   workflow_dispatch: {}    # esecuzione manuale dal tab Actions di GitHub
 
 permissions:

@@ -13,11 +13,12 @@ import argparse
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
+from html import escape as html_escape
 from pathlib import Path
 from typing import List, Dict
 
 from sources import get_enabled_sources
-from filtering import scadenza_passata, is_link_dedupabile, parse_data
+from filtering import scadenza_passata, chiave_link, parse_data
 from link_resolver import risolvi_scadenza_da_link, argo_archiviato
 from reporting import RunReporter, prune_old_reports
 from dashboard import aggiorna_dashboard
@@ -49,6 +50,7 @@ class InterpelliMonitor:
         self.source_filter = source_filter
         self.config = self.load_config()
         self.interpelli_salvati = "interpelli_visti.json"
+        self.problemi_sorgenti: Dict[str, List[str]] = {}
 
     def load_config(self) -> Dict:
         file_config = {}
@@ -93,15 +95,16 @@ class InterpelliMonitor:
         SMTP marcherebbe come 'visti' interpelli mai notificati."""
         stato = self.load_interpelli_visti()
         seen_ids = set(stato.get("ids", []))
-        seen_links = set(stato.get("links", []))
+        # Chiavi canoniche: anche i link storici (minuscoli, Argo vecchio formato)
+        # vengono convertiti, così i due formati di deep-link Argo dedupano tra loro
+        seen_links = {chiave_link(l) or l for l in stato.get("links", [])}
         nuovi = []
 
         for interpello in interpelli:
             sid = interpello['stable_id']
-            link_raw = interpello.get('link') or ''
             # I link generici (homepage scuola, albo intero) sono condivisi da più
             # interpelli: usarli per il dedup sopprimerebbe quelli successivi.
-            link = link_raw.strip().lower() if is_link_dedupabile(link_raw) else ''
+            link = chiave_link(interpello.get('link') or '')
 
             # Salta se già visto per contenuto O per link (dedup cross-sorgente)
             if sid in seen_ids or (link and link in seen_links):
@@ -176,8 +179,8 @@ class InterpelliMonitor:
                 html += f'<p class="link">🔗 <a href="{interpello["link"]}">Vai all\'interpello</a></p>'
             html += "</div>"
 
-        html += """
-            <div class="footer">
+        html += f"""
+            <div class="footer">{self._html_problemi_sorgenti()}
                 <p>Questa email è stata generata automaticamente dal Monitor Interpelli BAT.</p>
                 <p>Controlla sempre il sito ufficiale: <a href="https://www.istruzionebat.it">istruzionebat.it</a></p>
             </div>
@@ -185,6 +188,14 @@ class InterpelliMonitor:
         </html>
         """
         return html
+
+    def _html_problemi_sorgenti(self) -> str:
+        if not self.problemi_sorgenti:
+            return ''
+        voci = ''.join(f"<li><strong>{html_escape(nome)}</strong>: {html_escape('; '.join(errori))[:300]}</li>"
+                       for nome, errori in self.problemi_sorgenti.items())
+        return (f"<p>⚠️ Sorgenti con problemi in questa esecuzione "
+                f"(possibili interpelli non rilevati):</p><ul>{voci}</ul>")
 
     def _oggetto_email(self, interpelli: List[Dict]) -> str:
         n = len(interpelli)
@@ -262,6 +273,19 @@ class InterpelliMonitor:
             risultati = source.fetch(reporter=reporter)
             print(f"   Trovati {len(risultati)} interpelli corrispondenti ai codici obiettivo")
             tutti.extend(risultati)
+            errori = list(getattr(source, 'errori', None) or [])
+            if errori:
+                self.problemi_sorgenti[source.name] = errori
+                reporter.record_source_errors(source.name, errori)
+
+        # Sorgenti rotte: annotazioni visibili nella pagina della run, senza far
+        # fallire il job (trasparenzascuole è bloccata dal WAF su ogni run CI)
+        if self.problemi_sorgenti:
+            print(f"\n⚠️  Sorgenti con problemi: {', '.join(self.problemi_sorgenti)}")
+            if os.environ.get('GITHUB_ACTIONS') == 'true':
+                for nome, errori in self.problemi_sorgenti.items():
+                    for e in errori:
+                        print(f"::warning title=Sorgente {nome}::{e}")
 
         print(f"\n📊 Totale grezzo (da tutte le sorgenti): {len(tutti)}")
         scaduti = [ip for ip in tutti if scadenza_passata(ip.get('scadenza', ''))]
