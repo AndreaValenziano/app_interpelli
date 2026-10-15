@@ -255,6 +255,79 @@ class TestDettagli(unittest.TestCase):
         self.assertIn('24 h/sett', html)
         self.assertIn('De Amicis', html)
 
+    def test_email_supplenza_gia_iniziata(self):
+        from datetime import date, timedelta
+        inizio = (date.today() - timedelta(days=10)).strftime('%d/%m/%Y')
+        ip = _interpello('a')
+        ip['dettagli'] = {'periodo': f'dal {inizio} al 30/06/2099'}
+        html = self.monitor.crea_email_html([ip])
+        self.assertIn(f'supplenza iniziata il {inizio}', html)
+
+
+class TestLinkGenerici(unittest.TestCase):
+
+    HOME = 'https://www.icminervinomurge.edu.it/'
+    ARGO = 'https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4666558'
+
+    def setUp(self):
+        self.monitor = InterpelliMonitor(config_file='/nonexistent.json', dry_run=True)
+
+    def test_link_generico_ricondotto_all_atto(self):
+        ip = _interpello('a', link=self.HOME)
+        ip['testo'] = 'ADEE – VISUALIZZA INTERPELLI 05/10/2026'
+        ip['data_pubblicazione'] = '05/10/2026'
+        with patch('monitor_interpelli.link_specifico_argo', return_value=self.ARGO) as m:
+            self.monitor.riconduci_link_generici([ip])
+        self.assertEqual(ip['link'], self.ARGO)
+        args = m.call_args.args
+        self.assertEqual(args[1], ['ADEE'])
+        self.assertEqual(str(args[2]), '2026-10-04')
+
+    def test_link_specifico_non_toccato(self):
+        ip = _interpello('a', link=self.ARGO)
+        with patch('monitor_interpelli.link_specifico_argo') as m:
+            self.monitor.riconduci_link_generici([ip])
+        m.assert_not_called()
+
+
+class TestRiverificaArchivio(unittest.TestCase):
+
+    def setUp(self):
+        self.monitor = InterpelliMonitor(config_file='/nonexistent.json', dry_run=False)
+
+    def _rec(self, sid, **kw):
+        from datetime import datetime
+        r = dict(_interpello(sid), data_rilevamento=datetime.now().isoformat(), archiviato=False)
+        r.update(kw)
+        return r
+
+    def test_scadenza_trovata_al_secondo_tentativo(self):
+        rec = self._rec('a', link='https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/4685557')
+        with patch('monitor_interpelli.carica_archivio', return_value=[rec]), \
+             patch('monitor_interpelli.risolvi_da_link',
+                   return_value=('13/10/2026', 'domanda entro le ore 11:00 del 13/10/2026')), \
+             redirect_stdout(io.StringIO()):
+            [agg] = self.monitor.riverifica_archivio()
+        self.assertEqual(agg['scadenza'], '13/10/2026')
+        self.assertEqual(agg['dettagli']['ora_scadenza'], '11:00')
+
+    def test_atto_archiviato(self):
+        rec = self._rec('a', link='https://www.portaleargo.it/albopretorio/online/#/SC21815/atti/1')
+        with patch('monitor_interpelli.carica_archivio', return_value=[rec]), \
+             patch('monitor_interpelli.risolvi_da_link', return_value=('', '')), \
+             patch('monitor_interpelli.argo_archiviato', return_value=True), \
+             redirect_stdout(io.StringIO()):
+            [agg] = self.monitor.riverifica_archivio()
+        self.assertTrue(agg['archiviato'])
+
+    def test_record_con_scadenza_o_vecchi_ignorati(self):
+        recs = [self._rec('a', scadenza='13/10/2026'),
+                self._rec('b', data_rilevamento='2026-01-01T10:00:00')]
+        with patch('monitor_interpelli.carica_archivio', return_value=recs), \
+             patch('monitor_interpelli.risolvi_da_link') as m:
+            self.assertEqual(self.monitor.riverifica_archivio(), [])
+        m.assert_not_called()
+
 
 class TestFasciaOraria(unittest.TestCase):
     """Niente email di notte: si invia solo dalle 8 alle 22 ora italiana, con ora

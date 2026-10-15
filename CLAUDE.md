@@ -57,9 +57,11 @@ sources/
 2. `esegui()` discards expired postings using `scadenza_passata()` (logs "⏰ Scartati N scaduti"). Postings with no parseable deadline are kept (better a false positive than a miss).
 3. `filtra_nuovi_interpelli()` deduplicates: skips if `stable_id` (sha256 of normalized text) OR `chiave_link(link)` already seen. Links are used for dedup **only if `is_link_dedupabile()`** — generic links (school homepage, whole-albo pages shared by many postings) must not suppress later postings from the same school. Returns `(nuovi, stato)` **without saving**.
 4. `risolvi_scadenze()` runs `link_resolver.risolvi_scadenza_da_link()` on NEW postings with empty `scadenza` only (each resolution costs up to ~7 HTTP requests; capped at `MAX_RISOLUZIONI_LINK=40` per run). Postings whose freshly-discovered deadline is already past are dropped (but stay in state).
+2b. `riconduci_link_generici()` (before the expiry filter): a posting whose link is a bare Argo-school homepage (istruzionebat/scuolainterpelli often link `https://www.icminervinomurge.edu.it/`) gets the deep-link of the atto from `link_resolver.link_specifico_argo(link, codici, dal, al)`: school found by site domain (`siti` in `scuole_bat.json`), the **only** atto in pubblicazione that is an interpello (not esito) for one of the posting's codes, published in the window (scuolainterpelli's `data_pubblicazione` ±1 day, otherwise the last `GIORNI_RICERCA_ATTO` days). Ambiguous (2+ atti) → link unchanged. Then the deadline is resolvable and the posting dedups with `argo_albo`.
 4b. `aggiungi_dettagli()` fills `ip['dettagli']` from `testo_documento` (the PDF/page text in which the deadline was found: set by `argo_albo` and by `risolvi_scadenze` via `link_resolver.risolvi_da_link() -> (scadenza, testo)`) and, for missing keys, from `testo`. No HTTP. `testo_documento` is never persisted.
 5. `invia_email()` sends HTML via SMTP+STARTTLS, sorted by deadline urgency, and returns bool. **State is saved only after a successful send** — an SMTP failure leaves state untouched so the next run retries, and the process exits 1 (workflow does not commit state).
-6. `aggiorna_dashboard()` appends notified postings to `docs/interpelli.json` and regenerates the static `docs/index.html` (GitHub Pages dashboard). Skipped on `--dry-run`.
+6. `riverifica_archivio()` (not on dry-run): up to `MAX_RIVERIFICHE` dashboard records of the last `GIORNI_IGNOTA_ATTIVA` days still without deadline are retried (generic link → Argo atto, `risolvi_da_link`, `argo_archiviato`); updated records are merged by `aggiorna_dashboard` (scadenza, dettagli, archiviato, generic link replaced by a specific one). The archive is deduplicated by `chiave_link` (`_accorpa_doppioni`: first detected wins, gets missing info from duplicates). On the dashboard, a record without deadline whose supplenza started more than `GIORNI_SUPPLENZA_INIZIATA` (2) days ago (`filtering.supplenza_gia_iniziata`, periodo `dal X al Y`, also parsed from `testo` for old records) is "PROBABILMENTE SCADUTO"; the email still notifies it with a "probabilmente già chiuso" note.
+7. `aggiorna_dashboard()` appends notified postings to `docs/interpelli.json` and regenerates the static `docs/index.html` (GitHub Pages dashboard). Skipped on `--dry-run`.
 
 ### Normalized posting dict fields
 
@@ -155,6 +157,8 @@ The script downloads the MIUR open-data CSV `SCUANAGRAFESTAT`, **groups by `CODI
   "params": {"customerCode": "SC27220"}
 }
 ```
+
+`siti` is used to map a homepage link to the school (`link_specifico_argo`); schools missing from the MIUR CSV get it from `SITI_MANUALI` (taken from the IPA index, where some schools are registered with the old `BA…` code).
 
 `params` by platform: `argo` → `{customerCode}`, `nuvola` → `{codMiur}`, `trasparenzascuole` → `{codiceFiscale}`, `null` → absent.
 

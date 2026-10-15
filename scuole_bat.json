@@ -120,7 +120,9 @@
     "codMec": "BTIC80000C",
     "nome": "I.C. \"PIETROCOLA - MAZZINI\"",
     "comune": "MINERVINO MURGE",
-    "siti": [],
+    "siti": [
+      "https://www.icminervinomurge.edu.it"
+    ],
     "pec": "BTIC80000C@pec.istruzione.it",
     "gradi": [
       "ISTITUTO COMPRENSIVO",
@@ -194,7 +196,9 @@
     "codMec": "BTIC85400R",
     "nome": "I.C. \"GIOVANNI XXIII-G.PASCOLI\"",
     "comune": "MARGHERITA DI SAVOIA",
-    "siti": [],
+    "siti": [
+      "https://www.icmargheritadisavoia.edu.it"
+    ],
     "pec": "BTIC85400R@pec.istruzione.it",
     "gradi": [
       "ISTITUTO COMPRENSIVO",
@@ -211,7 +215,9 @@
     "codMec": "BTIC860004",
     "nome": "I.C. \"DON BOSCO SANTO-MANZONI\"",
     "comune": "ANDRIA",
-    "siti": [],
+    "siti": [
+      "https://www.donboscomanzoni.edu.it"
+    ],
     "pec": "BTIC860004@pec.istruzione.it",
     "gradi": [
       "ISTITUTO COMPRENSIVO",
@@ -267,7 +273,9 @@
     "codMec": "BTIC86400B",
     "nome": "I.C. \"IANNUZZI-MONS. DI DONNA\"",
     "comune": "ANDRIA",
-    "siti": [],
+    "siti": [
+      "https://www.icjannuzzimonsdidonna.edu.it"
+    ],
     "pec": "BTIC86400B@pec.istruzione.it",
     "gradi": [
       "ISTITUTO COMPRENSIVO",
@@ -340,7 +348,9 @@
     "codMec": "BTIC89300B",
     "nome": "I.C. \"IMBRIANI - SALVEMINI\"",
     "comune": "ANDRIA",
-    "siti": [],
+    "siti": [
+      "https://www.imbrianisalvemini.edu.it"
+    ],
     "pec": "BTIC89300B@pec.istruzione.it",
     "gradi": [
       "ISTITUTO COMPRENSIVO",
@@ -395,7 +405,9 @@
     "codMec": "BTIC8AE006",
     "nome": "I.C. \"ROCCA-BOVIO-PALUMBO-D'ANN",
     "comune": "TRANI",
-    "siti": [],
+    "siti": [
+      "https://www.icrbpd.edu.it"
+    ],
     "pec": "BTIC8AE006@pec.istruzione.it",
     "gradi": [
       "ISTITUTO COMPRENSIVO",
@@ -412,7 +424,9 @@
     "codMec": "BTIC8AF002",
     "nome": "I.C. DON MILANI-GARIBALDI-LEONE",
     "comune": "TRINITAPOLI",
-    "siti": [],
+    "siti": [
+      "https://www.icdonmilanigaribaldileone.edu.it"
+    ],
     "pec": "BTIC8AF002@pec.istruzione.it",
     "gradi": [
       "ISTITUTO COMPRENSIVO",
@@ -429,7 +443,9 @@
     "codMec": "BTIC8AJ00V",
     "nome": "I.C. \"DE AMICIS-GIOVANNI XXIII\"",
     "comune": "SAN FERDINANDO DI PUGLIA",
-    "siti": [],
+    "siti": [
+      "https://www.icsdeamicisgiovanni23.edu.it"
+    ],
     "pec": "BTIC8AJ00V@pec.istruzione.it",
     "gradi": [
       "ISTITUTO COMPRENSIVO",
@@ -446,7 +462,9 @@
     "codMec": "BTIC8AK00P",
     "nome": "I.C. \"A.ROSMINI-ALIGHIERI\"",
     "comune": "ANDRIA",
-    "siti": [],
+    "siti": [
+      "https://www.icrosminialighieri.edu.it"
+    ],
     "pec": "BTIC8AK00P@pec.istruzione.it",
     "gradi": [
       "ISTITUTO COMPRENSIVO",
@@ -482,7 +500,9 @@
     "codMec": "BTIC8AM00A",
     "nome": "I.C. \"OBERDAN-V. EMANUELE III\"",
     "comune": "ANDRIA",
-    "siti": [],
+    "siti": [
+      "https://www.icoberdanpertini.edu.it"
+    ],
     "pec": "BTIC8AM00A@pec.istruzione.it",
     "gradi": [
       "ISTITUTO COMPRENSIVO",
@@ -499,7 +519,9 @@
     "codMec": "BTIC8AN006",
     "nome": "I.C. \"R. COTUGNO\"",
     "comune": "ANDRIA",
-    "siti": [],
+    "siti": [
+      "https://www.cotugnoandria.edu.it"
+    ],
     "pec": "BTIC8AN006@pec.istruzione.it",
     "gradi": [
       "ISTITUTO COMPRENSIVO",
@@ -535,7 +557,9 @@
     "codMec": "BTIC8AQ00N",
     "nome": "IC DON P. UVA-BATTISTI-FERRARIS",
     "comune": "BISCEGLIE",
-    "siti": [],
+    "siti": [
+      "https://icdonuvacosmai.edu.it"
+    ],
     "pec": "BTIC8AQ00N@pec.istruzione.it",
     "gradi": [
       "ISTITUTO COMPRENSIVO",

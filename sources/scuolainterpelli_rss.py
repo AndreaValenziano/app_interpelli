@@ -136,6 +136,8 @@ class ScuolaInterppelliRssSource(BaseSource):
             # (homepage della scuola) si ripete per interpelli diversi
             'stable_id': compute_stable_id(f"scuolainterpelli {codici} {link or ''} {data}"),
             'data_rilevamento': datetime.now().isoformat(),
+            # per ricondurre un link generico all'atto Argo pubblicato quel giorno
+            'data_pubblicazione': data,
         })
 
 

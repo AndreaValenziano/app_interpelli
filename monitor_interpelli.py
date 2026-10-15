@@ -12,17 +12,20 @@ import sys
 import argparse
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from html import escape as html_escape
 from zoneinfo import ZoneInfo
 from pathlib import Path
 from typing import List, Dict, Optional
 
 from sources import get_enabled_sources
-from filtering import scadenza_passata, chiave_link, estrai_dettagli, parse_data
-from link_resolver import risolvi_da_link, argo_archiviato
+from filtering import (
+    CODICI_OBIETTIVO, chiave_link, estrai_dettagli, is_link_dedupabile, normalizza_codici,
+    parse_data, scadenza_passata, supplenza_gia_iniziata,
+)
+from link_resolver import argo_archiviato, link_specifico_argo, risolvi_da_link
 from reporting import RunReporter, prune_old_reports
-from dashboard import aggiorna_dashboard
+from dashboard import GIORNI_IGNOTA_ATTIVA, aggiorna_dashboard, carica_archivio
 
 # Cap alle risoluzioni scadenza via HTTP per run (protegge da reset dello stato)
 MAX_RISOLUZIONI_LINK = 40
@@ -43,6 +46,17 @@ def in_fascia_invio(adesso: Optional[datetime] = None) -> bool:
     return ORA_INIZIO_INVIO <= ora < ORA_FINE_INVIO
 
 
+# Riverifica dell'archivio dashboard: record senza scadenza riprovati per run
+MAX_RIVERIFICHE = 10
+# Finestra di pubblicazione dell'atto Argo cercato per un link generico senza data
+GIORNI_RICERCA_ATTO = 10
+
+
+def _codici(testo: str) -> List[str]:
+    testo = normalizza_codici(testo or '').upper()
+    return [c for c in CODICI_OBIETTIVO if c in testo]
+
+
 def _html_dettagli(dettagli: Dict) -> str:
     """Riga con periodo, ore settimanali e sede (solo quelli trovati)."""
     voci = [(icona, dettagli.get(k)) for icona, k in
@@ -51,10 +65,14 @@ def _html_dettagli(dettagli: Dict) -> str:
     return f'<p class="dettagli">{" · ".join(voci)}</p>' if voci else ''
 
 
-def _label_scadenza(scadenza: str, ora: str = '') -> str:
+def _label_scadenza(scadenza: str, ora: str = '', dettagli: Optional[Dict] = None) -> str:
     """Etichetta leggibile con indicazione di urgenza per l'email."""
     d = parse_data(scadenza)
     if d is None:
+        inizio = supplenza_gia_iniziata(dettagli or {})
+        if inizio:
+            return (f"⚠️ non rilevata — supplenza iniziata il {inizio.strftime('%d/%m/%Y')}: "
+                    f"probabilmente già chiuso, verifica dal link")
         return '⚠️ non rilevata — apri il link e verifica subito'
     giorni = (d - datetime.now().date()).days
     if ora:
@@ -164,6 +182,52 @@ class InterpelliMonitor:
             ip['dettagli'] = {**estrai_dettagli(ip.get('testo', ''), scad),
                               **estrai_dettagli(ip.get('testo_documento', ''), scad)}
 
+    def riconduci_link_generici(self, interpelli: List[Dict]):
+        """Link alla homepage di una scuola Argo → deep-link dell'atto (stesso codice,
+        pubblicato quel giorno o negli ultimi giorni). Così la scadenza si trova e
+        l'interpello deduplica con quello di argo_albo."""
+        for ip in interpelli:
+            link = ip.get('link') or ''
+            if not link or is_link_dedupabile(link):
+                continue
+            pubblicato = parse_data(ip.get('data_pubblicazione', ''))
+            dal, al = ((pubblicato - timedelta(days=1), pubblicato + timedelta(days=1)) if pubblicato
+                       else (date.today() - timedelta(days=GIORNI_RICERCA_ATTO), date.today()))
+            specifico = link_specifico_argo(link, _codici(ip.get('testo', '')), dal, al)
+            if specifico:
+                print(f"   🔗 {link} → {specifico}")
+                ip['link'] = specifico
+
+    def riverifica_archivio(self) -> List[Dict]:
+        """Riprova sui record recenti della dashboard ancora senza scadenza: link generico
+        → atto Argo, scadenza da link/PDF, atto archiviato. Ritorna i record aggiornati
+        (da passare ad aggiorna_dashboard). Nessuna email."""
+        limite = datetime.now() - timedelta(days=GIORNI_IGNOTA_ATTIVA)
+        da_rivedere = []
+        for r in carica_archivio():
+            try:
+                rilevato = datetime.fromisoformat(r.get('data_rilevamento', ''))
+            except ValueError:
+                continue
+            if not r.get('scadenza') and not r.get('archiviato') and r.get('link') and rilevato >= limite:
+                da_rivedere.append((r, rilevato.date()))
+        aggiornati = []
+        for r, rilevato in da_rivedere[:MAX_RIVERIFICHE]:
+            link = r['link']
+            if not is_link_dedupabile(link):
+                link = link_specifico_argo(link, _codici(r.get('testo', '')),
+                                           rilevato - timedelta(days=GIORNI_RICERCA_ATTO), rilevato) or link
+            scadenza, testo = risolvi_da_link(link)
+            archiviato = not scadenza and argo_archiviato(link)
+            if scadenza or archiviato or link != r['link']:
+                aggiornato = dict(r, link=link, scadenza=scadenza or '', archiviato=archiviato,
+                                  dettagli={**estrai_dettagli(r.get('testo', ''), scadenza),
+                                            **estrai_dettagli(testo, scadenza)})
+                aggiornati.append(aggiornato)
+                print(f"   ♻️  {r.get('title', '')[:60]} → "
+                      f"{scadenza or ('archiviato' if archiviato else link)}")
+        return aggiornati
+
     def crea_email_html(self, interpelli: List[Dict]) -> str:
         html = f"""
         <html>
@@ -205,7 +269,7 @@ class InterpelliMonitor:
             <div class="interpello">
                 <h3>Interpello #{i}</h3>
                 <p class="tipo">📋 Tipo: {interpello['tipo']}</p>
-                <p class="scadenza">📅 Scadenza domanda: {_label_scadenza(interpello['scadenza'], dettagli.get('ora_scadenza', ''))}</p>
+                <p class="scadenza">📅 Scadenza domanda: {_label_scadenza(interpello['scadenza'], dettagli.get('ora_scadenza', ''), dettagli)}</p>
                 {_html_dettagli(dettagli)}
                 <p class="fonte">Fonte: {interpello['source']}</p>
                 <p><strong>Descrizione:</strong><br>{interpello['testo'][:300]}...</p>
@@ -332,6 +396,7 @@ class InterpelliMonitor:
                         print(f"::warning title=Sorgente {nome}::{e}")
 
         print(f"\n📊 Totale grezzo (da tutte le sorgenti): {len(tutti)}")
+        self.riconduci_link_generici(tutti)
         scaduti = [ip for ip in tutti if scadenza_passata(ip.get('scadenza', ''))]
         for ip in scaduti:
             reporter.record_expired(ip)
@@ -382,7 +447,8 @@ class InterpelliMonitor:
         if invio_ok and not self.dry_run:
             self.save_interpelli_visti(stato_nuovo)
 
-        aggiorna_dashboard(nuovi, dry_run=self.dry_run)
+        aggiornati = [] if self.dry_run else self.riverifica_archivio()
+        aggiorna_dashboard(nuovi + aggiornati, dry_run=self.dry_run)
 
         reports_dir = Path('reports')
         json_path, md_path = reporter.write(reports_dir)

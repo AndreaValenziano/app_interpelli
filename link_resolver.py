@@ -26,6 +26,8 @@ Va chiamato DOPO il dedup, solo per gli interpelli nuovi: ogni risoluzione può
 costare fino a ~7 richieste HTTP.
 """
 import io
+import json
+import os
 import re
 import zipfile
 from typing import Dict, List, Optional, Tuple
@@ -37,7 +39,9 @@ from bs4 import BeautifulSoup
 
 from datetime import date
 
-from filtering import estrai_scadenza, parse_data, parse_link_argo
+from filtering import (
+    estrai_scadenza, is_esito_interpello, normalizza_codici, parse_data, parse_link_argo,
+)
 from pdf_utils import testo_scadenza_da_zip_url
 from sources.argo_albo import data_archiviazione, lista_atti
 
@@ -62,6 +66,8 @@ _ARGO_HEADERS = {
 }
 # Cache del listing albo per customerCode (una chiamata per scuola per run)
 _argo_listing_cache: Dict[str, Optional[dict]] = {}
+_mappa_host_argo: Optional[Dict[str, str]] = None
+SCUOLE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scuole_bat.json')
 
 # Parole in href/testo del link che suggeriscono un allegato di interpello
 _KEYWORDS_ALLEGATO = (
@@ -145,6 +151,53 @@ def argo_archiviato(url: str, oggi: Optional[date] = None) -> bool:
         return (listing.get('totalRows') or 0) <= len(atti)
     arch = parse_data(data_archiviazione(atto))
     return bool(arch and arch < (oggi or date.today()))
+
+
+def _host(url: str) -> str:
+    host = urlparse(url if '//' in url else f'http://{url}').netloc.lower()
+    return host[4:] if host.startswith('www.') else host
+
+
+def _scuole_argo_per_host() -> Dict[str, str]:
+    """Dominio del sito scuola → customerCode Argo (da scuole_bat.json, una volta per run)."""
+    global _mappa_host_argo
+    if _mappa_host_argo is None:
+        _mappa_host_argo = {}
+        try:
+            with open(SCUOLE_FILE, encoding='utf-8') as f:
+                for scuola in json.load(f):
+                    codice = (scuola.get('params') or {}).get('customerCode')
+                    if scuola.get('piattaforma') == 'argo' and codice:
+                        for sito in scuola.get('siti') or []:
+                            _mappa_host_argo[_host(sito)] = codice
+        except Exception:
+            pass
+    return _mappa_host_argo
+
+
+def link_specifico_argo(link: str, codici: List[str], dal: date, al: date) -> str:
+    """Deep-link Argo dell'interpello a cui rimanda un link generico (homepage di una
+    scuola Argo): l'UNICO atto in pubblicazione sull'albo della scuola che è un
+    interpello per uno dei `codici`, pubblicato tra `dal` e `al`. '' se la scuola non è
+    Argo, se non c'è nessun atto o se ce n'è più d'uno (meglio nessun link che uno sbagliato)."""
+    codice_scuola = _scuole_argo_per_host().get(_host(link or ''))
+    if not codice_scuola or not codici:
+        return ''
+    listing = _argo_listing(codice_scuola)
+    if not listing:
+        return ''
+    trovati = []
+    for atto in listing.get('list') or []:
+        descrizione = normalizza_codici(atto.get('descrizione') or '')
+        pubblicato = parse_data(atto.get('dataPubblicazione') or '')
+        if ('interpell' in descrizione.lower() and not atto.get('annullato')
+                and not is_esito_interpello(descrizione)
+                and any(c in descrizione.upper() for c in codici)
+                and pubblicato and dal <= pubblicato <= al):
+            trovati.append(atto)
+    if len(trovati) != 1:
+        return ''
+    return f"https://www.portaleargo.it/albopretorio/online/#/{codice_scuola}/atti/{trovati[0]['id']}"
 
 
 def _risolvi(url: str) -> str:

@@ -2,7 +2,9 @@
 Testi presi dai PDF reali degli interpelli Argo (ottobre 2026), estratti con pypdf."""
 import unittest
 
-from filtering import estrai_dettagli
+from datetime import date
+
+from filtering import estrai_dettagli, inizio_supplenza
 
 PIETROCOLA = (
     "per il conferimento di n. 1 supplenza • per 24 ore settimanali • dal 19/10/2026 al "
@@ -55,6 +57,16 @@ class TestEstraiDettagli(unittest.TestCase):
 
     def test_testo_vuoto(self):
         self.assertEqual(estrai_dettagli(''), {})
+
+
+class TestInizioSupplenza(unittest.TestCase):
+
+    def test_dal_al(self):
+        self.assertEqual(inizio_supplenza({'periodo': 'dal 01/10/2026 al 30/11/2026'}), date(2026, 10, 1))
+
+    def test_fino_al_o_vuoto(self):
+        self.assertIsNone(inizio_supplenza({'periodo': 'fino al 30/06/2027'}))
+        self.assertIsNone(inizio_supplenza({}))
 
 
 if __name__ == '__main__':

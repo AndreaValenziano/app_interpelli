@@ -11,9 +11,22 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List
 
-from filtering import parse_data
+from filtering import (
+    chiave_link, estrai_dettagli, is_link_dedupabile, parse_data, supplenza_gia_iniziata,
+)
 
 GIORNI_RETENTION = 120
+
+
+def carica_archivio(docs_dir: Path = Path('docs')) -> List[Dict]:
+    """Record dell'archivio dashboard ([] se assente o illeggibile)."""
+    json_path = Path(docs_dir) / 'interpelli.json'
+    if not json_path.exists():
+        return []
+    try:
+        return json.loads(json_path.read_text(encoding='utf-8'))
+    except Exception:
+        return []
 
 
 def aggiorna_dashboard(nuovi: List[Dict], dry_run: bool = False, docs_dir: Path = Path('docs')):
@@ -22,13 +35,7 @@ def aggiorna_dashboard(nuovi: List[Dict], dry_run: bool = False, docs_dir: Path 
     docs_dir = Path(docs_dir)
     docs_dir.mkdir(parents=True, exist_ok=True)
     json_path = docs_dir / 'interpelli.json'
-
-    archivio: List[Dict] = []
-    if json_path.exists():
-        try:
-            archivio = json.loads(json_path.read_text(encoding='utf-8'))
-        except Exception:
-            archivio = []
+    archivio = carica_archivio(docs_dir)
 
     per_id = {r.get('stable_id'): r for r in archivio}
     for ip in nuovi:
@@ -42,6 +49,9 @@ def aggiorna_dashboard(nuovi: List[Dict], dry_run: bool = False, docs_dir: Path 
                 esistente['archiviato'] = True
             if ip.get('dettagli') and not esistente.get('dettagli'):
                 esistente['dettagli'] = ip['dettagli']
+            # link generico ricondotto all'atto specifico (riverifica)
+            if is_link_dedupabile(ip.get('link') or '') and not is_link_dedupabile(esistente.get('link') or ''):
+                esistente['link'] = ip['link']
             continue
         archivio.append({
             'title': ip.get('title', ''),
@@ -64,6 +74,7 @@ def aggiorna_dashboard(nuovi: List[Dict], dry_run: bool = False, docs_dir: Path 
             return True
     archivio = [r for r in archivio if recente(r)]
 
+    archivio = _accorpa_doppioni(archivio)
     # Più recenti prima
     archivio.sort(key=lambda r: r.get('data_rilevamento', ''), reverse=True)
 
@@ -72,13 +83,34 @@ def aggiorna_dashboard(nuovi: List[Dict], dry_run: bool = False, docs_dir: Path 
     print(f"🖥  Dashboard aggiornata: {docs_dir / 'index.html'} ({len(archivio)} interpelli)")
 
 
+def _accorpa_doppioni(archivio: List[Dict]) -> List[Dict]:
+    """Un solo record per atto: stesso interpello arrivato da sorgenti diverse (anche
+    con link Argo in formati diversi). Resta il primo rilevato, con le informazioni
+    dei doppioni che gli mancano."""
+    per_chiave: Dict[str, Dict] = {}
+    risultato = []
+    for r in sorted(archivio, key=lambda r: r.get('data_rilevamento', '')):
+        chiave = chiave_link(r.get('link') or '')
+        primo = per_chiave.get(chiave) if chiave else None
+        if primo is None:
+            if chiave:
+                per_chiave[chiave] = r
+            risultato.append(r)
+            continue
+        for campo in ('scadenza', 'dettagli'):
+            if r.get(campo) and not primo.get(campo):
+                primo[campo] = r[campo]
+        primo['archiviato'] = bool(primo.get('archiviato') or r.get('archiviato'))
+    return risultato
+
+
 # Un interpello senza scadenza rilevabile più vecchio di così è quasi certamente
 # chiuso (le finestre di candidatura durano pochi giorni)
 GIORNI_IGNOTA_ATTIVA = 15
 
 
-def _genera_html(archivio: List[Dict]) -> str:
-    oggi = datetime.now().date()
+def _genera_html(archivio: List[Dict], oggi=None) -> str:
+    oggi = oggi or datetime.now().date()
     for r in archivio:
         d = parse_data(r.get('scadenza', ''))
         if r.get('archiviato'):
@@ -94,6 +126,9 @@ def _genera_html(archivio: List[Dict]) -> str:
                     r['_stato'] = 'stantio'
             except ValueError:
                 pass
+            # i record precedenti ai dettagli li ricavano dal testo
+            if supplenza_gia_iniziata(r.get('dettagli') or estrai_dettagli(r.get('testo', '')), oggi):
+                r['_stato'] = 'stantio'
         elif d < oggi:
             r['_stato'] = 'scaduto'
             r['_giorni'] = (d - oggi).days

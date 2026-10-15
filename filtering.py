@@ -241,6 +241,26 @@ def estrai_dettagli(testo: str, scadenza: str = '') -> dict:
     return dettagli
 
 
+def inizio_supplenza(dettagli: dict) -> Optional[date]:
+    """Data di inizio della supplenza dal periodo 'dal X al Y' dei dettagli, o None.
+    Senza scadenza, una supplenza già iniziata da giorni indica un interpello chiuso."""
+    m = re.match(r'dal (\d{2}/\d{2}/\d{4})', (dettagli or {}).get('periodo', ''))
+    return parse_data(m.group(1)) if m else None
+
+
+# Senza scadenza, una supplenza iniziata da più di tanti giorni indica un interpello
+# chiuso (si pubblica prima dell'inizio, o al massimo a supplenza appena iniziata)
+GIORNI_SUPPLENZA_INIZIATA = 2
+
+
+def supplenza_gia_iniziata(dettagli: dict, oggi: Optional[date] = None) -> Optional[date]:
+    """Data di inizio se la supplenza è iniziata da più di GIORNI_SUPPLENZA_INIZIATA, o None."""
+    inizio = inizio_supplenza(dettagli)
+    if inizio and ((oggi or date.today()) - inizio).days > GIORNI_SUPPLENZA_INIZIATA:
+        return inizio
+    return None
+
+
 def parse_data(s: str) -> Optional[date]:
     """Parsa 'DD/MM/YYYY' → date. Ritorna None se non parsabile."""
     if not s:

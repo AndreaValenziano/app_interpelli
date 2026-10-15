@@ -69,6 +69,24 @@ MAPPING_MANUALE: Dict[str, tuple] = {
     # Spaggiari (JS-side, fuori scope), custom, sconosciute → piattaforma=null, non in mappa
 }
 
+# Siti mancanti nel CSV MIUR, presi dall'indice IPA (ottobre 2026; alcune scuole vi
+# sono registrate col vecchio codice BA…). Servono a ricondurre i link alla homepage
+# della scuola all'atto Argo specifico (link_resolver.link_specifico_argo).
+SITI_MANUALI: Dict[str, str] = {
+    "BTIC80000C": "https://www.icminervinomurge.edu.it",
+    "BTIC85400R": "https://www.icmargheritadisavoia.edu.it",
+    "BTIC860004": "https://www.donboscomanzoni.edu.it",
+    "BTIC86400B": "https://www.icjannuzzimonsdidonna.edu.it",
+    "BTIC89300B": "https://www.imbrianisalvemini.edu.it",
+    "BTIC8AE006": "https://www.icrbpd.edu.it",
+    "BTIC8AF002": "https://www.icdonmilanigaribaldileone.edu.it",
+    "BTIC8AJ00V": "https://www.icsdeamicisgiovanni23.edu.it",
+    "BTIC8AK00P": "https://www.icrosminialighieri.edu.it",
+    "BTIC8AM00A": "https://www.icoberdanpertini.edu.it",
+    "BTIC8AN006": "https://www.cotugnoandria.edu.it",
+    "BTIC8AQ00N": "https://icdonuvacosmai.edu.it",
+}
+
 _GRADI_TARGET = {'PRIMARIA', 'INFANZIA'}
 _ALBO_KEYWORDS = {'albo', 'pretori', 'amministrazione-trasparente', 'portaleargo'}
 _VALORI_VUOTI = {'non disponibile', 'nd', '-', 'n/a', '', 'non disp.', 'nessuno'}
@@ -273,7 +291,7 @@ def main():
     scuole = []
     target_sorted = sorted(target.items())
     for i, (cod, ist) in enumerate(target_sorted, 1):
-        siti = sorted(ist['siti_raw'])
+        siti = sorted(ist['siti_raw']) or ([SITI_MANUALI[cod]] if cod in SITI_MANUALI else [])
         nome = ist['nome'] or cod
         print(f"[{i:2d}/{len(target)}] {nome[:50]:<50}", end='  ', flush=True)
 
