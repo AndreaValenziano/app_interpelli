@@ -17,11 +17,12 @@ concurrency:
 
 jobs:
   run:
-    runs-on: ubuntu-latest
+    # Versione fissata: ubuntu-latest migra a Ubuntu 26 dal 19/10/2026
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -29,6 +30,10 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Esegui monitor
+        id: monitor
+        # Il fallimento (es. errore SMTP) non interrompe il job: report e dashboard
+        # vanno comunque committati; il job viene marcato fallito nell'ultimo step
+        continue-on-error: true
         env:
           EMAIL_MITTENTE:     ${{ secrets.EMAIL_MITTENTE }}
           PASSWORD_EMAIL:     ${{ secrets.PASSWORD_EMAIL }}
@@ -37,13 +42,28 @@ jobs:
           SMTP_PORT:          ${{ secrets.SMTP_PORT }}
         run: python3 monitor_interpelli.py
 
-      - name: Salva stato interpelli visti
-        # if: always() NON va usato: se il monitor fallisce (es. errore SMTP) lo stato
-        # non deve essere committato, così la run successiva ritenta la notifica
+      - name: Salva stato, report e dashboard
+        # Se il monitor fallisce (es. errore SMTP) lo stato NON va committato, così la
+        # run successiva ritenta la notifica; report e dashboard sì, perché gli
+        # interpelli non notificati restino almeno consultabili su GitHub Pages
+        env:
+          MONITOR_OUTCOME: ${{ steps.monitor.outcome }}
         run: |
           git config user.name  "interpelli-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add interpelli_visti.json reports/ docs/
-          git diff --staged --quiet || git commit -m "chore: aggiorna stato e report interpelli [skip ci]"
+          git add reports/ docs/
+          if [ "$MONITOR_OUTCOME" = "success" ]; then
+            git add interpelli_visti.json
+            messaggio="chore: aggiorna stato e report interpelli [skip ci]"
+          else
+            messaggio="chore: report e dashboard (notifica fallita, stato non aggiornato) [skip ci]"
+          fi
+          git diff --staged --quiet || git commit -m "$messaggio"
           git pull --rebase origin main
           git push
+
+      - name: Segnala fallimento del monitor
+        if: steps.monitor.outcome != 'success'
+        run: |
+          echo "::error::Il monitor è fallito (vedi lo step 'Esegui monitor'): stato non aggiornato, la prossima run ritenta la notifica."
+          exit 1

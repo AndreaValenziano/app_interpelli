@@ -1,8 +1,12 @@
+import io
 import json
 import os
+import smtplib
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
@@ -60,6 +64,85 @@ class TestFiltraNuoviInterpelli(unittest.TestCase):
         self.monitor.save_interpelli_visti(stato)
         nuovi, _ = self.monitor.filtra_nuovi_interpelli([_interpello('b', link=link)])
         self.assertEqual(nuovi, [])
+
+
+class TestInviaEmail(unittest.TestCase):
+    """invia_email deve dire in quale fase SMTP fallisce: il 28/09/2026 una password
+    per le app revocata (535) ha bloccato le notifiche per 17 giorni senza che il
+    log lo rendesse evidente."""
+
+    def setUp(self):
+        self.monitor = InterpelliMonitor(config_file='/nonexistent.json', dry_run=False)
+
+    def _invia(self, smtp_mock):
+        out = io.StringIO()
+        with patch('monitor_interpelli.smtplib.SMTP', smtp_mock), redirect_stdout(out):
+            ok = self.monitor.invia_email([_interpello('a')])
+        return ok, out.getvalue()
+
+    def _server(self, smtp_mock):
+        return smtp_mock.return_value.__enter__.return_value
+
+    def test_successo(self):
+        smtp = MagicMock()
+        ok, _ = self._invia(smtp)
+        self.assertTrue(ok)
+        self._server(smtp).send_message.assert_called_once()
+        self.assertIn('timeout', smtp.call_args.kwargs)
+
+    def test_credenziali_rifiutate_suggerisce_rigenerare_password(self):
+        smtp = MagicMock()
+        self._server(smtp).login.side_effect = smtplib.SMTPAuthenticationError(
+            535, b'5.7.8 Username and Password not accepted')
+        ok, out = self._invia(smtp)
+        self.assertFalse(ok)
+        self.assertIn('login', out)
+        self.assertIn('SMTPAuthenticationError', out)
+        self.assertIn('PASSWORD_EMAIL', out)
+
+    def test_connessione_chiusa_indica_fase(self):
+        smtp = MagicMock()
+        self._server(smtp).starttls.side_effect = smtplib.SMTPServerDisconnected(
+            'Connection unexpectedly closed')
+        ok, out = self._invia(smtp)
+        self.assertFalse(ok)
+        self.assertIn('starttls', out)
+        self.assertIn('SMTPServerDisconnected', out)
+        self.assertNotIn('PASSWORD_EMAIL', out)
+
+    def test_errore_di_connessione(self):
+        smtp = MagicMock(side_effect=OSError('Network is unreachable'))
+        ok, out = self._invia(smtp)
+        self.assertFalse(ok)
+        self.assertIn('connessione', out)
+
+
+class TestEseguiInvioFallito(unittest.TestCase):
+
+    def setUp(self):
+        self.cwd = os.getcwd()
+        self.tmp = tempfile.TemporaryDirectory()
+        os.chdir(self.tmp.name)
+
+    def tearDown(self):
+        os.chdir(self.cwd)
+        self.tmp.cleanup()
+
+    def test_stato_non_salvato_ed_exit_1(self):
+        """Con SMTP rotto lo stato resta intatto (la run successiva ritenta) e il
+        processo esce con 1, così il workflow non committa interpelli_visti.json."""
+        sorgente = MagicMock()
+        sorgente.name = 'test'
+        sorgente.fetch.return_value = [_interpello('a', scadenza='31/12/2099')]
+        monitor = InterpelliMonitor(config_file='/nonexistent.json', dry_run=False)
+        with patch('monitor_interpelli.get_enabled_sources', return_value=[sorgente]), \
+             patch.object(monitor, 'invia_email', return_value=False), \
+             patch('monitor_interpelli.aggiorna_dashboard'), \
+             redirect_stdout(io.StringIO()):
+            with self.assertRaises(SystemExit) as ctx:
+                monitor.esegui()
+        self.assertEqual(ctx.exception.code, 1)
+        self.assertFalse(os.path.exists('interpelli_visti.json'))
 
 
 if __name__ == '__main__':

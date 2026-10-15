@@ -25,6 +25,9 @@ from dashboard import aggiorna_dashboard
 # Cap alle risoluzioni scadenza via HTTP per run (protegge da reset dello stato)
 MAX_RISOLUZIONI_LINK = 40
 
+# Secondi di attesa massima per ogni operazione SMTP (senza, un server muto blocca la run)
+SMTP_TIMEOUT = 30
+
 
 def _label_scadenza(scadenza: str) -> str:
     """Etichetta leggibile con indicazione di urgenza per l'email."""
@@ -205,24 +208,36 @@ class InterpelliMonitor:
                 print(f"       Link: {ip.get('link') or '—'}")
             return True
 
+        n = len(interpelli)
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = self._oggetto_email(interpelli)
+        msg['From'] = self.config['email_mittente']
+        msg['To'] = self.config['email_destinatario']
+        msg.attach(MIMEText(self.crea_email_html(interpelli), 'html'))
+
+        # La fase in cui cade l'invio distingue le cause (rete, TLS, credenziali)
+        fase = 'connessione'
         try:
-            n = len(interpelli)
-            msg = MIMEMultipart('alternative')
-            msg['Subject'] = self._oggetto_email(interpelli)
-            msg['From'] = self.config['email_mittente']
-            msg['To'] = self.config['email_destinatario']
-            msg.attach(MIMEText(self.crea_email_html(interpelli), 'html'))
-
-            with smtplib.SMTP(self.config['smtp_server'], self.config['smtp_port']) as server:
+            with smtplib.SMTP(self.config['smtp_server'], self.config['smtp_port'],
+                              timeout=SMTP_TIMEOUT) as server:
+                fase = 'starttls'
                 server.starttls()
+                fase = 'login'
                 server.login(self.config['email_mittente'], self.config['password_email'])
+                fase = 'invio'
                 server.send_message(msg)
-
-            print(f"✅ Email inviata con successo! ({n} interpell{'o' if n == 1 else 'i'})")
-            return True
         except Exception as e:
-            print(f"❌ Errore nell'invio dell'email: {e}")
+            print(f"❌ Errore SMTP in fase '{fase}' ({type(e).__name__}): {e}")
+            if isinstance(e, smtplib.SMTPAuthenticationError):
+                # Google revoca le password per le app (es. cambio password account):
+                # senza questo suggerimento il 535 si confonde con un guasto di rete
+                print("   ↳ Credenziali rifiutate: la password per le app Gmail è probabilmente "
+                      "stata revocata. Generane una nuova su "
+                      "https://myaccount.google.com/apppasswords e aggiorna il secret PASSWORD_EMAIL.")
             return False
+
+        print(f"✅ Email inviata con successo! ({n} interpell{'o' if n == 1 else 'i'})")
+        return True
 
     def esegui(self):
         print(f"\n{'='*60}")
