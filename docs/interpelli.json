@@ -1,5 +1,33 @@
 [
  {
+  "title": "[I.C. \"A. MARIANO - E. FERMI\"] INTERPELLO PER N. 2 POSTI SCUOLA PRIMARIA POSTO COMUNE EEEE DEL 05/11/2026",
+  "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+  "scadenza": "06/11/2026",
+  "link": "https://www.portaleargo.it/albopretorio/online/#/SC27220/atti/4754705",
+  "source": "argo_albo",
+  "stable_id": "2df7fa03586bb76364fde8b3a323a1e2898ce871715f812e11c64f361bfc8692",
+  "data_rilevamento": "2026-11-05T14:45:59.881497",
+  "testo": "INTERPELLO PER N. 2 POSTI SCUOLA PRIMARIA POSTO COMUNE EEEE DEL 05/11/2026",
+  "archiviato": false,
+  "dettagli": {
+   "ora_scadenza": "13:00",
+   "periodo": "dal 09/11/2026 al 21/12/2026",
+   "sede": "Istituto Comprensivo “Mariano – Fermi” Via Malpighi, 23 – Andria Sede Uffici di"
+  }
+ },
+ {
+  "title": "Interpello Nazionale per selezione personale docente su classe di concorso EEEE –Scuola PRIMARIA POSTO COMUNE – ai sensi",
+  "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+  "scadenza": "",
+  "link": "https://www.portaleargo.it/albopretorio/online/#/SC27220/atti",
+  "source": "istruzionebat_html",
+  "stable_id": "7ebbef23a63893a5a25fe005679a99a3124de92be4e61d978728c3c02a9cfeb4",
+  "data_rilevamento": "2026-11-05T14:45:37.170789",
+  "testo": "Interpello Nazionale per selezione personale docente su classe di concorso EEEE –Scuola PRIMARIA POSTO COMUNE – ai sensi dell’articolo 14 comma 22 OM 27/2026 – a.s. 2026/27. – https://www.portaleargo.it/albopretorio/online/#/SC27220/atti",
+  "archiviato": false,
+  "dettagli": {}
+ },
+ {
   "title": "Interpello nazionale per supplenza docente su classe di concorso ADEE (Posto Sostegno Scuola Primaria) – https://www.por",
   "tipo": "SOSTEGNO PRIMARIA (ADEE)",
   "scadenza": "05/11/2026",
