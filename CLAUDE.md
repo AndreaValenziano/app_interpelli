@@ -97,7 +97,7 @@ One-off backfill of the dashboard archive from historical reports: `python3 tool
 
 ### Sources
 
-- **`istruzionebat_rss`**: `feedparser` on `istruzionebat.it/category/interpello/feed/`. Each RSS entry is one interpello. **The feed stopped updating in February 2026** (the index page kept going): the source reports "Feed fermo" when the newest entry is older than `GIORNI_FEED_FERMO`.
+- **`istruzionebat_rss`** (disabled in `get_enabled_sources()`): `feedparser` on `istruzionebat.it/category/interpello/feed/`. Each RSS entry is one interpello. **The feed stopped updating in February 2026** (the index page kept going): the source reports "Feed fermo" when the newest entry is older than `GIORNI_FEED_FERMO`.
 - **`istruzionebat_html`** (main UST source in 2026-27): BeautifulSoup on the yearly index page `istruzionebat.it/interpelli/a-s-YYYY-YYYY/`, URL computed by `url_anno_scolastico()` (new year from September; falls back to the previous year's page if the new one doesn't exist yet). Entries are `<h2>/<h3>` inside `div.testolungo` (older years: `li/p/h4` in `entry-content`); reports an error if no entry is found (page structure changed).
 - **`scuolainterpelli_rss`** (secondary): `feedparser` on `scuolainterpelli.it/feed/`. The RSS `content:encoded` is a big HTML blob organized by region (`<h2>`) → province subheading (`Interpelli pubblicati da: <strong>NAME</strong>`) → entries `<p>CODES – <a href=…>VISUALIZZA INTERPELLI</a></p>` followed by `<p><em>12 ottobre 2026</em></p>`. Client-filters for PUGLIA and BAT province keywords (`BAT_PROVINCE_KEYWORDS`, whole-word match: `ALESSANDRIA` contains `ANDRIA`). The entry text is always the same, so `stable_id = sha256(codes + link + date)`; entries published more than `MAX_GIORNI` (3) days ago are skipped (the feed keeps ~2 weeks of issues). Links are often the school homepage or the UST site rather than the specific interpello.
 
@@ -192,7 +192,7 @@ If the MIUR CSV URL returns 404 (start of new school year), update `MIUR_CSV_URL
 - Stable_id: `sha256("trasparenzascuole-{cf}-{data-idatto}")` — the GUID per act is stable
 - Pagination: parse "Totale pagine X di N"; increment `PageNumber` in body; 5 results per page typical
 - `GET_APD_ATTO` (allegati): not called — requires active server session, returns error outside the browser flow. The page URL is used as `link` instead.
-- **Note CI**: the source uses `curl_cffi` with `impersonate="chrome131"` instead of `requests`. This impersonates Chrome's TLS handshake (JA3 + HTTP/2 fingerprint), bypassing the Cloudflare WAF that blocks `requests`/OpenSSL TLS signatures from GitHub Actions Azure IPs. Other sources keep using `requests`.
+- **Note CI**: the source uses `curl_cffi` with `impersonate="chrome131"` instead of `requests`. This impersonates Chrome's TLS handshake (JA3 + HTTP/2 fingerprint), bypassing the Cloudflare WAF that blocks `requests`/OpenSSL TLS signatures from GitHub Actions Azure IPs. Other sources keep using `requests`. It is still blocked from GitHub Actions (IP-based 403), so when the secrets `TRASPARENZA_PROXY_URL` + `TRASPARENZA_PROXY_KEY` are set, every request (source and `link_resolver._risolvi_view_doc`, via `nuova_sessione()`) is rewritten to a Cloudflare Worker (`tools/trasparenza_proxy_worker.js`, Worker secret `PROXY_KEY`, header `X-Proxy-Key`). Posting links keep the real trasparenzascuole host.
 
 ## Discovering new AJAX sources (`tools/discover_ajax.py`)
 

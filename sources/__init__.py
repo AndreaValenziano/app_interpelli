@@ -1,4 +1,3 @@
-from .istruzionebat_rss import IstruzioneBatRssSource
 from .istruzionebat_html import IstruzioneBatHtmlSource
 from .scuolainterpelli_rss import ScuolaInterppelliRssSource
 from .argo_albo import ArgoAlboSource
@@ -8,7 +7,7 @@ from .trasparenzascuole_albo import TrasparenzascuoleAlboSource
 
 def get_enabled_sources():
     return [
-        IstruzioneBatRssSource(),
+        # IstruzioneBatRssSource: feed fermo dal 12/02/2026, stessi interpelli della pagina HTML
         IstruzioneBatHtmlSource(),
         ScuolaInterppelliRssSource(),
         ArgoAlboSource(),
