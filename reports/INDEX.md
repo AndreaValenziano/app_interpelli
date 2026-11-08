@@ -2,6 +2,7 @@
 
 | Run | Data | Evento | Notificati | Scartati totali | File |
 |-----|------|--------|------------|-----------------|------|
+| #941 | 2026-11-08 11:31 | workflow_dispatch | 0 | 31 | [JSON](run-941-20261108-113100.json) · [MD](run-941-20261108-113100.md) |
 | #940 | 2026-11-08 11:15 | workflow_dispatch | 0 | 31 | [JSON](run-940-20261108-111542.json) · [MD](run-940-20261108-111542.md) |
 | #939 | 2026-11-08 11:01 | workflow_dispatch | 0 | 31 | [JSON](run-939-20261108-110115.json) · [MD](run-939-20261108-110115.md) |
 | #938 | 2026-11-08 10:45 | workflow_dispatch | 0 | 31 | [JSON](run-938-20261108-104543.json) · [MD](run-938-20261108-104543.md) |
