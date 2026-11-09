@@ -23,6 +23,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
+        with:
+          # Senza ref una run rimasta in coda riparte dal commit di quando è stata creata:
+          # stato vecchio (interpelli rinotificati) e conflitto al momento del push
+          ref: main
 
       - uses: actions/setup-python@v6
         with:
