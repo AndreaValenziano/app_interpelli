@@ -3,6 +3,7 @@ from .scuolainterpelli_rss import ScuolaInterppelliRssSource
 from .argo_albo import ArgoAlboSource
 from .nuvola_albo import NuvolaAlboSource
 from .trasparenzascuole_albo import TrasparenzascuoleAlboSource
+from .trasparenzascuole_mac import TrasparenzascuoleMacSource
 
 
 def get_enabled_sources():
@@ -13,4 +14,5 @@ def get_enabled_sources():
         ArgoAlboSource(),
         NuvolaAlboSource(),
         TrasparenzascuoleAlboSource(),
+        TrasparenzascuoleMacSource(),
     ]

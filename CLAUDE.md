@@ -47,7 +47,8 @@ sources/
   scuolainterpelli_rss.py  # secondary: national aggregator, filtered for BAT
   argo_albo.py          # per-school: Argo albo pretorio REST API
   nuvola_albo.py        # per-school: Nuvola Madisoft bacheca digitale (server-side HTML)
-  trasparenzascuole_albo.py  # per-school: Trasparenzascuole.it (Axios) AJAX API
+  trasparenzascuole_albo.py  # per-school: Trasparenzascuole.it (Axios) AJAX API (run from the Mac)
+  trasparenzascuole_mac.py   # the postings the Mac published to trasparenzascuole_mac.json
 .github/workflows/monitor.yml  # GitHub Actions cron scheduler
 ```
 
@@ -192,7 +193,7 @@ If the MIUR CSV URL returns 404 (start of new school year), update `MIUR_CSV_URL
 - Stable_id: `sha256("trasparenzascuole-{cf}-{data-idatto}")` — the GUID per act is stable
 - Pagination: parse "Totale pagine X di N"; increment `PageNumber` in body; 5 results per page typical
 - `GET_APD_ATTO` (allegati): not called — requires active server session, returns error outside the browser flow. The page URL is used as `link` instead.
-- **Note CI**: the source uses `curl_cffi` with `impersonate="chrome131"` instead of `requests`. This impersonates Chrome's TLS handshake (JA3 + HTTP/2 fingerprint), bypassing the Cloudflare WAF that blocks `requests`/OpenSSL TLS signatures from GitHub Actions Azure IPs. Other sources keep using `requests`. It is still blocked from GitHub Actions (403 based on the caller IP, which Cloudflare also passes through a Worker proxy — tried and removed in November 2026), so CI skips it (`SORGENTI_ESCLUSE: trasparenzascuole_albo` in the workflow, handled in `esegui()`) and the Mac runs it: `tools/mac_trasparenzascuole.sh` via the LaunchAgent `tools/it.interpelli.trasparenzascuole.plist` (every 30 min, copied to `~/Library/LaunchAgents/`), with its own `config.json`, state and reports in `~/Library/Application Support/interpelli-trasparenzascuole/` (state seeded from the repo on first run; not shared afterwards, so a posting also found by CI may be emailed twice; not on the dashboard). Log: `~/Library/Logs/interpelli-trasparenzascuole.log`.
+- **Note CI**: the source uses `curl_cffi` with `impersonate="chrome131"` instead of `requests`. This impersonates Chrome's TLS handshake (JA3 + HTTP/2 fingerprint), bypassing the Cloudflare WAF that blocks `requests`/OpenSSL TLS signatures from GitHub Actions Azure IPs. Other sources keep using `requests`. It is still blocked from GitHub Actions (403 based on the caller IP, which Cloudflare also passes through a Worker proxy — tried and removed in November 2026), so CI skips it (`SORGENTI_ESCLUSE: trasparenzascuole_albo` in the workflow, handled in `esegui()`) and the Mac reads it: `tools/mac_trasparenzascuole.py` via the LaunchAgent `tools/it.interpelli.trasparenzascuole.plist` (every 30 min, copied to `~/Library/LaunchAgents/`) publishes postings and errors to `trasparenzascuole_mac.json` on main through the GitHub API (`gh api`; only when changed, otherwise a heartbeat every 6 hours; it never touches the working copy). The `trasparenzascuole_mac` source reads that file on CI, so email, dedup, state and dashboard stay in one place; it reports "Mac fermo" after 24 hours without updates. Log: `~/Library/Logs/interpelli-trasparenzascuole.log`.
 
 ## Discovering new AJAX sources (`tools/discover_ajax.py`)
 

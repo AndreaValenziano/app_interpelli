@@ -6,8 +6,14 @@
   <string>it.interpelli.trasparenzascuole</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/AndreaValenziano/IdeaProjects/app_interpelli/tools/mac_trasparenzascuole.sh</string>
+    <string>/Users/AndreaValenziano/IdeaProjects/app_interpelli/.venv/bin/python</string>
+    <string>/Users/AndreaValenziano/IdeaProjects/app_interpelli/tools/mac_trasparenzascuole.py</string>
   </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/bin:/bin</string>
+  </dict>
   <key>StartInterval</key>
   <integer>1800</integer>
   <key>RunAtLoad</key>

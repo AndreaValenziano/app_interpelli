@@ -42,8 +42,8 @@ jobs:
           EMAIL_DESTINATARIO: ${{ secrets.EMAIL_DESTINATARIO }}
           SMTP_SERVER:        ${{ secrets.SMTP_SERVER }}
           SMTP_PORT:          ${{ secrets.SMTP_PORT }}
-          # Il WAF di trasparenzascuole blocca gli IP di GitHub (anche via Worker
-          # Cloudflare): quella sorgente la controlla il Mac (tools/mac_trasparenzascuole.sh)
+          # Il WAF di trasparenzascuole blocca gli IP di GitHub (anche via Worker Cloudflare):
+          # la legge il Mac (tools/mac_trasparenzascuole.py), qui arriva da trasparenzascuole_mac
           SORGENTI_ESCLUSE: trasparenzascuole_albo
         run: python3 monitor_interpelli.py
 
