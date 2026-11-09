@@ -11,6 +11,14 @@ export default {
     const url = new URL(req.url);
     const headers = new Headers(req.headers);
     headers.delete("x-proxy-key");
+    // L'IP del chiamante (GitHub) non deve arrivare al WAF: toglie gli header che lo portano
+    for (const h of [...headers.keys()]) {
+      if (h.startsWith("cf-") || h.startsWith("x-forwarded") || h === "x-real-ip" || h === "true-client-ip" || h === "forwarded") {
+        headers.delete(h);
+      }
+    }
+    // Cloudflare rimette X-Forwarded-For anche se cancellato: va sovrascritto
+    headers.set("x-forwarded-for", "127.0.0.1");
     const resp = await fetch(TARGET + url.pathname + url.search, {
       method: req.method,
       headers,
