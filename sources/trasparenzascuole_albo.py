@@ -49,26 +49,6 @@ _BASE_PAYLOAD = {
 
 _RETRY_STATUSES = {403, 429, 500, 502, 503, 504}
 
-# Il WAF Cloudflare blocca gli IP di GitHub Actions: se impostato, le richieste passano
-# dal Worker in tools/trasparenza_proxy_worker.js (IP Cloudflare, non bloccati).
-PROXY_URL = os.environ.get('TRASPARENZA_PROXY_URL', '').rstrip('/')
-PROXY_KEY = os.environ.get('TRASPARENZA_PROXY_KEY', '')
-_HOST_RE = re.compile(r'^https?://(www\.)?trasparenzascuole\.it', re.I)
-
-
-class _Sessione(cffi_requests.Session):
-    """Session curl_cffi che, con PROXY_URL impostato, riscrive l'host verso il Worker."""
-
-    def request(self, method, url, *args, **kwargs):
-        if PROXY_URL and _HOST_RE.match(url):
-            url = _HOST_RE.sub(PROXY_URL, url, count=1)
-            kwargs['headers'] = {**(kwargs.get('headers') or {}), 'X-Proxy-Key': PROXY_KEY}
-        return super().request(method, url, *args, **kwargs)
-
-
-def nuova_sessione() -> cffi_requests.Session:
-    return _Sessione(impersonate="chrome131")
-
 
 class TrasparenzascuoleAlboSource(BaseSource):
     name = "trasparenzascuole_albo"
@@ -111,7 +91,7 @@ class TrasparenzascuoleAlboSource(BaseSource):
 
     @staticmethod
     def _make_session() -> cffi_requests.Session:
-        session = nuova_sessione()
+        session = cffi_requests.Session(impersonate="chrome131")
         try:
             session.get(TRASPARENZA_BASE + '/', timeout=15)
         except Exception:

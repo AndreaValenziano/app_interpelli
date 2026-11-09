@@ -374,6 +374,8 @@ class InterpelliMonitor:
                 print(f"❌ Sorgente '{self.source_filter}' non trovata. Sorgenti disponibili: "
                       f"{', '.join(s.name for s in get_enabled_sources())}")
                 sys.exit(1)
+        escluse = set(filter(None, os.environ.get('SORGENTI_ESCLUSE', '').split(',')))
+        sources = [s for s in sources if s.name not in escluse]
 
         tutti = []
         for source in sources:

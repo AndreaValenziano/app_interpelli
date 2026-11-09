@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>it.interpelli.trasparenzascuole</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/AndreaValenziano/IdeaProjects/app_interpelli/tools/mac_trasparenzascuole.sh</string>
+  </array>
+  <key>StartInterval</key>
+  <integer>1800</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/Users/AndreaValenziano/Library/Logs/interpelli-trasparenzascuole.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/AndreaValenziano/Library/Logs/interpelli-trasparenzascuole.log</string>
+</dict>
+</plist>

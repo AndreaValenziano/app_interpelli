@@ -42,9 +42,9 @@ jobs:
           EMAIL_DESTINATARIO: ${{ secrets.EMAIL_DESTINATARIO }}
           SMTP_SERVER:        ${{ secrets.SMTP_SERVER }}
           SMTP_PORT:          ${{ secrets.SMTP_PORT }}
-          # Worker Cloudflare per trasparenzascuole (il WAF blocca gli IP di GitHub)
-          TRASPARENZA_PROXY_URL: ${{ secrets.TRASPARENZA_PROXY_URL }}
-          TRASPARENZA_PROXY_KEY: ${{ secrets.TRASPARENZA_PROXY_KEY }}
+          # Il WAF di trasparenzascuole blocca gli IP di GitHub (anche via Worker
+          # Cloudflare): quella sorgente la controlla il Mac (tools/mac_trasparenzascuole.sh)
+          SORGENTI_ESCLUSE: trasparenzascuole_albo
         run: python3 monitor_interpelli.py
 
       - name: Salva stato, report e dashboard

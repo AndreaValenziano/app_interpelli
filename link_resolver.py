@@ -294,10 +294,10 @@ def _testo_da_docx_bytes(body: bytes) -> str:
 def _risolvi_view_doc(url: str) -> str:
     """Documento diretto di trasparenzascuole.it: il WAF Cloudflare blocca
     requests/OpenSSL, serve l'impersonazione TLS di curl_cffi (come la source).
-    Da IP datacenter (GitHub Actions) risponde 403 se non è impostato il proxy → ''."""
+    Da IP datacenter (GitHub Actions) risponde comunque 403 → ritorna ''."""
     try:
-        from sources.trasparenzascuole_albo import nuova_sessione
-        resp = nuova_sessione().get(url, timeout=30)
+        from curl_cffi import requests as creq
+        resp = creq.get(url, impersonate='chrome131', timeout=30)
         if resp.status_code != 200 or len(resp.content) > MAX_BYTES:
             return ''
         ct = (resp.headers.get('Content-Type') or '').lower()
