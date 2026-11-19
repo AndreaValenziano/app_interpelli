@@ -1,7 +1,16 @@
 {
- "aggiornato": "2026-11-19T15:02:02",
- "errori": [
-  "Bloccato da WAF Cloudflare su 8 scuole: 2 C.D. \"PROF. ARC. CAPUTI\", 1 C.D. \"DE AMICIS\" (TRANI), 2 C.D. \"MONS. PETRONELLI\", I.C. \"GIOVANNI XXIII-G.PASCOLI\", I.C. \"MUSTI - DIMICCOLI\", I.C. \"ROCCA-BOVIO-PALUMBO-D'ANN, I.C. DON MILANI-GARIBALDI-LEONE, IC DON P. UVA-BATTISTI-FERRARIS"
- ],
- "interpelli": []
+ "aggiornato": "2026-11-19T16:46:12",
+ "errori": [],
+ "interpelli": [
+  {
+   "testo": "Nuova pubblicazione 0000107 Pubblicato in data 17/11/2026 Protocollo 0007013/U del 17/11/2026 1 Oggetto: Avviso_interpello_primaria_EEEE_(1).pdf 17/11/2026 03/12/2026 Avvisi Dettagli",
+   "title": "[I.C. \"MUSTI - DIMICCOLI\"] Avviso_interpello_primaria_EEEE_(1).pdf",
+   "link": "https://www.trasparenzascuole.it/Public/APDPublic_ExtV2.aspx?CF=90091130725#atto-909b4160-f903-467f-ab35-14a9f8973267",
+   "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+   "scadenza": "",
+   "source": "trasparenzascuole_albo",
+   "stable_id": "f51f26f846db634516d0876b2b8e1d367fae7b1c7178ae2f6041826cc46bc6ba",
+   "data_rilevamento": "2026-11-19T16:45:28.991083"
+  }
+ ]
 }
