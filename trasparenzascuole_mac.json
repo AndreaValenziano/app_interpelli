@@ -1,5 +1,16 @@
 {
- "aggiornato": "2026-11-19T12:55:55",
+ "aggiornato": "2026-11-19T13:56:53",
  "errori": [],
- "interpelli": []
+ "interpelli": [
+  {
+   "testo": "Nuova pubblicazione 0000107 Pubblicato in data 17/11/2026 Protocollo 0007013/U del 17/11/2026 1 Oggetto: Avviso_interpello_primaria_EEEE_(1).pdf 17/11/2026 03/12/2026 Avvisi Dettagli",
+   "title": "[I.C. \"MUSTI - DIMICCOLI\"] Avviso_interpello_primaria_EEEE_(1).pdf",
+   "link": "https://www.trasparenzascuole.it/Public/APDPublic_ExtV2.aspx?CF=90091130725#atto-909b4160-f903-467f-ab35-14a9f8973267",
+   "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+   "scadenza": "",
+   "source": "trasparenzascuole_albo",
+   "stable_id": "f51f26f846db634516d0876b2b8e1d367fae7b1c7178ae2f6041826cc46bc6ba",
+   "data_rilevamento": "2026-11-19T13:56:36.492884"
+  }
+ ]
 }
