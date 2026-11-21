@@ -1,5 +1,7 @@
 {
- "aggiornato": "2026-11-20T20:03:24",
- "errori": [],
+ "aggiornato": "2026-11-21T09:07:04",
+ "errori": [
+  "Bloccato da WAF Cloudflare su 1 scuole: 2 C.D. \"PROF. ARC. CAPUTI\""
+ ],
  "interpelli": []
 }
