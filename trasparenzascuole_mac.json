@@ -1,5 +1,7 @@
 {
- "aggiornato": "2026-11-22T15:21:05",
- "errori": [],
+ "aggiornato": "2026-11-22T16:58:37",
+ "errori": [
+  "Bloccato da WAF Cloudflare su 1 scuole: IC DON P. UVA-BATTISTI-FERRARIS"
+ ],
  "interpelli": []
 }
