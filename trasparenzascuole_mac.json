@@ -1,5 +1,7 @@
 {
- "aggiornato": "2026-11-22T14:16:12",
- "errori": [],
+ "aggiornato": "2026-11-22T14:48:39",
+ "errori": [
+  "Bloccato da WAF Cloudflare su 1 scuole: I.C. \"MUSTI - DIMICCOLI\""
+ ],
  "interpelli": []
 }
