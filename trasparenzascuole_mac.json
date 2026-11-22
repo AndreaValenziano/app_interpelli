@@ -1,7 +1,7 @@
 {
- "aggiornato": "2026-11-22T07:34:12",
+ "aggiornato": "2026-11-22T08:06:50",
  "errori": [
-  "Bloccato da WAF Cloudflare su 8 scuole: 2 C.D. \"PROF. ARC. CAPUTI\", 1 C.D. \"DE AMICIS\" (TRANI), 2 C.D. \"MONS. PETRONELLI\", I.C. \"GIOVANNI XXIII-G.PASCOLI\", I.C. \"MUSTI - DIMICCOLI\", I.C. \"ROCCA-BOVIO-PALUMBO-D'ANN, I.C. DON MILANI-GARIBALDI-LEONE, IC DON P. UVA-BATTISTI-FERRARIS"
+  "Bloccato da WAF Cloudflare su 5 scuole: 2 C.D. \"PROF. ARC. CAPUTI\", 2 C.D. \"MONS. PETRONELLI\", I.C. \"GIOVANNI XXIII-G.PASCOLI\", I.C. \"MUSTI - DIMICCOLI\", IC DON P. UVA-BATTISTI-FERRARIS"
  ],
  "interpelli": []
 }
