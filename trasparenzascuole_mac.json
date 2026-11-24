@@ -1,5 +1,7 @@
 {
- "aggiornato": "2026-11-24T10:18:09",
- "errori": [],
+ "aggiornato": "2026-11-24T12:23:45",
+ "errori": [
+  "Bloccato da WAF Cloudflare su 3 scuole: 1 C.D. \"DE AMICIS\" (TRANI), I.C. DON MILANI-GARIBALDI-LEONE, IC DON P. UVA-BATTISTI-FERRARIS"
+ ],
  "interpelli": []
 }
