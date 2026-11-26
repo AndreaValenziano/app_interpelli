@@ -1,5 +1,7 @@
 {
- "aggiornato": "2026-11-26T14:47:57",
- "errori": [],
+ "aggiornato": "2026-11-26T16:37:37",
+ "errori": [
+  "Bloccato da WAF Cloudflare su 6 scuole: 2 C.D. \"PROF. ARC. CAPUTI\", 2 C.D. \"MONS. PETRONELLI\", I.C. \"GIOVANNI XXIII-G.PASCOLI\", I.C. \"MUSTI - DIMICCOLI\", I.C. DON MILANI-GARIBALDI-LEONE, IC DON P. UVA-BATTISTI-FERRARIS"
+ ],
  "interpelli": []
 }
