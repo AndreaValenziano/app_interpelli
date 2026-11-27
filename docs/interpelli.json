@@ -1,5 +1,49 @@
 [
  {
+  "title": "Avviso – Interpello per una supplenza su posto di sostegno di Scuola Primaria con titolo di specializzazione – ai sensi ",
+  "tipo": "SOSTEGNO PRIMARIA",
+  "scadenza": "27/11/2026",
+  "link": "https://www.icsdeamicisgiovanni23.edu.it/2026/11/26/prot-9992-del-26-11-2026_interpello-per-conferimento-n-01-posto-sostegno-di-scuola-primaria-i-c-de-amicis-giovanni-xxiii-san-ferdinando-di-puglia/",
+  "source": "istruzionebat_html",
+  "stable_id": "a1941ba720c2e003297b0b6c6cd7ad7c51b686691e93d15353fbd571ca942eba",
+  "data_rilevamento": "2026-11-27T07:01:14.053910",
+  "testo": "Avviso – Interpello per una supplenza su posto di sostegno di Scuola Primaria con titolo di specializzazione – ai sensi dell’articolo 14 comma 22 OM 27/2026 A.S. 2026/27 – https://www.icsdeamicisgiovanni23.edu.it/2026/11/26/prot-9992-del-26-11-2026_interpello-per-conferimento-n-01-posto-sostegno-di-scuola-primaria-i-c-de-amicis-giovanni-xxiii-san-ferdinando-di-puglia/",
+  "archiviato": false,
+  "dettagli": {
+   "ora_scadenza": "07:00",
+   "periodo": "fino al 14/12/2026",
+   "sede": "Istituto Comprensivo “De Amicis-Giovanni XXIII ”- San Ferdinando di Puglia Visto"
+  }
+ },
+ {
+  "title": "Avviso – Interpello Nazionale per selezione personale docente di SCUOLA PRIMARIA – EEEE posto comune – supplenza breve e",
+  "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+  "scadenza": "",
+  "link": "https://www.trasparenzascuole.it/Public/APDPublic_ExtV2.aspx?CF=90091020728",
+  "source": "istruzionebat_html",
+  "stable_id": "ea024b5ba4e2e936aa7cbe163de7a784708b99f50f62ecaf6b360510f84848de",
+  "data_rilevamento": "2026-11-27T07:01:14.053724",
+  "testo": "Avviso – Interpello Nazionale per selezione personale docente di SCUOLA PRIMARIA – EEEE posto comune – supplenza breve e saltuaria dal 30/11/2026 al 04/12/2026 – https://www.trasparenzascuole.it/Public/APDPublic_ExtV2.aspx?CF=90091020728",
+  "archiviato": false,
+  "dettagli": {
+   "periodo": "dal 30/11/2026 al 04/12/2026"
+  }
+ },
+ {
+  "title": "Avviso – Interpello Nazionale per selezione personale docente di SCUOLA PRIMARIA – EEEE posto comune – supplenza breve e",
+  "tipo": "POSTO COMUNE PRIMARIA (EEEE)",
+  "scadenza": "",
+  "link": null,
+  "source": "istruzionebat_html",
+  "stable_id": "6e411346a41a2cdedadebb4f1b923fbc9e5e68200bdbbd065abd62be25d150bb",
+  "data_rilevamento": "2026-11-27T07:01:14.053572",
+  "testo": "Avviso – Interpello Nazionale per selezione personale docente di SCUOLA PRIMARIA – EEEE posto comune – supplenza breve e saltuaria dal 30/11/2026 al 04/12/2026",
+  "archiviato": false,
+  "dettagli": {
+   "periodo": "dal 30/11/2026 al 04/12/2026"
+  }
+ },
+ {
   "title": "[I.C. MARCON-CAREL-LOSIT-BOVIO] Interpello per individuazione di un docente di Infanzia.– Posto Comune, per una supplenza dal 25/11/",
   "tipo": "INFANZIA",
   "scadenza": "",
@@ -212,7 +256,7 @@
   "stable_id": "511d81145b8946e6e4af8bae7b156e9da95a9113d0c4d3a6104b77320b654331",
   "data_rilevamento": "2026-11-12T11:16:06.910946",
   "testo": "Interpello per individuazione di un docente di Infanzia.Posto sostegno. per una supplenza dal 16/11/2026al 27/11/2026",
-  "archiviato": false,
+  "archiviato": true,
   "dettagli": {}
  },
  {
